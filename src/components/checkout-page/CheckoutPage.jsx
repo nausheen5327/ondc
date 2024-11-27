@@ -1811,8 +1811,8 @@ const verifyPayment = async (items, method) => {
                             setOrderType={setOrderType}
                             orderType={orderType}
                             setAddress={setAddress}
-                            handleSelectAddress={handleSelectAddress}
-                            handleCloseAddress={handleCloseAddress}
+                            handleSelectAddress={()=>setOpenAddressModal(true)}
+                            handleCloseAddress={()=>handleCloseAddress(false)}
                             address={address}
                             page={page}
                             setPaymenMethod={setPaymenMethod}

@@ -71,12 +71,7 @@ const DeliveryAddress = ({
             onError: onSingleErrorResponse,
         }
     )
-    useEffect(async () => {
-        if (token) {
-            await refetch()
-        }
-
-    }, [restaurantId])
+   
     useEffect(() => {
         data && setAllAddress([mainAddress, ...data.addresses])
     }, [data])
@@ -102,7 +97,7 @@ const DeliveryAddress = ({
             additionalInformationDispatch({type:ACTIONS.setFloor , payload:selectedAddress?.floor || '' })
             additionalInformationDispatch({type:ACTIONS.setAddressType , payload:selectedAddress?.address_type || '' })
         }
-        handleClose()
+        handleCloseAddress()
     }
     console.log('address 1234567', address)
     return (
