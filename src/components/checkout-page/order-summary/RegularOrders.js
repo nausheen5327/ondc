@@ -290,17 +290,12 @@ const RegularOrders = () => {
                 {/* <Divider /> */}
                 {renderLineItem('Total',
     quote?.breakup?.reduce((sum, item) => {
-        // Check if the item has a parent_item_id or skip it
-        const hasParent = item?.item?.parent_item_id !== undefined && item?.item?.parent_item_id !== null;
-        
-        // Add price only for items with parent_item_id and matching title types
-        if (hasParent && ['item', 'tax'].includes(item['@ondc/org/title_type'])) {
+        if (item['@ondc/org/title_type'] === 'item' || 
+            (item['@ondc/org/title_type'] === 'tax' && !item.item?.tags?.some(tag => tag.code === 'quote'))) {
             return sum + Number(item.price.value);
         }
-        
-        // Skip adding the price for items without parent_item_id
         return sum;
-    }, 0), // Initialize sum as 0
+    }, 0),
     { isBold: true }
 )}
 

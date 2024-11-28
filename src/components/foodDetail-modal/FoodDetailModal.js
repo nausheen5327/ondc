@@ -299,125 +299,179 @@ const FoodDetailModal = ({
         }
       }, [cartItems, customization_state]);
     
-      const addToCart = async (navigate = false, isIncrement = true) => {
-        setAddToCartLoading(true);
-        const user = JSON.parse(getValueFromCookie("user"));
-        const url = `/clientApis/v2/cart/${user.id}`;
-        let subtotal = productPayload?.item_details?.price?.value;
+      // Helper function to process customization state
+const processCustomizationState = (customizationState, customisationItems) => {
+    if (!customizationState || !customisationItems) return [];
     
-        const customisations = getCustomizations() ?? null;
-    
-        if (customisations) {
-          calculateSubtotal(
-            customization_state["firstGroup"]?.id,
-            customization_state
-          );
-          subtotal += customizationPrices;
+    let selectedCustomizations = [];
+  
+    const processGroup = (groupId) => {
+      const group = customizationState[groupId];
+      if (!group || !group.selected) return;
+  
+      // Add selected items from current group
+      group.selected.forEach(selection => {
+        const matchingItem = customisationItems.find(item => item.local_id === selection.id);
+        if (matchingItem) {
+          selectedCustomizations.push({
+            ...matchingItem,
+            quantity: { count: 1 }
+          });
         }
+      });
+  
+      // Process child groups recursively
+      if (group.childs) {
+        group.childs.forEach(childId => processGroup(childId));
+      }
+    };
+  
+    // Start processing from the first group
+    if (customizationState.firstGroup) {
+      processGroup(customizationState.firstGroup.id);
+    }
+  
+    return selectedCustomizations;
+  };
+  
+  // Calculate total price including customizations
+  const calculateTotalPrice = (basePrice, customizations) => {
+    if (!customizations) return basePrice;
     
-        const payload = {
-          id: productPayload.id,
-          local_id: productPayload.local_id,
-          bpp_id: productPayload.bpp_details.bpp_id,
-          bpp_uri: productPayload.context.bpp_uri,
-          domain: productPayload.context.domain,
-          tags: productPayload.item_details.tags,
-          customisationState: customization_state,
-          contextCity: productPayload.context.city,
-          quantity: {
-            count: 1,
-          },
-          provider: {
-            id: productPayload.bpp_details.bpp_id,
-            locations: productPayload.locations,
-            ...productPayload.provider_details,
-          },
-          product: {
-            id: productPayload.id,
-            subtotal,
-            ...productPayload.item_details,
-          },
-          customisations,
-          hasCustomisations: customisations ? true : false,
+    const customizationTotal = customizations.reduce((total, item) => {
+      return total + (item.price?.value || 0);
+    }, 0);
+  
+    return basePrice + customizationTotal;
+  };
+  
+  // Prepare cart payload
+  const prepareCartPayload = (productData, customizationState, quantity = 1) => {
+    if (!productData) return null;
+  
+    const customisations = processCustomizationState(
+      customizationState, 
+      productData.customisation_items
+    );
+  
+    const basePrice = productData.item_details?.price?.value || 0;
+    const totalPrice = calculateTotalPrice(basePrice, customisations);
+  
+    return {
+      id: productData.id,
+      local_id: productData.local_id,
+      bpp_id: productData.bpp_details.bpp_id,
+      bpp_uri: productData.context.bpp_uri,
+      domain: productData.context.domain,
+      tags: productData.item_details.tags,
+      customisationState: customizationState,
+      contextCity: productData.context.city,
+      quantity: { count: quantity },
+      provider: {
+        id: productData.bpp_details.bpp_id,
+        locations: productData.locations,
+        ...productData.provider_details,
+      },
+      product: {
+        id: productData.id,
+        subtotal: basePrice,
+        ...productData.item_details,
+      },
+      customisations: customisations,
+      hasCustomisations: customisations && customisations.length > 0,
+      totalPrice: totalPrice
+    };
+  };
+  const addToCart = async (navigate = false, isIncrement = true) => {
+    setAddToCartLoading(true);
+    try {
+      const user = JSON.parse(getValueFromCookie("user"));
+      const url = `/clientApis/v2/cart/${user.id}`;
+      
+      // Get selected customizations
+      const selectedCustomizations = selectedOptions.map(option => {
+        const customizationItem = modalData[0].customisation_items.find(
+          item => item.local_id === option.id
+        );
+        return {
+          ...customizationItem,
+          quantity: { count: 1 }
         };
-    
-        let cartItem = [];
-        cartItem = cartItems.filter((ci) => {
-          return ci.item.id === payload.id;
-        });
-    
-        if (customisations) {
-          cartItem = cartItem.filter((ci) => {
-            return ci.item.customisations != null;
-          });
-        }
-    
-        if (cartItem.length > 0 && customisations) {
-          cartItem = cartItem.filter((ci) => {
-            return ci.item.customisations.length === customisations.length;
-          });
-        }
-    
-        if (cartItem.length === 0) {
-          const res = await postCall(url, payload);
-          getCartItems();
-          setAddToCartLoading(false);
-          CustomToaster('success',"Item added to cart successfully.")
-          
-    
-          if (navigate) {
-            console.log("bhaii close hojaa");
-            handleModalClose();
+      });
+  
+      // Calculate total price including customizations
+      const basePrice = modalData[0]?.item_details?.price?.value || 0;
+      const customizationTotal = selectedCustomizations.reduce((total, item) => {
+        return total + (item.price?.value || 0);
+      }, 0);
+      const totalPrice = basePrice + customizationTotal;
+  
+      const payload = {
+        id: modalData[0].id,
+        local_id: modalData[0].local_id,
+        bpp_id: modalData[0].bpp_details.bpp_id,
+        bpp_uri: modalData[0].context.bpp_uri,
+        domain: modalData[0].context.domain,
+        tags: modalData[0].item_details.tags,
+        customisationState: selectedOptions.length ? {
+          firstGroup: {
+            id: modalData[0].customisation_groups[0]?.id,
+            selected: selectedOptions
           }
-        } else {
-          const currentCount = parseInt(cartItem[0].item.quantity.count);
-          const maxCount = parseInt(
-            cartItem[0].item.product.quantity.maximum.count
-          );
-    
-          if (currentCount < maxCount) {
-            if (!customisations) {
-              await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
-              getCartItems();
-              setAddToCartLoading(false);
-              CustomToaster('success',"Item quantity updated in your cart.")
-              
-            } else {
-              const currentIds = customisations.map((item) => item.id);
-              let matchingCustomisation = null;
-    
-              for (let i = 0; i < cartItem.length; i++) {
-                let existingIds = cartItem[i].item.customisations.map(
-                  (item) => item.id
-                );
-                const areSame = areCustomisationsSame(existingIds, currentIds);
-                if (areSame) {
-                  matchingCustomisation = cartItem[i];
-                }
-              }
-    
-              if (matchingCustomisation) {
-                await updateCartItem(
-                  cartItems,
-                  isIncrement,
-                  matchingCustomisation._id
-                );
-                setAddToCartLoading(false);
-                getCartItems();
-                CustomToaster('success',"Item quantity updated in your cart.")
-              } else {
-                const res = await postCall(url, payload);
-                getCartItems();
-                setAddToCartLoading(false);
-                CustomToaster('success',"Item added to cart successfully.");
-              }
-            }
-          } else {
-            setAddToCartLoading(false);
-            CustomToaster('error',"The maximum available quantity for item is already in your cart.");
-          }
-        }
+        } : null,
+        contextCity: modalData[0].context.city,
+        quantity: { count: 1 },
+        provider: {
+          id: modalData[0].bpp_details.bpp_id,
+          locations: modalData[0].locations,
+          ...modalData[0].provider_details,
+        },
+        product: {
+          id: modalData[0].id,
+          subtotal: basePrice,
+          ...modalData[0].item_details,
+        },
+        customisations: selectedCustomizations,
+        hasCustomisations: selectedCustomizations.length > 0,
+        totalPrice
       };
+  
+      let cartItem = cartItems.filter(ci => ci.item.id === payload.id);
+      
+      if (selectedCustomizations.length > 0) {
+        cartItem = cartItem.filter(ci => {
+          if (!ci.item.customisations) return false;
+          const existingIds = ci.item.customisations.map(c => c.local_id).sort();
+          const newIds = selectedCustomizations.map(c => c.local_id).sort();
+          return JSON.stringify(existingIds) === JSON.stringify(newIds);
+        });
+      }
+  
+      if (cartItem.length === 0) {
+        const res = await postCall(url, payload);
+        CustomToaster('success', "Item added to cart successfully.");
+      } else {
+        const currentCount = parseInt(cartItem[0].item.quantity.count);
+        const maxCount = parseInt(cartItem[0].item.product.quantity.maximum.count);
+  
+        if (currentCount < maxCount) {
+          await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
+          CustomToaster('success', "Item quantity updated in your cart.");
+        } else {
+          CustomToaster('error', "Maximum available quantity already in cart.");
+        }
+      }
+      
+      getCartItems();
+      if (navigate) handleModalClose();
+      
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      CustomToaster('error', "Failed to add item to cart");
+    } finally {
+      setAddToCartLoading(false);
+    }
+  };
     const getProductDetails = async (productId) => {
         try {
         //   setProductLoading(true);

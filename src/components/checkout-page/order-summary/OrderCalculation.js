@@ -388,7 +388,7 @@ const OrderCalculation = (props) => {
             <CalculationGrid container md={12} xs={12} spacing={1}>
             <Grid item md={8} xs={8}>
                     
-                    {t("Subtoal")}
+                    {t("Subtotal")}
            </Grid>
            <Grid
                item
@@ -399,15 +399,10 @@ const OrderCalculation = (props) => {
                <Typography variant="h4">
                    {getAmount(
                        quote?.breakup?.reduce((sum, item) => {
-                        // Check if the item has a parent_item_id or skip it
-                        const hasParent = item?.item?.parent_item_id !== undefined && item?.item?.parent_item_id !== null;
-                        
-                        // Add price only for items with parent_item_id and matching title types
-                        if (hasParent && ['item', 'tax'].includes(item['@ondc/org/title_type'])) {
+                        if (item['@ondc/org/title_type'] === 'item' || 
+                            (item['@ondc/org/title_type'] === 'tax' && !item.item?.tags?.some(tag => tag.code === 'quote'))) {
                             return sum + Number(item.price.value);
                         }
-                        
-                        // Skip adding the price for items without parent_item_id
                         return sum;
                     }, 0),
                        currencySymbolDirection,

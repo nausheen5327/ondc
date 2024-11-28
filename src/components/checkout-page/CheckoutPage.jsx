@@ -1913,76 +1913,7 @@ const verifyPayment = async (items, method) => {
                                 global={global}
                             />
                         </SimpleBar>
-                        <Stack>
-                            
-                                    <Box mb={1}>
-                                        <Cutlery
-                                            isChecked={cutlery}
-                                            handleChange={handleCutlery}
-                                        />
-                                    </Box>
-                                
-                            {orderType !== 'take_away' && (
-                                <Box mb={1}>
-                                    <ItemSelectWithChip
-                                        title="Add More Delivery Instruction"
-                                        data={deliveryInstructions}
-                                        handleChange={
-                                            handleDeliveryInstructionNote
-                                        }
-                                    />
-                                </Box>
-                            )}
-
-                            
-                                      <Stack
-                                          direction="row"
-                                          justifyContent="space-between"
-                                          alignItems="center"
-                                          boxShadow={theme.shadows2[0]}
-                                          borderRadius="8px"
-                                          minHeight="50px"
-                                          py={0.5}
-                                          px={2}
-                                      >
-                                          <FormControlLabel
-                                              onChange={(e) =>
-                                                  handleExtraPackaging(e)
-                                              }
-                                              control={<Checkbox />}
-                                              label={
-                                                  <Typography
-                                                      fontWeight="700"
-                                                      fontSize="14px"
-                                                      color={
-                                                          theme.palette.primary
-                                                              .main
-                                                      }
-                                                  >
-                                                      {t(
-                                                          'Need Extra Packaging'
-                                                      )}
-                                                  </Typography>
-                                              }
-                                          />
-                                          <Typography
-                                              component="span"
-                                              m="0"
-                                              fontWeight="700"
-                                              fontSize="14px"
-                                              mt="6px"
-                                          >
-                                              {/* {getAmount(
-                                                  restaurantData.data
-                                                      .extra_packaging_amount,
-                                                  currencySymbolDirection,
-                                                  currencySymbol,
-                                                  digitAfterDecimalPoint
-                                              )} */}
-                                          </Typography>
-                                      </Stack>
-                                 
-                        </Stack>
+                        
 
                         <OrderCalculation
                             cartList={cartList
