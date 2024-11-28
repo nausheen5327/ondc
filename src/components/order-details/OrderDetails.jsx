@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  useMediaQuery,
+  Card, CardHeader, CardTitle, CardContent, useMediaQuery,
+  Stack, Grid, Typography, NoSsr
 } from "@mui/material";
 import { getAmount } from "@/utils/customFunctions";
 import {
-  CustomOrderStatus,
-  ProductDetailsWrapper,
-  InfoTypography,
-  OrderFoodAmount,
-  OrderFoodName,
-  OrderSummaryGrid,
-  TotalGrid,
+  CustomOrderStatus, ProductDetailsWrapper, InfoTypography,
+  OrderFoodAmount, OrderFoodName, OrderSummaryGrid, TotalGrid
 } from "./OrderDetail.style";
-import { Stack, Grid, Typography, NoSsr } from "@mui/material";
 import Meta from "../Meta";
 import CustomDivider from "../CustomDivider";
 import { useRouter } from "next/router";
@@ -31,7 +22,7 @@ import { getCall } from "@/api/MainApi";
 const OrderDetails = () => {
   const [order, setOrder] = useState();
   const router = useRouter();
-  const { orderId, phone, isTrackOrder, token } = router.query;
+  const { orderId, phone, isTrackOrder } = router.query;
   const theme = useTheme();
   const isXSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { t } = useTranslation();
@@ -47,28 +38,38 @@ const OrderDetails = () => {
   };
 
   useEffect(() => {
-   if(orderId)getItemDetails();
+    if(orderId) getItemDetails();
   }, [orderId]);
 
   const getBreakupItemByType = (type) => {
-    return order?.quote?.breakup?.find(
-      (item) => item["@ondc/org/title_type"] === type
+    return order?.quote?.breakup?.find(item => item["@ondc/org/title_type"] === type);
+  };
+
+  const getCustomizations = (parentItemId) => {
+    return order?.items?.filter(item => {
+      return item.tags?.some(tag => 
+        tag.code === "type" && 
+        tag.list[0]?.value === "customization"
+      ) && item.parent_item_id === parentItemId;
+    });
+  };
+
+  const getBaseItems = () => {
+    return order?.items?.filter(item => 
+      !item.tags?.some(tag => 
+        tag.code === "type" && 
+        tag.list[0]?.value === "customization"
+      )
     );
   };
 
-  const getDeliveryCharge = () => {
-    const deliveryItem = getBreakupItemByType("delivery");
-    return deliveryItem?.price?.value || 0;
-  };
-
-  const getPackingCharge = () => {
-    const packingItem = getBreakupItemByType("packing");
-    return packingItem?.price?.value || 0;
-  };
-
-  const getMiscCharge = () => {
-    const miscItem = getBreakupItemByType("misc");
-    return miscItem?.price?.value || 0;
+  const getTotalForItem = (item) => {
+    const basePrice = parseFloat(item.product?.price?.value || 0);
+    const customizations = getCustomizations(item.parent_item_id);
+    const customizationsTotal = customizations?.reduce((sum, c) => 
+      sum + parseFloat(c.product?.item_details?.price?.value || 0), 0
+    );
+    return (basePrice + (customizationsTotal || 0)) * item.quantity?.count;
   };
 
   if (isTrackOrder) {
@@ -112,46 +113,49 @@ const OrderDetails = () => {
         <Grid container spacing={2} padding="15px">
           <Grid item xs={12} sm={7.3}>
             <ProductDetailsWrapper>
-              {order?.items?.map((item, index) => (
-                <Stack key={index}>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Stack direction="row" gap="17px">
+              {getBaseItems()?.map((item, index) => {
+                const customizations = getCustomizations(item.parent_item_id);
+                return (
+                  <Stack key={index}>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Stack direction="row" gap="17px">
+                        <Stack>
+                          <CustomImageContainer
+                            src={item?.product?.descriptor?.images[0]}
+                            height="60px"
+                            maxWidth="60px"
+                            width="100%"
+                            loading="lazy"
+                            smHeight="50px"
+                            borderRadius="5px"
+                            objectFit="contained"
+                          />
+                          <OrderFoodName>
+                            {item?.product?.descriptor?.name}
+                            {customizations?.map((custom, idx) => (
+                              <Typography key={idx} fontSize="12px" color="text.secondary">
+                                + {custom.product?.item_details?.descriptor?.name}{" "}
+                                ({getAmount(custom.product?.item_details?.price?.value || 0, "left", "₹", 2)})
+                              </Typography>
+                            ))}
+                          </OrderFoodName>
+                          <OrderFoodName>
+                            {t("Unit Price")}: {getAmount(item?.product?.price?.value, "left", "₹", 2)}
+                          </OrderFoodName>
+                        </Stack>
+                      </Stack>
                       <Stack>
-                        <CustomImageContainer
-                          src={item.product.descriptor.images[0]}
-                          height="60px"
-                          maxWidth="60px"
-                          width="100%"
-                          loading="lazy"
-                          smHeight="50px"
-                          borderRadius="5px"
-                          objectFit="contained"
-                        />
-                        <OrderFoodName>
-                          {item.product.descriptor.name}
-                        </OrderFoodName>
-                        <OrderFoodName>
-                          {t("Unit Price")}:{" "}
-                          {getAmount(item.product.price.value, "left", "₹", 2)}
+                        <OrderFoodAmount>
+                          {getAmount(getTotalForItem(item), "left", "₹", 2)}
+                        </OrderFoodAmount>
+                        <OrderFoodName textAlign="end">
+                          {t("Qty")}: {item?.quantity?.count}
                         </OrderFoodName>
                       </Stack>
                     </Stack>
-                    <Stack>
-                      <OrderFoodAmount>
-                        {getAmount(
-                          item.product.price.value * item.quantity.count,
-                          "left",
-                          "₹",
-                          2
-                        )}
-                      </OrderFoodAmount>
-                      <OrderFoodName textAlign="end">
-                        {t("Qty")}: {item.quantity.count}
-                      </OrderFoodName>
-                    </Stack>
                   </Stack>
-                </Stack>
-              ))}
+                );
+              })}
             </ProductDetailsWrapper>
 
             <Stack gap="25px" marginTop="20px">
@@ -164,11 +168,8 @@ const OrderDetails = () => {
                     {order?.provider?.descriptor?.name}
                   </Typography>
                   <Typography>
-                    {
-                      order?.fulfillments?.[0]?.start?.location?.address
-                        ?.locality
-                    }
-                    ,{order?.fulfillments?.[0]?.start?.location?.address?.city}
+                    {order?.fulfillments?.[0]?.start?.location?.address?.locality},
+                    {order?.fulfillments?.[0]?.start?.location?.address?.city}
                   </Typography>
                 </Stack>
               </Stack>
@@ -190,7 +191,7 @@ const OrderDetails = () => {
                 <Grid item xs={4}>
                   <InfoTypography align="right">
                     {getAmount(
-                      order?.items?.[0]?.product?.price?.value || 0,
+                      getBaseItems()?.reduce((sum, item) => sum + getTotalForItem(item), 0) || 0,
                       "left",
                       "₹",
                       2
@@ -203,7 +204,7 @@ const OrderDetails = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <InfoTypography align="right">
-                    {getAmount(getDeliveryCharge(), "left", "₹", 2)}
+                    {getAmount(getBreakupItemByType("delivery")?.price?.value || 0, "left", "₹", 2)}
                   </InfoTypography>
                 </Grid>
 
@@ -212,7 +213,7 @@ const OrderDetails = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <InfoTypography align="right">
-                    {getAmount(getPackingCharge(), "left", "₹", 2)}
+                    {getAmount(getBreakupItemByType("packing")?.price?.value || 0, "left", "₹", 2)}
                   </InfoTypography>
                 </Grid>
 
@@ -221,7 +222,7 @@ const OrderDetails = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <InfoTypography align="right">
-                    {getAmount(getMiscCharge(), "left", "₹", 2)}
+                    {getAmount(getBreakupItemByType("misc")?.price?.value || 0, "left", "₹", 2)}
                   </InfoTypography>
                 </Grid>
               </Grid>
@@ -232,12 +233,7 @@ const OrderDetails = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography align="right" fontWeight="600">
-                    {getAmount(
-                      order?.payment?.params?.amount || 0,
-                      "left",
-                      "₹",
-                      2
-                    )}
+                    {getAmount(order?.payment?.params?.amount || 0, "left", "₹", 2)}
                   </Typography>
                 </Grid>
               </TotalGrid>

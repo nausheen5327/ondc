@@ -249,30 +249,8 @@ const FoodCard = ({
     }
 
     const addToCart = (e) => {
-        if (location) {
-            if (
-                product?.variations?.length > 0 ||
-                product?.add_ons?.length > 0
-            ) {
+        e.stopPropagation()
                 setOpenModal(true)
-            } else if (product?.available_date_ends) {
-                setOpenModal(true)
-            } else {
-                if (
-                    product?.item_stock === 0 &&
-                    product.stock_type !== 'unlimited'
-                ) {
-                    e.stopPropagation()
-                    CustomToaster('error', t('Out Of Stock'), product?.id)
-                } else {
-                    addToCartHandler()
-                    e.stopPropagation()
-                }
-            }
-        } else {
-            e.stopPropagation()
-            setOpenAddressModalAlert(true)
-        }
     }
     const getQuantity = (id) => {
         const product = cartList.find((cartItem) => cartItem.id === id)
