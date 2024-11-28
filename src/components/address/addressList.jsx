@@ -10,6 +10,7 @@ import { CustomToaster } from "../custom-toaster/CustomToaster";
 import { setlocation } from "@/redux/slices/addressData";
 import toast from "react-hot-toast";
 import useCancellablePromise from "@/api/cancelRequest";
+import { setIsLoading } from "@/redux/slices/global";
 
 const AddressList = (props) => {
   const { openAddressModal, setOpenAddressModal } = props;
@@ -23,6 +24,7 @@ const AddressList = (props) => {
   const fetchDeliveryAddress = async () => {
     // setFetchDeliveryAddressLoading(true);
     try {
+      dispatch(setIsLoading(true));
         let data = await cancellablePromise(
           getCall("/clientApis/v1/delivery_address")
         );
@@ -37,10 +39,13 @@ const AddressList = (props) => {
         }
         dispatch(setAddressList(data));
         dispatch(setlocation(updatedAddedAddr))
+        dispatch(setIsLoading(false));
       } catch (err) {
         CustomToaster('error',err)
+        dispatch(setIsLoading(false));
         //toast for error in fetching addresses
       } finally {
+        dispatch(setIsLoading(false));
         // setFetchDeliveryAddressLoading(false);
       }
   };
@@ -49,6 +54,7 @@ const AddressList = (props) => {
   const onUpdateAddresses = async (address) => {
     console.log("addr to be updated",address);
     try {
+      dispatch(setIsLoading(true));
       const data = await cancellablePromise(
         postCall(`/clientApis/v1/update_delivery_address/${address.id}`, {
           descriptor: {
@@ -73,17 +79,21 @@ const AddressList = (props) => {
       );
       console.log("updated addr", data);
       setUpdatedAddedAddr(data);
+      dispatch(setIsLoading(false));
       fetchDeliveryAddress();
     } catch (err) {
       CustomToaster('error',err);
+      dispatch(setIsLoading(false));
     } finally {
       // setAddAddressLoading(false);
+      dispatch(setIsLoading(false));
     }
   };
 
   const onAddAddress = async (address) => {
     console.log("addr to be updated",address);
     try {
+      dispatch(setIsLoading(true));
       const data = await cancellablePromise(
         postCall(`/clientApis/v1/delivery_address`, {
           descriptor: {
@@ -107,11 +117,14 @@ const AddressList = (props) => {
         })
       );
       console.log("updated addr", data);
+      dispatch(setIsLoading(false));
       setUpdatedAddedAddr(data);
       fetchDeliveryAddress();
     } catch (err) {
       CustomToaster('error',err);
+      dispatch(setIsLoading(false));
     } finally {
+      dispatch(setIsLoading(false));
       // setAddAddressLoading(false);
     }
   };

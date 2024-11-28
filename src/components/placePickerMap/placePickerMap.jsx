@@ -1,6 +1,8 @@
 import { getCall } from "@/api/MainApi";
 import useCancellablePromise from "@/api/cancelRequest";
+import { setIsLoading } from "@/redux/slices/global";
 import { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 // import "../../../PlacePickerMap.css"; // Adjust based on actual path
 // import useCancellablePromise from "../../api/MainApi"; // Update with relative path
 // import { getCall } from "../../api/MainApi"; // Update with relative path
@@ -14,7 +16,7 @@ const PlacePickerMap = (props) => {
     location,
     setLocation = null,
   } = props;
-
+const dispatch = useDispatch();
   const [apiKey, setApiKey] = useState();
   const [map, setMap] = useState();
   const [mapInitialized, setMapInitialized] = useState(false);
@@ -22,8 +24,11 @@ const PlacePickerMap = (props) => {
   const { cancellablePromise } = useCancellablePromise();
 
   const getToken = async () => {
+    dispatch(setIsLoading(true));
     let res = await cancellablePromise(getCall(`/clientApis/v2/map/accesstoken`));
     setApiKey(res.access_token);
+    dispatch(setIsLoading(false));
+
   };
 
   // Fetch MMI API token
@@ -33,7 +38,7 @@ const PlacePickerMap = (props) => {
 
   const loadMapmyIndiaScripts = async () => {
     if (!apiKey) return;
-
+    dispatch(setIsLoading(true));
     // Load the first script
     await new Promise((resolve, reject) => {
       const script1 = document.createElement("script");
@@ -53,7 +58,7 @@ const PlacePickerMap = (props) => {
       script2.onerror = reject;
       document.body.appendChild(script2);
     });
-
+    dispatch(setIsLoading(false));
     setMapInitialized(false); // Reset map initialization flag to trigger map setup
   };
 
