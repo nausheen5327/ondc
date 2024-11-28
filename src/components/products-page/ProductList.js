@@ -25,7 +25,7 @@ export default function ProductList({
                                     item
                                     xs={12}  // Takes full width on mobile
                                     sm={6}   // Two cards per row on tablet
-                                    md={2} 
+                                    md={4} 
 
                                 >
                                     <FoodCard

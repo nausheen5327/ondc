@@ -263,6 +263,7 @@ const RestaurantFoodItems = ({ category_ids, restaurant_id }) => {
                                     <FoodCard
                                         sm={1}
                                         xs={1}
+                                        md={3}
                                         product={product}
                                         productImageUrl={
                                             global?.base_urls?.product_image_url
