@@ -121,13 +121,13 @@ const FilterWithSideDrawer = ({
                             width="26px"
                             height="26px"
                         />
-                        {/* <Typography color={theme.palette.neutral[1000]}>
+                        <Typography color={theme.palette.neutral[1000]}>
                             {' '}
                             <Typography component="span">{count} </Typography>
                             {foodOrRestaurant === 'products'
                                 ? t('foods')
                                 : t('Restaurants')}{' '}
-                        </Typography> */}
+                        </Typography>
                     </Stack>
                 )}
             </Grid>

@@ -93,7 +93,7 @@ const NavResturant = () => {
             onMouseEnter={(e) => handleresdropClick(e)}
             onMouseLeave={handleResdropClose}
         >
-            {/* <NavMenuLink
+            <NavMenuLink
                 id="fade-button"
                 aria-controls={openresdrop ? 'fade-menu' : undefined}
                 aria-haspopup="true"
@@ -103,10 +103,10 @@ const NavResturant = () => {
                 alignItems="center"
             >
                 {t('Restaurants')}{' '}
-                <KeyboardArrowDownIcon
+                {/* <KeyboardArrowDownIcon
                     style={{ width: '16px', marginLeft: '5px' }}
-                />
-            </NavMenuLink> */}
+                /> */}
+            </NavMenuLink>
             <RTL direction={languageDirection}>
                 <Popover
                     disableScrollLock={true}

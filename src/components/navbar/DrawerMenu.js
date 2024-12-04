@@ -250,18 +250,18 @@ const DrawerMenu = ({  cartListRefetch }) => {
                                     toggleDrawers={toggleDrawer}
                                     pathName="/categories"
                                 />
-                                {/* <CollapsableMenu
+                                <CollapsableMenu
                                     value={collapsableMenu.res}
                                     setOpenDrawer={setOpenDrawer}
                                     toggleDrawers={toggleDrawer}
                                     pathName="/restaurant"
-                                /> */}
-                                {/* <CollapsableMenu
+                                />
+                                <CollapsableMenu
                                     value={collapsableMenu.cuisine}
                                     setOpenDrawer={setOpenDrawer}
                                     toggleDrawers={toggleDrawer}
                                     pathName="/cuisines"
-                                /> */}
+                                />
                                 {/*<CollapsableMenu value={collapsableMenu.profile} setOpenDrawer={setOpenDrawer} toggleDrawers={toggleDrawer}/>*/}
                                 <ListItemButton
                                     sx={{
@@ -290,7 +290,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
                             </>
                         )}
 
-                        {/* <ListItemButton
+                        <ListItemButton
                             sx={{
                                 borderBottom: '1px solid',
                                 borderBottomColor: (theme) =>
@@ -310,8 +310,8 @@ const DrawerMenu = ({  cartListRefetch }) => {
                                     handleRoute('terms-and-conditions')
                                 }
                             />
-                        </ListItemButton> */}
-                        {/* <ListItemButton
+                        </ListItemButton>
+                        <ListItemButton
                             sx={{
                                 borderBottom: '1px solid',
                                 borderBottomColor: (theme) =>
@@ -330,7 +330,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
                                 }
                                 onClick={() => handleRoute('privacy-policy')}
                             />
-                        </ListItemButton> */}
+                        </ListItemButton>
 
                         <ListItemButton
                             sx={{

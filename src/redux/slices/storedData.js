@@ -228,28 +228,28 @@ const initialState = {
                 "storage": []
             }
         ],
-        // "restaurant_section": {
-        //     "react_restaurant_section_title": "Open your own restaurant",
-        //     "react_restaurant_section_sub_title": "Open your own restaurant",
-        //     "react_restaurant_section_button_name": "Register",
-        //     "react_restaurant_section_link_data": {
-        //         "react_restaurant_section_button_status": "1",
-        //         "react_restaurant_section_link": "https:\/\/stackfood-admin.6amtech.com\/restaurant\/apply"
-        //     },
-        //     "react_restaurant_section_image": "2023-06-21-649273298ec53.png",
-        //     "react_restaurant_section_image_full_url": "https:\/\/stackfood-admin.6amtech.com\/storage\/app\/public\/react_restaurant_section_image\/2023-06-21-649273298ec53.png"
-        // },
-        // "delivery_section": {
-        //     "react_delivery_section_title": "Become a Delivery Man",
-        //     "react_delivery_section_sub_title": "Become a Delivery Man",
-        //     "react_delivery_section_button_name": "Register",
-        //     "react_delivery_section_link_data": {
-        //         "react_delivery_section_button_status": "1",
-        //         "react_delivery_section_link": "https:\/\/stackfood-admin.6amtech.com\/deliveryman\/apply"
-        //     },
-        //     "react_delivery_section_image": "2023-06-21-649273299ff67.png",
-        //     "react_delivery_section_image_full_url": "https:\/\/stackfood-admin.6amtech.com\/storage\/app\/public\/react_delivery_section_image\/2023-06-21-649273299ff67.png"
-        // },
+        "restaurant_section": {
+            "react_restaurant_section_title": "Open your own restaurant",
+            "react_restaurant_section_sub_title": "Open your own restaurant",
+            "react_restaurant_section_button_name": "Register",
+            "react_restaurant_section_link_data": {
+                "react_restaurant_section_button_status": "1",
+                "react_restaurant_section_link": "https:\/\/stackfood-admin.6amtech.com\/restaurant\/apply"
+            },
+            "react_restaurant_section_image": "2023-06-21-649273298ec53.png",
+            "react_restaurant_section_image_full_url": "https:\/\/stackfood-admin.6amtech.com\/storage\/app\/public\/react_restaurant_section_image\/2023-06-21-649273298ec53.png"
+        },
+        "delivery_section": {
+            "react_delivery_section_title": "Become a Delivery Man",
+            "react_delivery_section_sub_title": "Become a Delivery Man",
+            "react_delivery_section_button_name": "Register",
+            "react_delivery_section_link_data": {
+                "react_delivery_section_button_status": "1",
+                "react_delivery_section_link": "https:\/\/stackfood-admin.6amtech.com\/deliveryman\/apply"
+            },
+            "react_delivery_section_image": "2023-06-21-649273299ff67.png",
+            "react_delivery_section_image_full_url": "https:\/\/stackfood-admin.6amtech.com\/storage\/app\/public\/react_delivery_section_image\/2023-06-21-649273299ff67.png"
+        },
         "download_app_section": {
             "react_download_apps_banner_image": "2023-06-21-6492737ae5e61.png",
             "react_download_apps_banner_image_full_url": "https:\/\/stackfood-admin.6amtech.com\/storage\/app\/public\/react_download_apps_image\/2023-06-21-6492737ae5e61.png",
@@ -278,8 +278,8 @@ const initialState = {
         "available_zone_list": [
             {
                 "id": 1,
-                "name": "All over India",
-                "display_name": "All over India",
+                "name": "All over the World",
+                "display_name": "All over the World",
                 "translations": [
                     {
                         "id": 1188,
@@ -287,7 +287,7 @@ const initialState = {
                         "translationable_id": 1,
                         "locale": "en",
                         "key": "name",
-                        "value": "All over India",
+                        "value": "All over the World",
                         "created_at": null,
                         "updated_at": null
                     }

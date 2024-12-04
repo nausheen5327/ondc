@@ -204,7 +204,7 @@ const HorizontalFoodCard = (props) => {
 
                             </Stack>
                             <Stack flexDirection="row" gap="5px">
-                                {/* <StarIcon
+                                <StarIcon
                                     style={{
                                         width: '16px',
                                         height: '16px',
@@ -213,7 +213,7 @@ const HorizontalFoodCard = (props) => {
                                 />
                                 <FoodRating
                                     product_avg_rating={4.2}
-                                /> */}
+                                />
                                 <Typography
                                     fontSize={{ xs: '12px', md: '14px' }}
                                     fontWeight={400}

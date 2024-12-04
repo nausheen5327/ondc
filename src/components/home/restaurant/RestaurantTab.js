@@ -131,7 +131,7 @@ const RestaurantTab = (props) => {
                     </Stack>
                 </Button>
             </Stack>
-            {/* <Popover
+            <Popover
                 onClose={() => handleDropClose()}
                 id="fade-button"
                 open={open}
@@ -155,7 +155,7 @@ const RestaurantTab = (props) => {
                     handleClearAll={handleClearAll}
                     setCheckedFilterKey={setCheckedFilterKey}
                 />
-            </Popover> */}
+            </Popover>
         </div>
     )
 }

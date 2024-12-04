@@ -1,106 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-// const initialState = {
-//     isFilterDrawerOpen: false,
-//     bannerFood: null,
-//     deliveryManInfo: null,
-//     filterData: {
-//         sortBy: '',
-//         filterBy: {},
-//         filterByCuisine: [],
-//         price: '',
-//         rating: '',
-//     },
-//     foodOrRestaurant:"products"
-// }
-
-// export const searchFilterSlice = createSlice({
-//     name: 'search-filter',
-//     initialState,
-//     reducers: {
-//         setSortbyByDispatch: (state, action) => {
-
-//             state.filterData.sortBy = action.payload
-//         },
-//         setFilterbyByDispatch: (state, action) => {
-//             let filteredData = {
-//                 veg:
-//                     action.payload.find((item) => item.value === 'veg') !==
-//                     undefined,
-//                 nonVeg:
-//                     action.payload.find((item) => item.value === 'nonVeg') !==
-//                     undefined,
-//                 currentlyAvailable:
-//                     action.payload.find(
-//                         (item) => item.value === 'currentlyAvailable'
-//                     ) !== undefined,
-//                 rating:
-//                     action.payload.find(
-//                         (item) => item.value === 'rating'
-//                     ) !== undefined,
-//                 ratings:
-//                     action.payload.find(
-//                         (item) => item.value === 'ratings'
-//                     ) !== undefined,
-//                 rating5:
-//                     action.payload.find(
-//                         (item) => item.value === 'rating5'
-//                     ) !== undefined,
-//                 new:
-//                     action.payload.find((item) => item.value === 'new_arrivals') !==
-//                     undefined,
-//                 popular:
-//                     action.payload.find((item) => item.value === 'popular') !==
-//                     undefined,
-//                 discounted:
-//                     action.payload.find(
-//                         (item) => item.value === 'discounted'
-//                     ) !== undefined,
-//                 sort_by:
-//                     action.payload.find((item) => item.value === 'sort_by') !==
-//                     undefined,
-//             }
-//             state.filterData.filterBy = filteredData
-//         },
-//         setFilterbyByCuisineDispatch: (state, action) => {
-//             state.filterData.filterByCuisine = action.payload
-//         },
-//         setPriceByDispatch: (state, action) => {
-//             state.filterData.price = action.payload
-//         },
-//         setRatingByDispatch: (state, action) => {
-//             state.filterData.rating = action.payload
-//         },
-//         setFilterDrawerOpenByDispatch: (state, action) => {
-//             state.isFilterDrawerOpen = action.payload
-//         },
-//         setBannerFoodByDispatch: (state, action) => {
-//             state.bannerFood = action.payload
-//         },
-//         setDeliveryManInfoByDispatch: (state, action) => {
-//             state.deliveryManInfo = action.payload
-//         },
-//         setFoodOrRestaurant:(state,action) => {
-//             state.foodOrRestaurant = action.payload
-//         }
-//     },
-// })
-
-// // Action creators are generated for each case reducer function
-// export const {
-//     setSortbyByDispatch,
-//     setFilterbyByDispatch,
-//     setPriceByDispatch,
-//     setRatingByDispatch,
-//     setFilterDrawerOpenByDispatch,
-//     setBannerFoodByDispatch,
-//     setDeliveryManInfoByDispatch,
-//     setFilterbyByCuisineDispatch,
-//     setFoodOrRestaurant
-// } = searchFilterSlice.actions
-// export default searchFilterSlice.reducer
-
-
 const initialState = {
     isFilterDrawerOpen: false,
     bannerFood: null,
@@ -112,69 +11,82 @@ const initialState = {
         price: '',
         rating: '',
     },
-    foodOrRestaurant: "products",
-    searchTagData: [] // Add this to the initial state
-};
+    foodOrRestaurant:"products"
+}
 
 export const searchFilterSlice = createSlice({
     name: 'search-filter',
     initialState,
     reducers: {
         setSortbyByDispatch: (state, action) => {
-            state.filterData.sortBy = action.payload;
+
+            state.filterData.sortBy = action.payload
         },
         setFilterbyByDispatch: (state, action) => {
             let filteredData = {
                 veg:
-                    action.payload.find((item) => item.value === 'veg') !== undefined,
+                    action.payload.find((item) => item.value === 'veg') !==
+                    undefined,
                 nonVeg:
-                    action.payload.find((item) => item.value === 'nonVeg') !== undefined,
+                    action.payload.find((item) => item.value === 'nonVeg') !==
+                    undefined,
                 currentlyAvailable:
-                    action.payload.find((item) => item.value === 'currentlyAvailable') !== undefined,
+                    action.payload.find(
+                        (item) => item.value === 'currentlyAvailable'
+                    ) !== undefined,
                 rating:
-                    action.payload.find((item) => item.value === 'rating') !== undefined,
+                    action.payload.find(
+                        (item) => item.value === 'rating'
+                    ) !== undefined,
                 ratings:
-                    action.payload.find((item) => item.value === 'ratings') !== undefined,
+                    action.payload.find(
+                        (item) => item.value === 'ratings'
+                    ) !== undefined,
                 rating5:
-                    action.payload.find((item) => item.value === 'rating5') !== undefined,
+                    action.payload.find(
+                        (item) => item.value === 'rating5'
+                    ) !== undefined,
                 new:
-                    action.payload.find((item) => item.value === 'new_arrivals') !== undefined,
+                    action.payload.find((item) => item.value === 'new_arrivals') !==
+                    undefined,
                 popular:
-                    action.payload.find((item) => item.value === 'popular') !== undefined,
+                    action.payload.find((item) => item.value === 'popular') !==
+                    undefined,
                 discounted:
-                    action.payload.find((item) => item.value === 'discounted') !== undefined,
+                    action.payload.find(
+                        (item) => item.value === 'discounted'
+                    ) !== undefined,
                 sort_by:
-                    action.payload.find((item) => item.value === 'sort_by') !== undefined,
-            };
-            state.filterData.filterBy = filteredData;
+                    action.payload.find((item) => item.value === 'sort_by') !==
+                    undefined,
+            }
+            state.filterData.filterBy = filteredData
         },
         setFilterbyByCuisineDispatch: (state, action) => {
-            state.filterData.filterByCuisine = action.payload;
+            state.filterData.filterByCuisine = action.payload
         },
         setPriceByDispatch: (state, action) => {
-            state.filterData.price = action.payload;
+            state.filterData.price = action.payload
         },
         setRatingByDispatch: (state, action) => {
-            state.filterData.rating = action.payload;
+            state.filterData.rating = action.payload
         },
         setFilterDrawerOpenByDispatch: (state, action) => {
-            state.isFilterDrawerOpen = action.payload;
+            state.isFilterDrawerOpen = action.payload
         },
         setBannerFoodByDispatch: (state, action) => {
-            state.bannerFood = action.payload;
+            state.bannerFood = action.payload
         },
         setDeliveryManInfoByDispatch: (state, action) => {
-            state.deliveryManInfo = action.payload;
+            state.deliveryManInfo = action.payload
         },
-        setFoodOrRestaurant: (state, action) => {
-            state.foodOrRestaurant = action.payload;
-        },
-        setSearchTagData: (state, action) => { // New reducer
-            state.searchTagData = action.payload;
-        },
+        setFoodOrRestaurant:(state,action) => {
+            state.foodOrRestaurant = action.payload
+        }
     },
-});
+})
 
+// Action creators are generated for each case reducer function
 export const {
     setSortbyByDispatch,
     setFilterbyByDispatch,
@@ -184,8 +96,6 @@ export const {
     setBannerFoodByDispatch,
     setDeliveryManInfoByDispatch,
     setFilterbyByCuisineDispatch,
-    setFoodOrRestaurant,
-    setSearchTagData // Export the new reducer
-} = searchFilterSlice.actions;
-
-export default searchFilterSlice.reducer;
+    setFoodOrRestaurant
+} = searchFilterSlice.actions
+export default searchFilterSlice.reducer

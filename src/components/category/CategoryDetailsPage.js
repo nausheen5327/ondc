@@ -22,7 +22,7 @@ import RestaurantFilterCard from "../home/restaurant/RestaurantFilterCard";
 import { mockData } from "./categoryFilterData";
 import { handleFilterData } from "./helper";
 import { setFoodOrRestaurant } from "@/redux/slices/searchFilter";
-// import { isAction } from "@reduxjs/toolkit";
+import { isAction } from "@reduxjs/toolkit";
 import { useTheme } from "@mui/material/styles";
 
 const CategoryDetailsPage = ({

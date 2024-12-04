@@ -51,7 +51,7 @@ const CustomShimmerForCard = () => {
 
                 <RatingWrapTypography color="#808080">
                     0
-                    {/* <RatingStarIcon fontSize="small" color="#808080" /> */}
+                    <RatingStarIcon fontSize="small" color="#808080" />
                 </RatingWrapTypography>
                 <PricingCardActions>
                     <Skeleton
