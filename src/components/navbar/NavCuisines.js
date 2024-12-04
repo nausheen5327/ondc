@@ -72,7 +72,7 @@ const NavCuisines = ({
             onMouseEnter={(e) => handledropClick(e)}
             onMouseLeave={handledropClose}
         >
-            <NavMenuLink
+            {/* <NavMenuLink
                 id="fade-button"
                 aria-controls={opendrop ? 'fade-menu' : undefined}
                 aria-haspopup="true"
@@ -82,10 +82,10 @@ const NavCuisines = ({
                 alignItems="center"
             >
                 {t('Cuisines')}{' '}
-                {/* <KeyboardArrowDownIcon
+                <KeyboardArrowDownIcon
                     style={{ width: '16px', marginLeft: '5px' }}
-                /> */}
-            </NavMenuLink>
+                />
+            </NavMenuLink> */}
             <Menu
                 disableScrollLock={true}
                 id="mouse-over-popover"

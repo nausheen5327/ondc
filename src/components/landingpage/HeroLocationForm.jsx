@@ -35,7 +35,7 @@ import { onErrorResponse, onSingleErrorResponse } from '../ErrorResponse'
 import LocationEnableCheck from './LocationEnableCheck'
 import { Box } from '@mui/system'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { retry } from '@reduxjs/toolkit/query'
+import { retry } from '@reduxjs/toolkit/query/react'
 import { AnimationDots } from "../products-page/AnimationDots";
 import { CustomToaster } from '../custom-toaster/CustomToaster'
 export function FacebookCircularProgress(props) {
