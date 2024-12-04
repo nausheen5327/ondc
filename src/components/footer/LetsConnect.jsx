@@ -22,7 +22,7 @@ const LetsConnect = ({ languageDirection, web }) => {
     }))
     return (
         <>
-            <Stack direction={'column'} className="lets-connect-wrap">
+            {/* <Stack direction={'column'} className="lets-connect-wrap">
                 <Typography
                     variant="h6"
                     className="title font-signika-negative"
@@ -64,7 +64,7 @@ const LetsConnect = ({ languageDirection, web }) => {
                         {`${t("Join")}`}
                     </StyledButton>
                 </Paper>
-            </Stack>
+            </Stack> */}
         </>
     )
 }

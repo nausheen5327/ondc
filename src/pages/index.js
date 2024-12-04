@@ -12,7 +12,7 @@ import { setlocation } from '@/redux/slices/addressData'
 import cart, { setCartList } from '@/redux/slices/cart'
 import { withAuth } from '@/components/withAuth'
 
-const Home = ({ configData, landingPageData, searchQuery }) => {
+const Home = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const { cancellablePromise } = useCancellablePromise();
@@ -70,6 +70,19 @@ const Home = ({ configData, landingPageData, searchQuery }) => {
           }
       };
 
+      let configData = {
+        business_name: "ONDC",
+        base_urls: { react_landing_page_images: "https://mockurl.com/images" },
+        fav_icon_full_url : "https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg",
+        default_location: {
+            lat:21.13,
+            lng:79.06
+        }
+    };
+
+    let landingPageData = {
+                    banner_section_full: { banner_section_img_full: "https://source.unsplash.com/random/400x300" },
+                };
 
     dispatch(setGlobalSettings(configData));
     const getCartItems = async () => {
@@ -147,39 +160,60 @@ export default withAuth(Home);
 
 
 
-// pages/index.js
-export async function getServerSideProps(context) {
-    const { query } = context
-  
-    // Your existing data fetching logic
-    let configData = {
-      business_name: "ONDC",
-      // ... other config data
-    }
-  
-    let landingPageData = {
-      banner_section_full: { 
-        banner_section_img_full: "https://source.unsplash.com/random/400x300" 
-      }
-    }
-  
-    // If there's a search query, fetch search results
-    let searchResults = null
-    if (query.query) {
-      try {
-        // Add your search API call here
-        // searchResults = await fetchSearchResults(query.query)
-      } catch (error) {
-        console.error('Search error:', error)
-      }
-    }
-  
-    return {
-      props: {
-        configData,
-        landingPageData,
-        searchResults,
-        searchQuery: query.query || null
-      }
-    }
-  }
+// export const getServerSideProps = async (context) => {
+//     // console.log("heloo.....")
+//     let configData = null;
+//     let landingPageData = null;
+//     const token = localStorage.getItem("token");
+//     try {
+//         const configRes = await fetch(
+//             `${process.env.NEXT_PUBLIC_BASE_URL}/v1/delivery_address`,
+//             {
+//                 method: 'GET',
+//                 headers: {
+//                     origin: process.env.NEXT_CLIENT_HOST_URL,
+//                     Authorization: `Bearer ${token}`
+//                 },
+//             }
+//         );
+
+//         if (!configRes.ok) throw new Error(`Failed to fetch config data: ${configRes.status}`);
+//         let configResData = await configRes.json();
+        
+//         let configInfoData = {
+//             business_name: "Mock Business",
+//             base_urls: { react_landing_page_images: "https://mockurl.com/images" },
+//             fav_icon_full_url : "https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg",
+//             default_location: {
+//                 lat:21.13,
+//                 lng:79.06
+//             }
+//         };
+//         configData = Object.assign({}, configResData,configInfoData);
+//     } catch (error) {
+//         console.log('Error in config data fetch, using mock data:', error);
+//     }
+
+//     try {
+//         const landingPageRes = await fetch(
+//             `${process.env.NEXT_PUBLIC_BASE_URL}/v2/providers`,
+//             { method: 'GET', headers: CustomHeader }
+//         );
+
+//         if (!landingPageRes.ok) throw new Error(`Failed to fetch landing page data: ${landingPageRes.status}`);
+//         landingPageData = await landingPageRes.json();
+//         landingPageData['banner_section_full'] = { banner_section_img_full: "https://source.unsplash.com/random/400x300" }
+//     } catch (error) {
+//         console.log('Error in landing page data fetch, using mock data:', error);
+//         landingPageData = {
+//             banner_section_full: { banner_section_img_full: "https://source.unsplash.com/random/400x300" },
+//         };
+//     }
+
+//     return {
+//         props: {
+//             configData,
+//             landingPageData,
+//         },
+//     };
+// };

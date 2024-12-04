@@ -34,22 +34,6 @@ Router.events.on('routeChangeError', nProgress.done)
 Router.events.on('routeChangeComplete', nProgress.done)
 export const currentVersion = process.env.NEXT_PUBLIC_SITE_VERSION
 const clientSideEmotionCache = createEmotionCache()
-App.getInitialProps = async ({ Component, ctx }) => {
-    let pageProps = {}
-  
-    // If the component has getInitialProps, run it
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx)
-    }
-  
-    // Handle search query if present
-    if (ctx.query.query) {
-      // You can handle the search query here if needed
-      pageProps.searchQuery = ctx.query.query
-    }
-  
-    return { pageProps }
-  }
 const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, pageProps }) => {
     const isLoading = useSelector(state => state.globalSettings.isLoading);
     const Footer = dynamic(() => import('../components/footer/Footer'), {
