@@ -108,7 +108,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
             dispatch(setWelcomeModal(false))
             dispatch(setIsLoading(false));
             CustomToaster('success', logoutSuccessFull)
-            router.push('/login')
+            router.push('/')
         } catch (err) {
             dispatch(setIsLoading(false));
 

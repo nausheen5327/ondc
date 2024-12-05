@@ -15,6 +15,7 @@ import Drawer from '@mui/material/Drawer'
 import { useRouter } from 'next/router'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useDispatch, useSelector } from 'react-redux'
+import Cookies from "js-cookie";
 import {
   calculateItemBasePrice,
   cartItemsTotalAmount,
@@ -45,7 +46,7 @@ import {
 } from "@/styled-components/CustomStyles.style"
 import { useTranslation } from 'react-i18next'
 import { ImageSource } from '../../utils/ImageSource'
-import { setCouponInfo, setIsLoading } from "@/redux/slices/global"
+import { setAuthModalOpen, setCouponInfo, setIsLoading } from "@/redux/slices/global"
 import SimpleBar from 'simplebar-react'
 import CustomModal from '../custom-modal/CustomModal'
 import ProductUpdateModal from '../food-card/ProductUpdateModal'
@@ -116,8 +117,9 @@ const FloatingCart = (props) => {
     try {
       //   setLoading(true);
       dispatch(setIsLoading(true));
-      const user = JSON.parse(getValueFromCookie("user"));
-      const url = `/clientApis/v2/cart/${user.id}`;
+      // const user = JSON.parse(getValueFromCookie("user"));
+      const user = JSON.parse(localStorage.getItem('userId'))
+      const url = `/clientApis/v2/cart/${user}`;
       const res = await getCall(url);
       dispatch(setIsLoading(false));
       console.log("cart...", res);
@@ -155,8 +157,9 @@ const FloatingCart = (props) => {
   const updateCartItem = async (itemId, increment, uniqueId) => {
     try {
       dispatch(setIsLoading(true));
-      const user = JSON.parse(getValueFromCookie("user"));
-      const url = `/clientApis/v2/cart/${user.id}/${uniqueId}`;
+      // const user = JSON.parse(getValueFromCookie("user"));
+      const user = JSON.parse(localStorage.getItem('userId'))
+      const url = `/clientApis/v2/cart/${user}/${uniqueId}`;
 
       // Find the item
       const itemIndex = cartItems.findIndex((item) => item._id === uniqueId);
@@ -266,8 +269,9 @@ const FloatingCart = (props) => {
 
   const deleteCartItem = async (itemId) => {
     dispatch(setIsLoading(true));
-    const user = JSON.parse(getValueFromCookie("user"));
-    const url = `/clientApis/v2/cart/${user.id}/${itemId}`;
+    // const user = JSON.parse(getValueFromCookie("user"));
+    const user = JSON.parse(localStorage.getItem('userId'))
+    const url = `/clientApis/v2/cart/${user}/${itemId}`;
     const res = await deleteCall(url);
     dispatch(setIsLoading(false));
 
@@ -540,7 +544,13 @@ const FloatingCart = (props) => {
     // eslint-disable-next-line
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = () => {const token = localStorage.getItem("token") || Cookies.get("token");
+  if (!token) {
+    setSideDrawerOpen(false);
+      dispatch(setAuthModalOpen(true));
+      return;
+  }
+
     const closeDrawers = () => {
       setDrawerOpen(false);
       setSideDrawerOpen(false);

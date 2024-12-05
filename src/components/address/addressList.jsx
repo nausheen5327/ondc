@@ -17,6 +17,7 @@ const AddressList = (props) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const addresses = useSelector((state) => state.user.addressList);
+  console.log("address list",addresses);
   const [updatedAddedAddr, setUpdatedAddedAddr] = useState();
   const dispatch = useDispatch();
   const {cancellablePromise} = useCancellablePromise()
@@ -36,9 +37,9 @@ const AddressList = (props) => {
                 dispatch(setlocation(updatedAddedAddr));
                 localStorage.setItem('location',JSON.stringify(data[findIndex]));
             }
+            dispatch(setlocation(updatedAddedAddr))
         }
         dispatch(setAddressList(data));
-        dispatch(setlocation(updatedAddedAddr))
         dispatch(setIsLoading(false));
       } catch (err) {
         CustomToaster('error',err)
@@ -49,8 +50,6 @@ const AddressList = (props) => {
         // setFetchDeliveryAddressLoading(false);
       }
   };
-
-
   const onUpdateAddresses = async (address) => {
     console.log("addr to be updated",address);
     try {

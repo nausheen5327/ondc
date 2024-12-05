@@ -27,6 +27,8 @@ import { createTheme } from '../theme/index'
 import createEmotionCache from '../utils/create-emotion-cache'
 import BottomNav from '@/components/navbar/BottomNav'
 import LoadingOverlay from '@/components/common/layoutProgress'
+import AuthModal from '@/components/auth'
+import { AuthDataListener } from '@/components/auth/authSuccessHandler'
 // import { PersistGate } from 'redux-persist/integration/react'
 
 Router.events.on('routeChangeStart', nProgress.start)
@@ -52,9 +54,13 @@ App.getInitialProps = async ({ Component, ctx }) => {
   }
 const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, pageProps }) => {
     const isLoading = useSelector(state => state.globalSettings.isLoading);
+    const [forSignup, setForSignup] = useState('')
+    const [modalFor, setModalFor] = useState('sign-in')
+
     const Footer = dynamic(() => import('../components/footer/Footer'), {
         ssr: false,
     })
+    const authModalOpen = useSelector(state=>state.globalSettings.authModalOpen)    
     return (
         <ThemeProvider
             theme={createTheme({
@@ -115,6 +121,15 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
                                                 }
                                             />
                                         )}
+                                        {authModalOpen && (
+                 <AuthModal
+                 open={authModalOpen}
+                 handleClose={false}
+                 forSignup={forSignup}
+                 modalFor={modalFor}
+                 setModalFor={setModalFor}
+             />
+            )}
             </WrapperForApp>
         </ThemeProvider>
     );
@@ -125,7 +140,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     const router = useRouter()
     const [showSplashScreen, setShowSplashScreen] = useState(true)
     
-
+    const {userId} = router.query;
 
     useEffect(() => {
         setShowSplashScreen(false)
@@ -157,6 +172,9 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
             localStorage.setItem('appVersion', currentVersion);
             window.location.reload();
         }
+        if(userId){
+            localStorage.setItem('userId', userId);
+        }
     }, []);
     
     const isAuthRoute = router.pathname === '/login' || router.pathname === '/register';
@@ -164,6 +182,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
         <CacheProvider value={emotionCache}>
             <QueryClientProvider client={queryClient}>
                 <Provider store={store}>
+                <AuthDataListener />
                     <SettingsProvider>
                         <SettingsConsumer>
                         {(value) => (

@@ -146,8 +146,9 @@ const FoodDetailModal = ({
   const [productAvailability, setProductAvailability] = useState(true);
 
   const deleteCartItem = async (itemId) => {
-    const user = JSON.parse(getValueFromCookie("user"));
-    const url = `/clientApis/v2/cart/${user.id}/${itemId}`;
+    // const user = JSON.parse(getValueFromCookie("user"));
+    const user = localStorage.getItem("userId")
+    const url = `/clientApis/v2/cart/${user}/${itemId}`;
     const res = await deleteCall(url);
     getCartItems();
   };
@@ -385,16 +386,11 @@ const processCustomizationState = (customizationState, customisationItems) => {
     };
   };
   const addToCart = async (navigate = false, isIncrement = true) => {
-    //before that check for login
-    const token = localStorage.getItem("token") || Cookies.get("token");
-    if (!token) {
-        dispatch(setAuthModalOpen(true));
-        return;
-    }
     setAddToCartLoading(true);
     try {
-      const user = JSON.parse(getValueFromCookie("user"));
-      const url = `/clientApis/v2/cart/${user.id}`;
+    //   const user = JSON.parse(getValueFromCookie("user"));
+    const user = localStorage.getItem("userId")
+      const url = `/clientApis/v2/cart/${user}`;
       
       // Get selected customizations
       const selectedCustomizations = selectedOptions.map(option => {
@@ -503,8 +499,9 @@ const processCustomizationState = (customizationState, customisationItems) => {
       const getCartItems = async () => {
         try {
         //   setLoading(true);
-        const user = JSON.parse(getValueFromCookie("user"));
-          const url = `/clientApis/v2/cart/${user.id}`;
+        // const user = JSON.parse(getValueFromCookie("user"));
+        const user = localStorage.getItem("userId")
+          const url = `/clientApis/v2/cart/${user}`;
           const res = await getCall(url);
           console.log("cart...",res);
           dispatch(setCartList(res));

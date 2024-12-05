@@ -113,7 +113,7 @@ export const AccountPopover = (props) => {
                 //CustomToaster('success', logoutSuccessFull)
                 onClose?.()
                 dispatch(setIsLoading(false));
-                router.push('/login')
+                router.push('/')
             }, 500)
         } catch (err) {
             dispatch(setIsLoading(false));

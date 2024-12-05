@@ -58,6 +58,7 @@ import { useFireBaseOtpVerify } from '@/hooks/react-query/useFireBaseVerfify'
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { AddCookie } from '@/utils/cookies'
 import { setAuthModalOpen } from '@/redux/slices/global'
+import { useAuthData } from '../authSuccessHandler'
 const auth = getAuth();
 const provider = new GoogleAuthProvider().setCustomParameters({
     prompt: 'select_account'
@@ -111,6 +112,8 @@ const SignInPage = ({
     sendOTP,
     fireBaseId,
 }) => {
+    const { fetchUserData } = useAuthData();
+
     const [showPassword, setShowPassword] = useState(false)
     const { t } = useTranslation()
     const theme = useTheme()
@@ -252,6 +255,7 @@ const SignInPage = ({
             CustomToaster('success', loginSuccessFull)
             dispatch(setToken(response.token))
             dispatch(setAuthModalOpen(false));
+            fetchUserData();
                 // router.push('/')
         }
     }
