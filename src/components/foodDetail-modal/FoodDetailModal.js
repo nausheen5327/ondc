@@ -63,7 +63,7 @@ import CustomizationSection from './customizationManager'
 import RestaurantMDetails from './helper-functions/restaurantMDetails'
 import { getValueFromCookie } from '@/utils/cookies'
 import { updateCartItem } from '@/utils/checkout/cart/updateCartItem'
-import { setAuthModalOpen } from '@/redux/slices/global'
+import { setAuthModalOpen, setSideDrawerOpen } from '@/redux/slices/global'
 const FoodDetailModal = ({
     product,
     image,
@@ -471,7 +471,10 @@ const processCustomizationState = (customizationState, customisationItems) => {
       }
       
       getCartItems();
-      if (navigate) handleModalClose();
+      if (navigate){
+        handleModalClose();
+        dispatch(setSideDrawerOpen(true))
+      } 
       
     } catch (error) {
       console.error('Add to cart error:', error);

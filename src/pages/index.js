@@ -50,6 +50,7 @@ const Home = ({ configData, landingPageData, searchQuery }) => {
                 if(findIndex!==-1){
                     dispatch(setlocation(localLocation));
                     localStorage.setItem('location',JSON.stringify(data[findIndex]));
+                    router.replace('/home')
                 }
             }
             // if (deliveryAddress) {
@@ -109,21 +110,24 @@ const Home = ({ configData, landingPageData, searchQuery }) => {
         //     return;
         // }
        //use this logic for login
-        //            dispatch(setGlobalSettings(configData));
-        // fetchDeliveryAddress();
-        // getCartItems();
-        if(localStorage.getItem('location'))
+      //  console.log("bhaiii token");
+      
+        console.log("bhaiii token",localStorage.getItem('token'));
+        if(localStorage.getItem('token'))
         {
-          dispatch(setlocation(JSON.parse(localStorage.getItem('location'))));
-          router.replace('/home')
+         dispatch(setGlobalSettings(configData));
+         fetchDeliveryAddress();
+         getCartItems();
         }
+         if(!localStorage.getItem('token') && localStorage.getItem('location'))
+         {
+           dispatch(setlocation(JSON.parse(localStorage.getItem('location'))));
+           router.replace('/home')
+         }
+      
+     
        
-    }, [router, dispatch]);
-
-   
-
-   
-
+    }, []);
     return (
         <>
             <Meta

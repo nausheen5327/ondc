@@ -10,6 +10,7 @@ const initialState = {
     userLocationUpdate: false,
     isLoading: false,
     authModalOpen: false,
+    sideDrawerOpen: false
 }
 
 export const globalSettingSlice = createSlice({
@@ -45,6 +46,9 @@ export const globalSettingSlice = createSlice({
         },
         setAuthModalOpen:(state,action)=>{
             state.authModalOpen = action.payload
+        },
+        setSideDrawerOpen:(state,action)=>{
+            state.sideDrawerOpen = action.payload
         }
         
     },
@@ -62,6 +66,7 @@ export const {
     setOpenMapDrawer,
     setUserLocationUpdate,
     setIsLoading,
-    setAuthModalOpen
+    setAuthModalOpen,
+    setSideDrawerOpen
 } = globalSettingSlice.actions
 export default globalSettingSlice.reducer
