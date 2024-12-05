@@ -29,7 +29,7 @@ const RestaurantCard = (props) => {
     const restaurantLogo = `${props?.restaurantImageUrl}/${props?.image}`
     const id = props?.id
 
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
 
     const restaurantCloseHandler = () => {
         if (props.active) {

@@ -47,7 +47,7 @@ const ProfilePage = () => {
     const [deleteModal, setDeleteModal] = useState(false)
     const theme = useTheme()
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const dispatch = useDispatch()
     const { global } = useSelector((state) => state.globalSettings)
     const { userData } = useSelector((state) => state.user)

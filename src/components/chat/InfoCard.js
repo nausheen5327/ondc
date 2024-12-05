@@ -80,7 +80,7 @@ const InfoCard = (props) => {
     )
     const isSender =
         data?.data?.userinfo?.id === userList.last_message.sender_id
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const isRead = !isLoading && !isSender && unRead > 0
 
     return (

@@ -14,7 +14,7 @@ const ConversationInfoTop = ({
     theme,
 }) => {
 
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <ChatUserTop direction="row" mdUp={mdUp}>
             {!mdUp &&

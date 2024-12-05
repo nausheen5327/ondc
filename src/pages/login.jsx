@@ -40,17 +40,8 @@ const Login = ({ zoneid, cartListRefetch }) => {
     const dispatch = useDispatch()
     // const token = getToken()
     const [authModalOpen, setOpen] = useState(true)
-    const handleOpenAuthModal = (page) => {
-        setModalFor(page)
-        setOpen(true)
-        setForSignup(page)
-    }
-
-    const handleCloseAuthModal = () => {
-        setOpen(false)
-        setForSignup('sign-in')
-    }
-
+   
+    // const authModalOpen = useSelector(state=>state.globalSettings.authModalOpen)
 
     return (
         <Box>
@@ -60,7 +51,6 @@ const Login = ({ zoneid, cartListRefetch }) => {
                     forSignup={forSignup}
                     modalFor={modalFor}
                     setModalFor={setModalFor}
-                    cartListRefetch={cartListRefetch}
                 />
         </Box>
     )

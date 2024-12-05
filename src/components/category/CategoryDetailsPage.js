@@ -30,7 +30,6 @@ const CategoryDetailsPage = ({
                                  id,
                                  category_id,
                                  setCategoryId,
-                                 resData,
                                  offset,
                                  page_limit,
                                  type,
@@ -211,30 +210,7 @@ const CategoryDetailsPage = ({
                             <CustomShimmerForBestFood />
                         ))}
 
-                    {foodOrRestaurant === "restaurants" &&
-                        (resData ? (
-                            <>
-                                <RestaurantsData
-                                    resData={resData}
-                                    offset={offset}
-                                    page_limit={page_limit}
-                                    setOffset={setOffset}
-                                    global={global}
-                                />
-                                {resData.data.total_size === 0 && (
-                                    <CustomStackFullWidth sx={{ mt: "10px" }}>
-                                        <CustomEmptyResult
-                                            image={noRestaurantsImage}
-                                            label="No Restaurants Found"
-                                        />
-                                    </CustomStackFullWidth>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <CustomShimmerRestaurant />
-                            </>
-                        ))}
+                    
                 </Grid>
             </Grid>
             <Popover

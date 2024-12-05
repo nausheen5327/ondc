@@ -95,7 +95,7 @@ const RouteLinks = (props) => {
             Router.push(href, undefined, { shallow: true })
         }
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const handleClickToRoute = (href) => {
         router.push(href, undefined, { shallow: true })
     }

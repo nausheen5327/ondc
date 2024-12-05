@@ -79,7 +79,7 @@ const ItemForm = ({ data,notNow,id,refetchOrderReview,refetchTrackData ,setRevie
             onError: onErrorResponse,
         })
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <CustomStackFullWidth>
             <form onSubmit={formik.handleSubmit}>

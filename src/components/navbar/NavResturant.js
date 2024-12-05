@@ -86,7 +86,7 @@ const NavResturant = () => {
             { shallow: true }
         )
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
 
     return (
         <div

@@ -13,7 +13,7 @@ const RestaurantLoginForm = ({
     passwordHandler,
 }) => {
     const { t } = useTranslation()
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <CustomBoxFullWidth>
             <CustomStackFullWidth alignItems="center" mb="1.5rem" mt="1rem">

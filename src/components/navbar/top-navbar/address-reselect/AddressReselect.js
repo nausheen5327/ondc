@@ -15,6 +15,7 @@ import { useGeolocated } from "react-geolocated";
 import { setOpenMapDrawer, setUserLocationUpdate } from "@/redux/slices/global"
 import MapModal from "@/components/landingpage/google-map/MapModal";
 import AddressList from '@/components/address/addressList'
+import GuestAddressList from '@/components/address/guestAddress'
 export const AddressTypographyGray = styled(Typography)(({ theme }) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -31,6 +32,7 @@ const AddressReselect = ({ location }) => {
     console.log("location inside addr",location);
     const router = useRouter()
     const [open, setOpen] = useState(false)
+    const [openGuestAddr, setOpenGuestAddr] = useState(false)
     const dispatch = useDispatch()
     const anchorRef = useRef(null)
     const [deliveryAddr, setDeliveryAddr] = useState('');
@@ -44,10 +46,14 @@ const AddressReselect = ({ location }) => {
 
    
 
-   
+    const token = localStorage.getItem("token");
     const handleClickToLandingPage = () => {
-        
-            setOpen(true)
+            if(token){
+                setOpen(true)
+            }else{
+                setOpenGuestAddr(true);
+            }
+            
         
     }
     // const handleOpen = () => setOpen(true)
@@ -58,6 +64,11 @@ const AddressReselect = ({ location }) => {
             handleModalClose()
         }
     }
+
+    const handleCloseGuest = () => {
+        setOpenGuestAddr(false)
+    }
+
 
     return (
         <>{location && Object.keys(location).length>=1 ?
@@ -120,6 +131,7 @@ const AddressReselect = ({ location }) => {
                 coords={coords}
 
             /> */}
+            {openGuestAddr && <GuestAddressList openAddressModal={openGuestAddr} setOpenAddressModal={handleCloseGuest}/>}
             {open && <AddressList openAddressModal={open} setOpenAddressModal={handleClose}/>
 }
         </>

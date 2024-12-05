@@ -45,7 +45,7 @@ const FoodCampaign = ({ data, isLoading }) => {
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     const isMedium = useMediaQuery(theme.breakpoints.up('sm'))
     const foodCampaignSliderRef = useRef(null)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const settings = {
         speed: 500,
         slidesToShow: 4.1,

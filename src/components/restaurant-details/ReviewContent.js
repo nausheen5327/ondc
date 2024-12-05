@@ -31,7 +31,7 @@ const ReviewContent = ({ review, restaurantName }) => {
     const handleModalClose = () => {
         setOpenModal(false)
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <>
             <Grid

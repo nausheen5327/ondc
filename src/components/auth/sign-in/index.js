@@ -57,6 +57,7 @@ import { RecaptchaVerifier, signInWithEmailAndPassword, signInWithPhoneNumber } 
 import { useFireBaseOtpVerify } from '@/hooks/react-query/useFireBaseVerfify'
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { AddCookie } from '@/utils/cookies'
+import { setAuthModalOpen } from '@/redux/slices/global'
 const auth = getAuth();
 const provider = new GoogleAuthProvider().setCustomParameters({
     prompt: 'select_account'
@@ -100,7 +101,6 @@ const SignInPage = ({
     handleClose,
     signInSuccess,
     setModalFor,
-    cartListRefetch,
     setJwtToken,
     setUserInfo,
     handleSuccess,
@@ -251,7 +251,8 @@ const SignInPage = ({
             dispatch(setToken(response.user.stsTokenManager.accessToken));
             CustomToaster('success', loginSuccessFull)
             dispatch(setToken(response.token))
-                router.push('/')
+            dispatch(setAuthModalOpen(false));
+                // router.push('/')
         }
     }
 
@@ -694,7 +695,7 @@ const SignInPage = ({
         }
     }
 
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <Stack>
             <RTL direction={languageDirection}>

@@ -43,7 +43,7 @@ const ChatMessage = (props) => {
     } = props
 
     const { global } = useSelector((state) => state.globalSettings)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const authorType = messgageData.sender_id //sender
     let userType, userImage, senderImage
     const videoRef = useRef(null)

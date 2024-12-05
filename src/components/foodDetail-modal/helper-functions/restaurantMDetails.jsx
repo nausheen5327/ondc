@@ -29,10 +29,10 @@ const theme = useTheme();
           <div className="info-item">
             <MapPin className="icon1" height={'35px'} width={'60px'} color='#FF7918'/>
             <span className="text">
-              {data.location_details.address.street}, 
-              {data.location_details.address.locality}, 
-              {data.location_details.address.city} - 
-              {data.location_details.address.area_code}
+              {data?.location_details?.address?.street}, 
+              {data?.location_details?.address?.locality}, 
+              {data?.location_details?.address?.city} - 
+              {data?.location_details?.address?.area_code}
             </span>
           </div>
           

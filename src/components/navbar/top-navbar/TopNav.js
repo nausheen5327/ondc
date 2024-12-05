@@ -90,7 +90,6 @@ const TopNav = ({ cartListRefetch }) => {
                             {isSmall && (
                                 <DrawerMenu
                                    
-                                    cartListRefetch={cartListRefetch}
                                 />
                             )}
                         </Box>

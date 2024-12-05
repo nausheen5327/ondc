@@ -245,7 +245,7 @@ const SignUpPage = ({
             //dispatch(cart(setItemIntoCart()));
         }
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <>
         <Stack>

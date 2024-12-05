@@ -19,17 +19,17 @@ import AddressList from '../address/addressList'
 
 const LandingPage = (props) => {
     const { global } = props
-    const [openAddressModal,setOpenAddressModal] = useState(true);
+    const [openAddressModal, setOpenAddressModal] = useState(true);
     const dispatch = useDispatch()
     const { landingPageData } = useSelector((state) => state.storedData);
     const location = useSelector((state) => state.addressData.location);
-    console.log("location",location);
+    console.log("location", location);
 
     let token = undefined
     if (typeof window != 'undefined') {
         token = localStorage.getItem('token')
     }
-    const handleModalClose = () => {}
+    const handleModalClose = () => { }
 
     const onSuccessHandler = (res) => {
         dispatch(setLandingPageData(res))
@@ -57,8 +57,9 @@ const LandingPage = (props) => {
     return (
         <NoSsr>
             <CssBaseline />
-{           !location&& <AddressList openAddressModal={openAddressModal} setOpenAddressModal={setOpenAddressModal}/>
-}            <HeroSection
+            {/* {!location && <AddressList openAddressModal={openAddressModal} setOpenAddressModal={setOpenAddressModal} />
+            } */}
+            <HeroSection
                 business_name={global?.business_name}
                 banner_section_title={landingPageData?.react_header_title}
                 banner_section_subTitle={
@@ -114,19 +115,19 @@ const LandingPage = (props) => {
             />
             {landingPageData?.download_app_section
                 ?.react_download_apps_banner_image && (
-                <DiscountBanner
-                    global={global}
-                    discount_banner={
-                        landingPageData?.download_app_section
-                            ?.react_download_apps_banner_image_full_url
-                    }
-                    isLoading={isLoading}
-                    discount_banner_url={
-                        landingPageData?.base_urls
-                            ?.react_download_apps_banner_image_url
-                    }
-                />
-            )}
+                    <DiscountBanner
+                        global={global}
+                        discount_banner={
+                            landingPageData?.download_app_section
+                                ?.react_download_apps_banner_image_full_url
+                        }
+                        isLoading={isLoading}
+                        discount_banner_url={
+                            landingPageData?.base_urls
+                                ?.react_download_apps_banner_image_url
+                        }
+                    />
+                )}
 
             {(landingPageData?.download_app_section
                 ?.react_download_apps_play_store
@@ -134,17 +135,17 @@ const LandingPage = (props) => {
                 landingPageData?.download_app_section
                     ?.react_download_apps_app_store
                     ?.react_download_apps_link_status === '1') && (
-                <DownloadSection
-                    download_app_data={landingPageData?.download_app_section}
-                    isLoading={isLoading}
-                    global={global}
-                    landing_page_links={landingPageData?.landing_page_links}
-                    download_app_image_urls={
-                        landingPageData?.base_urls
-                            ?.react_download_apps_image_url
-                    }
-                />
-            )}
+                    <DownloadSection
+                        download_app_data={landingPageData?.download_app_section}
+                        isLoading={isLoading}
+                        global={global}
+                        landing_page_links={landingPageData?.landing_page_links}
+                        download_app_image_urls={
+                            landingPageData?.base_urls
+                                ?.react_download_apps_image_url
+                        }
+                    />
+                )}
 
             <CookiesConsent text={global?.cookies_text} />
         </NoSsr>

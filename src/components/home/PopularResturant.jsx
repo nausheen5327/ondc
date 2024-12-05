@@ -27,7 +27,7 @@ const PopularResturant = ({ data, latestRestaurantData }) => {
     const { t } = useTranslation()
     const router = useRouter()
     const { global } = useSelector((state) => state.globalSettings)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const newtext = t('New On')
     return (
         <>

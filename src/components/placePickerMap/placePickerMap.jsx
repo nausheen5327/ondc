@@ -3,6 +3,7 @@ import useCancellablePromise from "@/api/cancelRequest";
 import { setIsLoading } from "@/redux/slices/global";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { CustomToaster } from "../custom-toaster/CustomToaster";
 // import "../../../PlacePickerMap.css"; // Adjust based on actual path
 // import useCancellablePromise from "../../api/MainApi"; // Update with relative path
 // import { getCall } from "../../api/MainApi"; // Update with relative path
@@ -81,7 +82,7 @@ const dispatch = useDispatch();
         if (typeof window.MapmyIndia !== "undefined") {
           setMapInitialized(true); // Set to true only if MapmyIndia is available
         } else {
-          console.error("MapmyIndia is still not defined after scripts loaded.");
+          CustomToaster('error',"MapmyIndia is still not defined after scripts loaded.");
         }
       }).catch(err => console.error("Failed to load MapmyIndia scripts", err));
     }
@@ -93,7 +94,7 @@ const dispatch = useDispatch();
     if (lat && lng) {
       setLocation(data);
     } else {
-      console.log("Location not found. Please try moving map.");
+      CustomToaster('error',"Location not found. Please try moving map.");
     }
   };
 

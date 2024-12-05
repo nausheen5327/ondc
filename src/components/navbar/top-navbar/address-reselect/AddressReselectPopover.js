@@ -32,7 +32,7 @@ const AddressReselectPopover = (props) => {
     const { geoCodeLoading } = useGetLocation(coords);
     const { location, formatted_address, zoneId } = useSelector((state) => state.addressData)
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const handleSuccess = () => {
         if (getToken()) {
             if (!mapOpen && open) {

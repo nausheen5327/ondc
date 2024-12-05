@@ -60,7 +60,6 @@ const AuthModal = ({
     signInSuccess,
     modalFor,
     setModalFor,
-    cartListRefetch,
 }) => {
     const { openMapDrawer, global } = useSelector(
         (state) => state.globalSettings
@@ -101,7 +100,6 @@ const AuthModal = ({
                     handleClose={handleClose}
                     setModalFor={setModalFor}
                     setSignInPage={setSignInPage}
-                    cartListRefetch={cartListRefetch}
                     setJwtToken={setJwtToken}
                     setUserInfo={setUserInfo}
                     setMedium={setMedium}

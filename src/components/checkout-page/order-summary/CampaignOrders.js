@@ -15,7 +15,7 @@ import {Box} from "@mui/system";
 const CampaignOrders = ({ global }) => {
     const { campFoodList } = useSelector((state) => state.cart)
     const productBaseUrl = global?.base_urls?.campaign_image_url
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <>
             {campFoodList.map((item) => (

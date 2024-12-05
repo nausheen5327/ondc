@@ -7,7 +7,7 @@ import {RTL} from "../RTL/RTL";
 export default function SearchResult({ searchValue, count, foodOrRestaurant }) {
     const {t}=useTranslation()
     const theme=useTheme()
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
        <RTL direction={languageDirection}>
            <Grid item container md={12} lg={12} xs={12}>

@@ -633,7 +633,6 @@ const FloatingCart = (props) => {
           handleClose={handleCloseAuthModal}
           modalFor={modalFor}
           setModalFor={setModalFor}
-          cartListRefetch={cartListRefetch}
         />
       )}
 

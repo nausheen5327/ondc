@@ -43,7 +43,7 @@ const NewRestaurant = () => {
     })
 
     const { global } = useSelector((state) => state.globalSettings)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const {
         isLoading,
         data: newRestuarants,

@@ -27,7 +27,7 @@ const StartPriceView = (props) => {
     const { global } = useSelector((state) => state.globalSettings)
     const bgColor = theme.palette.secondary.light
     const chipColor = theme.palette.neutral[100]
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     let currencySymbol = '₹'
     let currencySymbolDirection = 'left'
     let digitAfterDecimalPoint = 2

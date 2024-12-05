@@ -48,7 +48,7 @@ const AddressCard = ({ address, refetch }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [addressSymbol, setAddressSymbol] = useState("")
     const [rerenderMap, setRerenderMap] = useState(false)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const { token } = useSelector((state) => state.userToken)
     const { location, formatted_address } = useSelector((state) => state.addressData);
     const { data, isError } = useQuery(['profile-info'], ProfileApi.profileInfo);

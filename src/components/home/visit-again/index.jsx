@@ -110,7 +110,7 @@ const VisitAgain = () => {
     const [hoverOn, setHoverOn] = useState(false)
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     const isXSmall = useMediaQuery(theme.breakpoints.down('sm'))
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const [open, setOpen] = useState(false)
     const [openDrawer, setOpenDrawer] = useState(false)
     const { global } = useSelector((state) => state.globalSettings)

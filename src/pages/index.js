@@ -102,16 +102,21 @@ const Home = ({ configData, landingPageData, searchQuery }) => {
 
      
     useEffect(() => {
-        const isLoggedIn = checkIfUserIsLoggedIn(); // Implement this function
-
-        if (!isLoggedIn) {
-            router.push('/login'); // Redirect to login if not logged in
-            return;
-        }
+        //use this logic for login
+        // const isLoggedIn = checkIfUserIsLoggedIn(); 
+        // if (!isLoggedIn) {
+        //     router.push('/login'); 
+        //     return;
+        // }
+       //use this logic for login
         //            dispatch(setGlobalSettings(configData));
-        fetchDeliveryAddress();
-        getCartItems();
-
+        // fetchDeliveryAddress();
+        // getCartItems();
+        if(localStorage.getItem('location'))
+        {
+          dispatch(setlocation(JSON.parse(localStorage.getItem('location'))));
+          router.replace('/home')
+        }
        
     }, [router, dispatch]);
 
@@ -143,7 +148,7 @@ const checkIfUserIsLoggedIn = () => {
     return !!token; // Returns true if token exists, false otherwise
 }
 
-export default withAuth(Home);
+export default withAuth(Home,false);
 
 
 

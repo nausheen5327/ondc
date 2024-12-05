@@ -215,7 +215,6 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
                         anchorEl={anchorRef.current}
                         onClose={handleClosePopover}
                         open={openPopover}
-                        cartListRefetch={cartListRefetch}
                     />
                 </>
 

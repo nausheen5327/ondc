@@ -17,7 +17,7 @@ const FooterBottom = (props) => {
     const handleClick = (href) => {
         Router.push(href)
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     return (
         <CustomStackFullWidth py="1.5rem">
             <CustomContainer >

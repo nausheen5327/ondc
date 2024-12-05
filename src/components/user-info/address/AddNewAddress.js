@@ -102,7 +102,7 @@ const AddNewAddress = ({
             setOpen(false)
         }
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const primaryColor = theme.palette.primary.main
     const whiteColor = theme.palette.whiteContainer.main
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =

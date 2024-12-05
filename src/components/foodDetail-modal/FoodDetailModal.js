@@ -31,7 +31,7 @@ import { handleProductVariationRequirementsToaster } from './SomeHelperFuctions'
 import TotalAmountVisibility from './TotalAmountVisibility'
 import UpdateToCartUi from './UpdateToCartUi'
 import VariationsManager from './VariationsManager'
-
+import Cookies from "js-cookie";
 import { CustomToaster } from '@/components/custom-toaster/CustomToaster'
 import { useIsMount } from '@/components/first-render-useeffect-controller/useIsMount'
 import HalalSvg from '@/components/food-card/HalalSvg'
@@ -63,6 +63,7 @@ import CustomizationSection from './customizationManager'
 import RestaurantMDetails from './helper-functions/restaurantMDetails'
 import { getValueFromCookie } from '@/utils/cookies'
 import { updateCartItem } from '@/utils/checkout/cart/updateCartItem'
+import { setAuthModalOpen } from '@/redux/slices/global'
 const FoodDetailModal = ({
     product,
     image,
@@ -79,6 +80,7 @@ const FoodDetailModal = ({
     const router = useRouter()
     const { t } = useTranslation()
     const dispatch = useDispatch()
+    const [forSignup, setForSignup] = useState('')
     const cartItems = useSelector(state=>state.cart.cartList);
     const theme = useTheme()
     const [selectedOptions, setSelectedOptions] = useState([])
@@ -383,6 +385,12 @@ const processCustomizationState = (customizationState, customisationItems) => {
     };
   };
   const addToCart = async (navigate = false, isIncrement = true) => {
+    //before that check for login
+    const token = localStorage.getItem("token") || Cookies.get("token");
+    if (!token) {
+        dispatch(setAuthModalOpen(true));
+        return;
+    }
     setAddToCartLoading(true);
     try {
       const user = JSON.parse(getValueFromCookie("user"));
@@ -893,12 +901,11 @@ const processCustomizationState = (customizationState, customisationItems) => {
         return !!wishLists?.food?.find((wishFood) => wishFood.id === id)
     }
     //auth modal
-    const [authModalOpen, setAuthModalOpen] = useState(false)
-
+    const authModalOpen = useSelector(state=>state.globalSettings.authModalOpen)    
     const orderNow = () => {
         
     }
-    
+    console.log("auth modal open",authModalOpen);
     const getFullFillRequirements = () => {
         let isdisabled = false
         if (modalData[0]?.variations?.length > 0) {
@@ -1374,7 +1381,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
 
                                                                 }
                                                                 incrementItem={() => addToCart(false, true)}
-                                                                decrementItem={()=>deleteCartItem(itemAvailableInCart._id)}
+                                                                decrementItem={quantity>1?() => addToCart(false, false):()=>deleteCartItem(itemAvailableInCart._id)}
                                                                 quantity={quantity}
                                                             />
                                                         
@@ -1393,13 +1400,13 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 addToCard={addToCard}
             />
             {authModalOpen && (
-                <AuthModal
-                    open={authModalOpen}
-                    handleClose={() => setAuthModalOpen(false)}
-                    signInSuccess={handleSignInSuccess}
-                    modalFor={modalFor}
-                    setModalFor={setModalFor}
-                />
+                 <AuthModal
+                 open={authModalOpen}
+                 handleClose={false}
+                 forSignup={forSignup}
+                 modalFor={modalFor}
+                 setModalFor={setModalFor}
+             />
             )}
         </>
     )

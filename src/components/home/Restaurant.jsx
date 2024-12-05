@@ -134,7 +134,7 @@ const Restaurant = () => {
         mode = localStorage.getItem('mode')
     }
     const lightColor = theme.palette.neutral[1000]
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const handleDelete = (itemId) => {
         const tempData = checkedFilterKey.map((items) =>
             items?.id === itemId ? { ...items, isActive: false } : items

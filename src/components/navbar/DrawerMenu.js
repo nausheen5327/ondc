@@ -534,7 +534,6 @@ const DrawerMenu = ({  cartListRefetch }) => {
                     forSignup={forSignup}
                     modalFor={modalFor}
                     setModalFor={setModalFor}
-                    cartListRefetch={cartListRefetch}
                 />
             )}
             <IconButton

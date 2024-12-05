@@ -72,7 +72,7 @@ const BestReviewedFood = ({ data, isLoading }) => {
         if (global?.ref_earning_status && global?.ref_earning_exchange_rate !== 0)
             setFullWidth(false)
     }, [])
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
 
     const settings = {
         speed: 500,

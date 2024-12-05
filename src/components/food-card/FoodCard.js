@@ -119,7 +119,7 @@ const FoodCard = ({
         e.stopPropagation()
         setOpenModal(true)
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const handleModalClose = () => {
         setOpenModal(false)
     }

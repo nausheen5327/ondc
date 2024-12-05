@@ -5,7 +5,7 @@ import { CustomTypographyGray } from '../../error/Errors.style'
 const LoyalityPage = ({ data, profileDataLoading,isLast,index }) => {
     const { t } = useTranslation()
     const theme = useTheme()
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
 
     return (
         <>

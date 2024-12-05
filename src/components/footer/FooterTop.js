@@ -37,7 +37,7 @@ const FooterTop = ({ landingPageData }) => {
     const [errorText, setErrorText] = useState(null)
 
     const { t } = useTranslation()
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const { mutate, isLoading } = usePostNewsletterEmail()
     const handleSuccess = () => {
         // toast.success(t('Subscribed Successfully'), {

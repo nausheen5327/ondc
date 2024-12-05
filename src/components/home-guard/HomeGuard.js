@@ -10,23 +10,7 @@ const HomeGuard = (props) => {
     const [checked, setChecked] = useState(false)
     const location = useSelector(state=>state.addressData.location)
     // console.log("location inside homeguard",location);
-    useEffect(
-        () => {
-            if (!router.isReady) {
-                return
-            }
-            
-            if (location) {
-                setChecked(true)
-            } else {
-                router.push('/')
-            }
-        },
-        [router.isReady,location]
-    )
-    if (!checked) {
-        return null
-    }
+   
 
     // If got here, it means that the redirect did not occur, and that tells us that the user is
     // authenticated / authorized.

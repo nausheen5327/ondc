@@ -23,7 +23,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 const AddsSection = () => {
     const [hoverOn, setHoverOn] = useState(false)
     const [renderComp, setRenderComp] = useState(1)
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const [isAutoPlay, setIsAutoPlay] = useState(true)
     const sliderRef = useRef(null)
     const [currentSlide, setCurrentSlide] = useState(0)

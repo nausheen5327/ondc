@@ -89,13 +89,7 @@ const Navigation = () => {
         }
     }
 
-    const { data: cartData, refetch: cartListRefetch } = useGetAllCartList(
-        guestId,
-        cartListSuccessHandler
-    )
-    useEffect(() => {
-        cartListRefetch()
-    }, [router.pathname])
+  
 
     const handleConfigData = (res) => {
         if (res?.data) {
@@ -139,12 +133,12 @@ const Navigation = () => {
             isSmall={isSmall}
         >
             { (
-                <TopNav cartListRefetch={cartListRefetch} />
+                <TopNav  />
             )}
             {
                 <SecondNavbar
                     isSticky={isSticky}
-                    cartListRefetch={cartListRefetch}
+                    
                     location={userLocation}
                 />
             }

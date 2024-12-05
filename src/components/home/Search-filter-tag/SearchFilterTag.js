@@ -14,7 +14,7 @@ import {
   setSearchTagData,
 } from "@/redux/slices/searchFilter";
 import { Button } from "@mui/material";
-
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 const SearchFilterTag = ({ tags, query, page, sort_by, setSort_by }) => {
   const dispatch = useDispatch();
   const { offsetElementRef } = useScrollSticky();
@@ -129,10 +129,11 @@ const SearchFilterTag = ({ tags, query, page, sort_by, setSort_by }) => {
       >
         <CustomContainer>
           <Button
-            variant="outlined"
+            // variant="outlined"
             onClick={() => setShowFilters((prev) => !prev)}
           >
-            {showFilters ? "Hide Filters" : "Show Filters"}
+            <FilterAltIcon color={showFilters? 'grey':'primary'}/>
+            {/* {showFilters ? "Hide Filters" : "Show Filters"} */}
           </Button>
           {showFilters && (
             <FilterTag

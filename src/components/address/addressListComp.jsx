@@ -24,6 +24,9 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
   const theme = useTheme();
   const location = useSelector((state) => state.addressData.location);
   // console.log("location for def",location);
+  useEffect(()=>{
+    if(addresses.length<1)setIsAddMode(true)
+  },[addresses])
   const [currentAddress, setCurrentAddress] = useState({
     id: "",
     descriptor: {
@@ -172,7 +175,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
         gap: "16px",
       }}
     >
-      {addresses.map((address) => (
+      {addresses.length>0 && addresses.map((address) => (
         <Card
           key={address.id}
           style={{
@@ -239,14 +242,14 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
         </Card>
       ))}
 
-      <Button
+     {addresses.length>0 && <Button
         variant="contained"
         color="primary"
         onClick={handleAddAddress}
         style={{ width: "100%", marginTop: "16px" }}
       >
         Add Address
-      </Button>
+      </Button>}
 
       {/* Dialog for editing or adding an address */}
       <Dialog

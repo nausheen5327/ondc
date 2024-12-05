@@ -383,7 +383,7 @@ const Homes = () => {
     const { searchTagData } = useSelector((state) => state.searchTags)
     const router = useRouter()
     const { query, page, restaurantType, tags } = router.query
-
+    const [welcomeModal,setWelcomeModal] = useState(false);
     const dispatch = useDispatch()
     const onSuccessHandler = (response) => {
         setFetcheedData(response)
@@ -399,7 +399,9 @@ const Homes = () => {
     const location = useSelector(state => state.addressData.location)
 
 
-
+   const handleCloseWelcomeModal = ()=>{
+    setWelcomeModal(false);
+   }
 
 
 
@@ -428,41 +430,128 @@ const Homes = () => {
    
     return (
         <>
-            <CustomContainer>
-                <CustomStackFullWidth
-                    sx={{
-                        marginTop: { xs: '60px', md: '130px' },
-                        marginBottom: '10px',
-                    }}
-                >
-                    <Typography
-                        fontSize={{ xs: '16px', md: '20px' }}
-                        fontWeight={{
-                            xs: '500',
-                            md: '700',
+             <PushNotificationLayout>
+                <CustomContainer>
+                    <CustomStackFullWidth
+                        sx={{
+                            marginTop: { xs: '60px', md: '130px' },
+                            marginBottom: '10px',
                         }}
-                        color={theme.palette.neutral[1000]}
                     >
-                        {t('Find Best Restaurants and Foods')}
-                    </Typography>
-                </CustomStackFullWidth>
-            </CustomContainer>
-            <SearchFilterTag
-                sort_by={sort_by}
-                setSort_by={setSort_by}
-                tags={tags}
-                query={query}
-                page={page}
-            />
-            <CustomContainer>
-                <ProductSearchPage
+                        <Typography
+                            fontSize={{ xs: '16px', md: '20px' }}
+                            fontWeight={{
+                                xs: '500',
+                                md: '700',
+                            }}
+                            color={theme.palette.neutral[1000]}
+                        >
+                            {t('Find Best Restaurants and Foods')}
+                        </Typography>
+                    </CustomStackFullWidth>
+                </CustomContainer>
+                <SearchFilterTag
+                    sort_by={sort_by}
+                    setSort_by={setSort_by}
                     tags={tags}
-                    configData={configData}
                     query={query}
                     page={page}
-                    restaurantType={restaurantType}
                 />
-            </CustomContainer>
+                {query || page || restaurantType || tags ? (
+                    <CustomContainer>
+                        <ProductSearchPage
+                            tags={tags}
+                            configData={configData}
+                            query={query}
+                            page={page}
+                            restaurantType={restaurantType}
+                        />
+                    </CustomContainer>
+                ) : (
+                    <>
+                        <Box>
+                            <FeatureCatagories height="70px" />
+                            {/* <CustomContainer>
+                                <VisitAgain />
+                                <AddsSection />
+                            </CustomContainer> */}
+                        </Box>
+                        <CustomContainer>
+                            <DifferentFoodCompontent
+                                campaignIsloading={false}
+                                isLoading={false}
+                                isLoadingNearByPopularRestaurantData={
+                                    false
+                                }
+                            />
+                            {/* <NewRestaurant /> */}
+                            {global && <Cuisines />}
+
+                            {global?.banner_data?.promotional_banner_image && (
+                                <PromotionalBanner global={global} />
+                            )}
+
+                            {/* <Restaurant /> */}
+                        </CustomContainer>
+                    </>
+                )}
+
+                <CustomModal
+                    setModalOpen={handleCloseWelcomeModal}
+                    openModal={welcomeModal}
+                    closeButton
+                >
+                    <Box
+                        sx={{
+                            maxWidth: '382px',
+                            width: '95vw',
+                            px: 1.3,
+                            pb: 4,
+                            textAlign: 'center',
+                            img: {
+                                height: 'unset',
+                            },
+                            marginInline: 'auto',
+                        }}
+                    >
+                        <Box pb={2}>
+                            <img
+                                src={'/static/sign-up-welcome.svg'}
+                                alt="welcome"
+                                width={183}
+                                height={183}
+                            />
+                        </Box>
+                        <Box mt={2}>
+                            <Typography
+                                variant="h5"
+                                mb={1}
+                                color={theme.palette.neutral[1000]}
+                            >
+                                {t('Welcome to ' + configData?.business_name)}
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                lineHeight={'1.5'}
+                                color={theme.palette.neutral[1000]}
+                            >
+                                {userData?.is_valid_for_discount
+                                    ? t(
+                                          `Get ready for a special welcome gift, enjoy a special discount on your first order within `
+                                      ) +
+                                      userData?.validity +
+                                      '.'
+                                    : ''}
+                                {'  '}
+                                {t(
+                                    `  Start exploring the best services around you.`
+                                )}
+                            </Typography>
+                        </Box>
+                    </Box>
+                </CustomModal>
+                {getToken && <CashBackPopup />}
+            </PushNotificationLayout>
 
         </>
     )

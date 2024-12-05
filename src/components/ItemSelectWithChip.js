@@ -35,7 +35,7 @@ const ItemSelectWithChip = (props) => {
         setSelected(null)
         handleChange?.(null)
     }
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const theme = useTheme()
     return (
         <RTL direction={languageDirection}>

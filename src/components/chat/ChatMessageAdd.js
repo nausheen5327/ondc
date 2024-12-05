@@ -44,7 +44,7 @@ const ChatMessageAdd = ({ onSend }) => {
         text: '',
         file: [],
     })
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const fileInputRef = useRef(null)
     const attachmentInputRef = useRef(null)
 

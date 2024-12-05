@@ -14,7 +14,7 @@ const WalletsPage = (props) => {
         isLoading,
     } = props
     const theme = useTheme()
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const debit = data?.debit + data?.admin_bonus
     const credit = data?.credit + data?.admin_bonus
     return (

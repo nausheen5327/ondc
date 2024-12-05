@@ -63,7 +63,7 @@ const RestaurantBoxCard = (props) => {
     } = props
     const { t } = useTranslation()
     const router = useRouter()
-    const languageDirection = localStorage.getItem('direction')
+    const languageDirection = 'ltr'
     const { userData } = useSelector((state) => state.user)
     const { global } = useSelector((state) => state.globalSettings)
     const restaurantIdOrSlug = slug ? slug : id

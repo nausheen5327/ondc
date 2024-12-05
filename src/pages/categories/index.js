@@ -13,7 +13,7 @@ const index = ({ configData, landingPageData, pathName }) => {
         <div className="div">
             <HomeGuard>
             <Meta
-                title={`${t('Categories')} on ${configData?.business_name}`}
+                title={`${t('Categories')} on ONDC`}
                 ogImage={`${configData?.base_urls?.react_landing_page_images}/${landingPageData?.banner_section_full?.banner_section_img_full}`}
                 pathName={pathName}
             />
