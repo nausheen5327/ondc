@@ -26,6 +26,7 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
   
   const [userData, setUserData] = useState(null)
   const [locationData, setLocationData] = useState(null)
+  const [cartData, setCartData] = useState(null)
   const [token, setToken] = useState(null)
 
   // First useEffect - initialization
@@ -38,12 +39,17 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
 
       const storedLocation = localStorage.getItem('location')
       const storedUser = localStorage.getItem('user')
+
+      const storedCartItems = localStorage.getItem('cartItems')
       
       console.log("Stored data present:", {
           hasStoredLocation: !!storedLocation,
           hasStoredUser: !!storedUser
       })
-      
+      if(storedCartItems){
+        const parsedCartItems = JSON.parse(storedCartItems)
+        setCartData(parsedCartItems)
+      }
       if (storedLocation) {
           const parsedLocation = JSON.parse(storedLocation)
           setLocationData(parsedLocation)
@@ -132,10 +138,13 @@ const getCartItems = async () => {
           console.log("Authenticated state - fetching user data")
           fetchDeliveryAddress()
           getCartItems()
-      } else if (!token && locationData) {
+      } else if (!token) {
           console.log("Unauthenticated with location - redirecting")
+          if(cartData)dispatch(setCartList(cartData))
+         if(locationData){ 
           dispatch(setlocation(locationData))
           router.replace('/home')
+        }
       }
   }, [token, userData, locationData])
 

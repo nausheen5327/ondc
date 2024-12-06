@@ -505,6 +505,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
           const res = await getCall(url);
           console.log("cart...",res);
           dispatch(setCartList(res));
+          localStorage.setItem('cartItems',JSON.stringify(res));
 
           
 
@@ -518,10 +519,6 @@ const processCustomizationState = (customizationState, customisationItems) => {
           }, 0);
 
           setQuantity(totalQuantity)
-
-
-
-          
         } catch (error) {
           console.log("Error fetching cart items:", error);
         //   setLoading(false);
