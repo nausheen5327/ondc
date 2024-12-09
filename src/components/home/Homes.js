@@ -50,7 +50,7 @@ import AddsSection from '@/components/home/add-section'
 
 const Homes = () => {
     let configData = {
-        "business_name": "StackFood",
+        "business_name": "Nazara SDK",
         "logo": "2022-04-17-625c012c3c07d.png",
         "logo_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/business/2022-04-17-625c012c3c07d.png",
         "address": "House: 00, Road: 00, City-0000, Country",

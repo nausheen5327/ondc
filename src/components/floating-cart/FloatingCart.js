@@ -76,8 +76,10 @@ import useCancellablePromise from '@/api/cancelRequest'
 import { deleteCall, getCall, postCall, putCall } from '@/api/MainApi'
 import { CustomToaster } from '../custom-toaster/CustomToaster'
 import CartActions from './cartAction';
+import { useCheckoutFlow } from '../checkout-guard/checkoutFlow';
 
 const FloatingCart = (props) => {
+  const { handleCheckoutFlow } = useCheckoutFlow()
   const { sideDrawerOpen, setSideDrawerOpen } = props
   const theme = useTheme()
   const { t } = useTranslation()
@@ -544,41 +546,9 @@ const FloatingCart = (props) => {
     // eslint-disable-next-line
   };
 
-  const handleCheckout = () => {const token = localStorage.getItem("token") || Cookies.get("token");
-  if (!token) {
-    setSideDrawerOpen(false);
-      dispatch(setAuthModalOpen(true));
-      return;
-  }
-
-    const closeDrawers = () => {
-      setDrawerOpen(false);
-      setSideDrawerOpen(false);
-    };
-    //call APIs 
-    if (cartItems.length > 0) {
-      let c = cartItems.map((item) => {
-        return item.item;
-      });
-
-      const request_object = constructQouteObject(c);
-      console.log("request_object", request_object);
-      getQuote(request_object[0]);
-      getProviderIds(request_object[0]);
-    }
-    // if (token) {
-    //     router.push('/checkout?page=cart');
-    //     closeDrawers();
-    // } else {
-    //     const shouldOpenGuestModal = global?.guest_checkout_status === 1;
-    //     if (shouldOpenGuestModal) {
-    //         setOpenGuestModal(true);
-    //     } else {
-    //         handleOpenAuthModal();
-    //     }
-
-    //     closeDrawers();
-    // }
+  const handleCheckout = () => {
+    handleCheckoutFlow(cartItems, location)
+    setSideDrawerOpen(false)
   };
 
   // const variationPrice = cartList.map((item) => {

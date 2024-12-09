@@ -64,6 +64,7 @@ import RestaurantMDetails from './helper-functions/restaurantMDetails'
 import { getValueFromCookie } from '@/utils/cookies'
 import { updateCartItem } from '@/utils/checkout/cart/updateCartItem'
 import { setAuthModalOpen, setSideDrawerOpen } from '@/redux/slices/global'
+import { useCheckoutFlow } from '../checkout-guard/checkoutFlow'
 const FoodDetailModal = ({
     product,
     image,
@@ -76,6 +77,7 @@ const FoodDetailModal = ({
     handleBadge,
     campaign,
 }) => {
+    const { handleCheckoutFlow } = useCheckoutFlow()
     const isMount = useIsMount()
     const router = useRouter()
     const { t } = useTranslation()
@@ -453,13 +455,22 @@ const processCustomizationState = (customizationState, customisationItems) => {
   
       if (cartItem.length === 0) {
         const res = await postCall(url, payload);
+        if(navigate){
+            handleModalClose();
+            handleCheckoutFlow([res], location)
+            return;
+        }
         CustomToaster('success', "Item added to cart successfully.");
       } else {
         const currentCount = parseInt(cartItem[0].item.quantity.count);
         const maxCount = parseInt(cartItem[0].item.product.quantity.maximum.count);
-  
         if (currentCount < maxCount) {
-          await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
+          const res = await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
+          if(navigate){
+            handleModalClose();
+            handleCheckoutFlow([res], location)
+            return;
+        }
           CustomToaster('success', "Item quantity updated in your cart.");
         } else {
           CustomToaster('error', "Maximum available quantity already in cart.");
@@ -467,10 +478,11 @@ const processCustomizationState = (customizationState, customisationItems) => {
       }
       
       getCartItems();
-      if (navigate){
-        handleModalClose();
-        dispatch(setSideDrawerOpen(true))
-      } 
+    //   if (navigate){
+    //     handleModalClose();
+    //     handleCheckoutFlow(cartItems, location)
+    //     // dispatch(setSideDrawerOpen(true))
+    //   } 
       
     } catch (error) {
       console.error('Add to cart error:', error);

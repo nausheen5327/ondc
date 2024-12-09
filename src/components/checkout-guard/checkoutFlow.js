@@ -1,0 +1,234 @@
+// hooks/useCheckoutFlow.js
+import { useRouter } from 'next/router'
+import { useDispatch } from 'react-redux'
+import { setAuthModalOpen, setIsLoading } from '@/redux/slices/global'
+import { EventSourcePolyfill } from 'event-source-polyfill'
+import { getValueFromCookie, AddCookie } from '@/utils/cookies'
+import { constructQouteObject } from '@/utils/constructQouteObject'
+import { postCall, getCall } from '@/api/MainApi'
+import useCancellablePromise from '@/api/cancelRequest'
+import { CustomToaster } from '../custom-toaster/CustomToaster'
+import React, { useState } from 'react'
+import { setCartContext } from '@/redux/slices/cart'
+
+export const useCheckoutFlow = () => {
+  const router = useRouter()
+  const dispatch = useDispatch()
+  const { cancellablePromise } = useCancellablePromise()
+  const responseRef = React.useRef([])
+  const eventTimeOutRef = React.useRef([])
+  const updatedCartItems = React.useRef([])
+
+  const getProviderIds = (request_object) => {
+    let providers = []
+    request_object.map((cartItem) => {
+      providers.push(cartItem.provider.local_id)
+    })
+    const ids = [...new Set(providers)]
+    AddCookie("providerIds", ids)
+    return ids
+  }
+
+  const offerInSelectFormat = (id) => {
+    return {
+      id: id,
+      tags: [
+        {
+          code: "selection",
+          list: [{ code: "apply", value: "yes" }]
+        }
+      ]
+    }
+  }
+
+  const getOffersForSelect = (selectedNonAdditiveOffer, selectedAdditiveOffers) => {
+    if (selectedNonAdditiveOffer) {
+      return [offerInSelectFormat(selectedNonAdditiveOffer)]
+    } else {
+      return selectedAdditiveOffers?.length > 0
+        ? selectedAdditiveOffers.map((id) => offerInSelectFormat(id))
+        : []
+    }
+  }
+
+  const onGetQuote = async (message_id) => {
+    try {
+      dispatch(setIsLoading(true))
+      const data = await getCall(`/clientApis/v2/on_select?messageIds=${message_id}`)
+      
+      responseRef.current = [...responseRef.current, data[0]];
+
+      // setEventData((eventData) => [...eventData, data[0]]);
+      dispatch(setCartContext(data[0]))
+
+      // onUpdateProduct(data[0].message.quote.items, data[0].message.quote.fulfillments);
+      data[0].message.quote.items.forEach((item) => {
+        const findItemIndexFromCart = updatedCartItems.current.findIndex(
+          (prod) => prod.item.product.id === item.id
+        );
+        if (findItemIndexFromCart > -1) {
+          updatedCartItems.current[
+            findItemIndexFromCart
+          ].item.product.fulfillment_id = item.fulfillment_id;
+          updatedCartItems.current[
+            findItemIndexFromCart
+          ].item.product.fulfillments = data[0].message.quote.fulfillments;
+        }
+      });
+
+      localStorage.setItem(
+        "cartItems",
+        JSON.stringify(updatedCartItems.current)
+      );
+      localStorage.setItem(
+        "updatedCartItems",
+        JSON.stringify(responseRef.current)
+      );
+      localStorage.setItem(
+        "offers",
+        JSON.stringify({
+          additive_offers: selectedAdditiveOffers,
+          non_additive_offer: selectedNonAdditiveOffer,
+        })
+      );
+      dispatch(setIsLoading(false));
+
+      router.push(`/checkout`);
+    } catch (err) {
+      //   setCheckoutLoading(false);
+      CustomToaster('error', err.message);
+      dispatch(setIsLoading(false));
+
+      //   setGetQuoteLoading(false);
+    }
+  }
+
+  const onFetchQuote = (message_ids) => {
+    dispatch(setIsLoading(true))
+    eventTimeOutRef.current = []
+
+    const token = getValueFromCookie("token")
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+    message_ids.forEach((id) => {
+      let es = new EventSourcePolyfill(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`,
+        { headers }
+      )
+
+      es.addEventListener("on_select", (e) => {
+        const { messageId } = JSON.parse(e.data)
+        onGetQuote(messageId)
+      })
+
+      const timer = setTimeout(() => {
+        eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
+          eventSource.close()
+          clearTimeout(timer)
+        })
+
+        if (responseRef.current.length <= 0) {
+          dispatch(setIsLoading(false))
+          CustomToaster('error', 'Cannot fetch details for this product')
+          router.replace("/")
+          return
+        }
+      }, 20000)
+
+      dispatch(setIsLoading(false))
+      eventTimeOutRef.current.push({ eventSource: es, timer })
+    })
+  }
+  const [selectedNonAdditiveOffer, setSelectedNonAdditiveOffer] = useState("");
+  const [selectedAdditiveOffers, setSelectedAdditiveOffers] = useState([]);
+  
+  const offersForSelect = () => {
+    if (selectedNonAdditiveOffer) {
+      console.log("selectedNonAdditiveOffer", selectedNonAdditiveOffer);
+      return [offerInSelectFormat(selectedNonAdditiveOffer)];
+    } else {
+      return selectedAdditiveOffers.length > 0
+        ? selectedAdditiveOffers.map((id) => offerInSelectFormat(id))
+        : [];
+    }
+  };
+  const getQuote = async (items, location) => {
+    if (!location) {
+      CustomToaster('error', 'Please Select Address')
+      return
+    }
+
+    try {
+      const transactionId = localStorage.getItem("transaction_id")
+      responseRef.current = []
+
+      const updatedItems = items.map((item) => {
+        const newItem = { ...item }
+        delete newItem.context
+        delete newItem.contextCity
+        return newItem
+      })
+
+
+
+      const selectPayload = {
+        context: {
+          transaction_id: transactionId,
+          domain: items[0]?.domain,
+          city: location?.address?.city,
+          pincode: location?.address?.areaCode,
+          state: location?.address?.state,
+        },
+        message: {
+          cart: { items: updatedItems },
+          offers: offersForSelect(),
+          fulfillments: [{
+            end: {
+              location: {
+                gps: `${location?.address?.lat},${location?.address?.lng}`,
+                address: { area_code: location?.address?.areaCode }
+              }
+            }
+          }]
+        }
+      }
+
+      dispatch(setIsLoading(true))
+      const data = await postCall("/clientApis/v2/select", [selectPayload])
+      console.log('inside hook ',  data )
+
+      dispatch(setIsLoading(false))
+
+      const isNACK = data.find(item => item?.error && item?.message?.ack?.status === "NACK")
+      console.log('inside hook ',  isNACK )
+
+      if (isNACK) {
+        CustomToaster('error', `${isNACK.error.message}`)
+      } else {
+        onFetchQuote(data.map(txn => txn.context?.message_id))
+      }
+    } catch (err) {
+      CustomToaster('error', err)
+      router.replace('/')
+    }
+  }
+
+  const handleCheckoutFlow = async (cartItems, location) => {
+    const token = getValueFromCookie("token");
+
+    if (!token) {
+      dispatch(setAuthModalOpen(true))
+      return
+    }
+    if (cartItems.length > 0) {
+      const items = cartItems.map(item => item.item)
+      const request_object = constructQouteObject(items)
+      await getQuote(request_object[0], location)
+      getProviderIds(request_object[0])
+    }
+  }
+
+  return {
+    handleCheckoutFlow
+  }
+}

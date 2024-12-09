@@ -54,7 +54,7 @@ import {
 } from '@/redux/slices/OfflinePayment'
 import { setCartList, setWalletAmount } from '@/redux/slices/cart'
 import { setUser } from '@/redux/slices/customer'
-import { setIsLoading, setZoneData } from '@/redux/slices/global'
+import { setAuthModalOpen, setIsLoading, setZoneData } from '@/redux/slices/global'
 import {
     CustomPaperBigCard,
     CustomStackFullWidth,
@@ -182,8 +182,8 @@ const CheckoutPage = () => {
     const { method } = router.query
     const [offlineCheck, setOfflineCheck] = useState(false)
     const [openAddressModal, setOpenAddressModal] = useState(false);
-
-
+ 
+   
     const handleSelectAddress = () => {
       setOpenAddressModal(true);
   };
@@ -1153,6 +1153,11 @@ function onConfirm(message_id) {
   eventTimeOutRef.current = []
 
   const token = getValueFromCookie("token");
+  useEffect(()=>{
+    if (!token) {
+      dispatch(setAuthModalOpen(true))
+    }
+  },[token])
   let header = {
     headers: {
       ...(token && {

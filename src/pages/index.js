@@ -44,7 +44,8 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
       
       console.log("Stored data present:", {
           hasStoredLocation: !!storedLocation,
-          hasStoredUser: !!storedUser
+          hasStoredUser: !!storedUser,
+          hasStoredCart: !!storedCartItems
       })
       if(storedCartItems){
         const parsedCartItems = JSON.parse(storedCartItems)
@@ -82,6 +83,8 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
             if (findIndex !== -1) {
                 dispatch(setlocation(locationData))
                 localStorage.setItem('location', JSON.stringify(data[findIndex]))
+                router.replace('/home')
+
             }
         }
         
