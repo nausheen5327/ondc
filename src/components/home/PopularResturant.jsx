@@ -134,7 +134,7 @@ const PopularResturant = ({ data, latestRestaurantData }) => {
                                 justifyContent="space-between"
                             >
                                 <Typography variant={isXSmall ? 'h4' : 'h3'}>
-                                    {`${newtext} ${global?.business_name} `}
+                                    {`${newtext} ONDC `}
                                 </Typography>
                                 <Button
                                     onClick={() =>

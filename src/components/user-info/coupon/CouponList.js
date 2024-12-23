@@ -57,7 +57,7 @@ const CouponList = () => {
     return (
         <>
             <Meta
-                title={` My Coupons-${global?.business_name}`}
+                title={` My Coupons-ONDC`}
                 description=""
                 keywords=""
             />

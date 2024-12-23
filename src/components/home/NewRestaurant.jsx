@@ -232,7 +232,7 @@ const NewRestaurant = () => {
                                 fontSize={{ xs: '16px', md: '20px' }}
                                 fontWeight={{ xs: '500', md: '700' }}
                             >
-                                {t(`New on ${global?.business_name}`)}
+                                {t(`New on ONDC`)}
                             </Typography>
                         </Stack>
                         <CustomViewAll

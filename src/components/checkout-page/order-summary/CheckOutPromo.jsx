@@ -47,7 +47,7 @@ const CheckOutPromo = ({ data, handleApply ,handleClose,loading}) => {
                         <Stack justifyContent="center" width="100%" alignItems="center" spacing={1}>
                             <NoCouponSvg />
                             <Typography fontSize="14px" fontWeight="500">{t("No Promo Available!")}</Typography>
-                            <Typography fontSize="12px" color={theme.palette.neutral[400]}>{t(` ${subTitle} ${global?.business_name} `)}</Typography>
+                            <Typography fontSize="12px" color={theme.palette.neutral[400]}>{t(` ${subTitle} ONDC `)}</Typography>
                         </Stack>
                     )}
                 </Stack>

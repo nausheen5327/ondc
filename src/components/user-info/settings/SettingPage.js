@@ -93,8 +93,7 @@ const SettingPage = () => {
         cookie.set('languageSetting', ln?.languageCode)
         // i18n.changeLanguage(ln)
         localStorage.setItem(
-            'direction',
-            isRTLLanguage(ln?.languageCode) ? 'rtl' : 'ltr'
+            'direction','ltr'
         )
 
         window.location.reload()
@@ -126,7 +125,7 @@ const SettingPage = () => {
         <>
             {' '}
             <Meta
-                title={` My Settings-${global?.business_name}`}
+                title={` My Settings-ONDC`}
                 description=""
                 keywords=""
             />

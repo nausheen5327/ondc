@@ -1,12 +1,6 @@
-import { getCall } from "@/api/MainApi";
-import useCancellablePromise from "@/api/cancelRequest";
-import { setIsLoading } from "@/redux/slices/global";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { CustomToaster } from "../custom-toaster/CustomToaster";
-// import "../../../PlacePickerMap.css"; // Adjust based on actual path
-// import useCancellablePromise from "../../api/MainApi"; // Update with relative path
-// import { getCall } from "../../api/MainApi"; // Update with relative path
+import { Button } from "@mui/material";
 
 const PlacePickerMap = (props) => {
   const {
@@ -17,108 +11,388 @@ const PlacePickerMap = (props) => {
     location,
     setLocation = null,
   } = props;
-const dispatch = useDispatch();
-  const [apiKey, setApiKey] = useState();
-  const [map, setMap] = useState();
-  const [mapInitialized, setMapInitialized] = useState(false);
 
-  const { cancellablePromise } = useCancellablePromise();
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
+  const googleRef = useRef(null);
+  const [map, setMap] = useState(null);
+  const [searchBox, setSearchBox] = useState(null);
+  const [tempLocation, setTempLocation] = useState(null);
+  const [pinnedAddress, setPinnedAddress] = useState("");
 
-  const getToken = async () => {
-    dispatch(setIsLoading(true));
-    let res = await cancellablePromise(getCall(`/clientApis/v2/map/accesstoken`));
-    setApiKey(res.access_token);
-    dispatch(setIsLoading(false));
+  // Convert coordinates to numbers and validate
+  const parseCoordinates = (lat, lng) => {
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
 
+    if (isNaN(parsedLat) || isNaN(parsedLng)) {
+      return null;
+    }
+
+    return {
+      lat: parsedLat,
+      lng: parsedLng,
+    };
   };
 
-  // Fetch MMI API token
-  useEffect(() => {
-    getToken();
-  }, []);
+  // Get initial coordinates
+  const getInitialCoordinates = useCallback(() => {
+    if (location?.lat && location?.lng) {
+      const coords = parseCoordinates(location.lat, location.lng);
+      if (coords) return coords;
+    }
+    return { lat: parseFloat(center[0]), lng: parseFloat(center[1]) };
+  }, [center, location]);
 
-  const loadMapmyIndiaScripts = async () => {
-    if (!apiKey) return;
-    dispatch(setIsLoading(true));
-    // Load the first script
-    await new Promise((resolve, reject) => {
-      const script1 = document.createElement("script");
-      script1.src = `https://apis.mapmyindia.com/advancedmaps/v1/${apiKey}/map_load?v=1.3`;
-      script1.async = true;
-      script1.onload = resolve;
-      script1.onerror = reject;
-      document.body.appendChild(script1);
-    });
+  // Get address details from coordinates using Google Geocoding service
+  const getAddressFromLatLng = useCallback(
+    async (lat, lng) => {
+      if (!googleRef.current?.maps) return;
 
-    // Load the second script
-    await new Promise((resolve, reject) => {
-      const script2 = document.createElement("script");
-      script2.src = `https://apis.mapmyindia.com/advancedmaps/api/${apiKey}/map_sdk_plugins`;
-      script2.async = true;
-      script2.onload = resolve;
-      script2.onerror = reject;
-      document.body.appendChild(script2);
-    });
-    dispatch(setIsLoading(false));
-    setMapInitialized(false); // Reset map initialization flag to trigger map setup
+      try {
+        const geocoder = new googleRef.current.maps.Geocoder();
+        const response = await new Promise((resolve, reject) => {
+          geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            if (status === "OK") {
+              resolve(results);
+            } else {
+              reject(status);
+            }
+          });
+        });
+
+        if (response?.[0]) {
+          const addressComponents = response[0].address_components;
+          const findComponent = (type) => {
+            const component = addressComponents.find((comp) =>
+              comp.types.includes(type)
+            );
+            return component ? component.long_name : "";
+          };
+
+          const locationData = {
+            lat: lat.toString(),
+            lng: lng.toString(),
+            street: `${
+              findComponent("street_number")
+                ? findComponent("street_number") + " "
+                : ""
+            }${findComponent("route") || ""}`,
+            city: findComponent("locality") || "",
+            state: findComponent("administrative_area_level_1") || "",
+            pincode: findComponent("postal_code") || "",
+            formatted_address: response[0].formatted_address,
+          };
+
+          setTempLocation(locationData);
+          setPinnedAddress(response[0].formatted_address);
+        }
+      } catch (error) {
+        CustomToaster("error", "Failed to get address details");
+        console.error("Geocoding error:", error);
+      }
+    },
+    []
+  );
+
+  const handleConfirmLocation = () => {
+    if (tempLocation && setLocation) {
+      setLocation(tempLocation);
+      CustomToaster("success", "Location confirmed successfully");
+    }
   };
 
-  const initializeMap = useCallback((node) => {
-    if (!mapInitialized && node && typeof window !== "undefined" && window.MapmyIndia) {
-      const mapInstance = new window.MapmyIndia.Map(node, {
-        center,
+  // Initialize or update marker
+  // const updateMarker = useCallback(
+  //   (position) => {
+      
+  //     if (!map || !googleRef.current?.maps) return;
+
+  //     const newPosition = new googleRef.current.maps.LatLng(
+  //       position.lat,
+  //       position.lng
+  //     );
+
+  //     console.log("new position", googleRef.current?.maps);
+
+
+  //     if (!markerRef.current) {
+  //       // Create new marker
+  //       const markerOptions = {
+  //         map,
+  //         position: newPosition,
+  //         draggable: true,
+  //       };
+
+  //       // Use AdvancedMarkerElement if available, fallback to regular Marker
+  //       markerRef.current = googleRef.current.maps.marker?.AdvancedMarkerElement
+  //         ? new googleRef.current.maps.marker.AdvancedMarkerElement(
+  //             markerOptions
+  //           )
+  //         : new googleRef.current.maps.Marker(markerOptions);
+
+  //       // Add drag end listener
+  //       markerRef.current.addListener("dragend", () => {
+  //         const pos = markerRef.current.position;
+  //         const newPos = { lat: pos.lat(), lng: pos.lng() };
+  //         getAddressFromLatLng(newPos.lat, newPos.lng);
+  //       });
+  //     } else {
+  //       // Update existing marker
+  //       markerRef.current.setPosition(newPosition);
+  //     }
+  //   },
+  //   [map, getAddressFromLatLng]
+  // );
+
+  const updateMarker = useCallback((position) => {
+    console.log("Updating marker position:", position);
+  
+    if (!map || !googleRef.current?.maps){
+      console.log("inside update marker position if:", map);
+      return;
+    }
+  
+    const newPosition = new googleRef.current.maps.LatLng(
+      position.lat,
+      position.lng
+    );
+  
+    if (!markerRef.current) {
+      console.log("Creating new marker");
+      const markerOptions = {
+        map,
+        position: newPosition,
+        draggable: true,
+      };
+  
+      markerRef.current = new googleRef.current.maps.Marker(markerOptions);
+  
+      markerRef.current.addListener("dragend", () => {
+        const pos = markerRef.current.position;
+        const newPos = { lat: pos.lat(), lng: pos.lng() };
+        console.log("Marker dragged to:", newPos);
+        getAddressFromLatLng(newPos.lat, newPos.lng);
+      });
+    } else {
+      console.log("Updating existing marker position");
+      markerRef.current.setPosition(newPosition);
+    }
+  }, [map, getAddressFromLatLng]);
+  
+  // Initialize map
+  const initMap = useCallback(() => {
+    if (!mapRef.current || !googleRef.current?.maps) return;
+
+    try {
+      const initialCoords = getInitialCoordinates();
+
+      const mapInstance = new googleRef.current.maps.Map(mapRef.current, {
+        center: initialCoords,
         zoom,
         zoomControl,
-        search,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+        gestureHandling: "greedy",
       });
+
+      // Add click listener to map
+      mapInstance.addListener("click", (e) => {
+        if (!e.latLng) return;
+
+        const newPos = {
+          lat: e.latLng.lat(),
+          lng: e.latLng.lng(),
+        };
+
+        updateMarker(newPos);
+        getAddressFromLatLng(newPos.lat, newPos.lng);
+      });
+
       setMap(mapInstance);
-      setMapInitialized(true);
-    }
-  }, [mapInitialized, center, zoom, zoomControl, search]);
+      updateMarker(initialCoords);
 
+      // Add search box if enabled
+      if (search && googleRef.current.maps.places) {
+        const searchContainer = document.createElement("div");
+        searchContainer.style.cssText = `
+          position: absolute;
+          top: 10px;
+          z-index: 1000;
+          width: 100%;
+          display: flex;
+          justify-content: flex-end; 
+        `;
+
+        const input = document.createElement("input");
+        input.placeholder = "Search";
+        input.className = "controls";
+        input.style.cssText = `
+          width: 100%;
+          height: 44px;
+          padding: 8px 12px;
+          margin-left: 4px;
+          margin-right: 4px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          font-size: 14px;
+          background: white;
+        `;
+
+        searchContainer.appendChild(input);
+        document.querySelector(".map-container")?.appendChild(searchContainer);
+
+        const searchBoxInstance = new googleRef.current.maps.places.SearchBox(
+          input
+        );
+        setSearchBox(searchBoxInstance);
+
+        // Ensure the autocomplete container has the highest z-index
+        const observer = new MutationObserver((mutations) => {
+          const pacContainer = document.querySelector(".pac-container");
+          if (pacContainer) {
+            pacContainer.style.zIndex = "2000";
+            observer.disconnect();
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+
+        searchBoxInstance.addListener("places_changed", () => {
+          
+          const places = searchBoxInstance.getPlaces();
+          if (places.length === 0) return;
+
+          const place = places[0];
+          if (!place.geometry?.location) return;
+
+          const newPos = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+          };
+          console.log("new position", newPos);
+          
+          mapInstance.setCenter(newPos);
+          updateMarker(newPos);
+          getAddressFromLatLng(newPos.lat, newPos.lng);
+        });
+      }
+    } catch (error) {
+      CustomToaster("error", "Failed to initialize map");
+      console.error("Map initialization error:", error);
+    }
+  }, [
+    zoom,
+    zoomControl,
+    search,
+    getInitialCoordinates,
+    updateMarker,
+    getAddressFromLatLng,
+  ]);
+
+  // Add styles for the autocomplete container
   useEffect(() => {
-    if (!mapInitialized && apiKey) {
-      loadMapmyIndiaScripts().then(() => {
-        if (typeof window.MapmyIndia !== "undefined") {
-          setMapInitialized(true); // Set to true only if MapmyIndia is available
-        } else {
-          CustomToaster('error',"MapmyIndia is still not defined after scripts loaded.");
-        }
-      }).catch(err => console.error("Failed to load MapmyIndia scripts", err));
-    }
-  }, [apiKey, mapInitialized]);
+    const style = document.createElement("style");
+    style.textContent = `
+      .pac-container {
+        z-index: 2000 !important;
+        position: fixed !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
-  const onChange = (data) => {
-    console.log(data,"data...");
-    const { lat, lng } = data;
-    if (lat && lng) {
-      setLocation(data);
-    } else {
-      CustomToaster('error',"Location not found. Please try moving map.");
-    }
-  };
-
+  // Load Google Maps script
   useEffect(() => {
-    if (!mapInitialized || !map || !window.MapmyIndia) return;
-    
-    const options = {
-      map,
-      callback: setLocation ? onChange : undefined,
-      search,
-      closeBtn: false,
-      topText: " ",
-      geolocation: true,
-      location: location?.lat && location?.lng ? location : { lat: 28.679079, lng: 77.06971 },
+    if (window.google?.maps) {
+      googleRef.current = window.google;
+      initMap();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+
+    script.onload = () => {
+      googleRef.current = window.google;
+      initMap();
     };
 
-    new window.MapmyIndia.placePicker(options);
-  }, [mapInitialized, map, location, setLocation, search]);
+    script.onerror = () => {
+      CustomToaster("error", "Failed to load Google Maps");
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      if (markerRef.current) {
+        markerRef.current.setMap(null);
+      }
+      if (map) {
+        window.google?.maps?.event?.clearInstanceListeners(map);
+      }
+    };
+  }, []);
+
+  // Update marker when location prop changes
+  useEffect(() => {
+    if (map && location?.lat && location?.lng) {
+      const coords = parseCoordinates(location.lat, location.lng);
+      if (coords) {
+        map.setCenter(coords);
+        updateMarker(coords);
+      }
+    }
+  }, [location, map, updateMarker]);
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <div id="map" ref={initializeMap} style={{ width: "100%", height: "100%" }} />
+    <div
+      className="map-container"
+      style={{ height: "100%", width: "100%", position: "relative" }}
+    >
+      <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
+      {pinnedAddress && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "90%",
+            maxWidth: "500px",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            padding: "12px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            zIndex: 1000,
+            textAlign: "center",
+          }}
+        >
+          <div style={{ marginBottom: "8px", fontSize: "14px" }}>
+            {pinnedAddress}
+          </div>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleConfirmLocation}
+            style={{ width: "100%" }}
+          >
+            Confirm Location
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
 
 export default PlacePickerMap;
+
+

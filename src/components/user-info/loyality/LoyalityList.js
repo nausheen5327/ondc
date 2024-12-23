@@ -71,7 +71,7 @@ const LoyalityList = () => {
     return (
         <>
             <Meta
-                title={` My Loyalty-${global?.business_name}`}
+                title={` My Loyalty-ONDC`}
                 description=""
                 keywords=""
             />

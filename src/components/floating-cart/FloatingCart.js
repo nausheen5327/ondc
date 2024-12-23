@@ -616,7 +616,7 @@ const FloatingCart = (props) => {
         />
       )}
 
-      <RTL direction={languageDirection}>
+      {/* <RTL direction={languageDirection}> */}
         <Drawer
           anchor="right"
           open={sideDrawerOpen}
@@ -787,7 +787,7 @@ const FloatingCart = (props) => {
             </>
           )}
         </Drawer>
-      </RTL>
+      {/* </RTL> */}
     </>
   )
   //}

@@ -49,7 +49,7 @@ const WishlistPage = () => {
         <>
             {' '}
             <Meta
-                title={` My Wish List-${global?.business_name}`}
+                title={` My Wish List-ONDC`}
                 description=""
                 keywords=""
             />

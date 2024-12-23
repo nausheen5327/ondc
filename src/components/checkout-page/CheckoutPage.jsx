@@ -204,12 +204,7 @@ const CheckoutPage = () => {
 
 
    
-    const { token } = useSelector((state) => state.userToken)
-    const { guestUserInfo } = useSelector((state) => state.guestUserInfo)
-    const [subscriptionStates, subscriptionDispatch] = useReducer(
-        subscriptionReducer,
-        subscriptionsInitialState
-    )
+   
 
     //additional information
     const [additionalInformationStates, additionalInformationDispatch] =

@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux'
 import CustomContainer from '../../components/container'
 import HomeGuard from "../../components/home-guard/HomeGuard";
 import { getServerSideProps } from '../index'
+import GiftCard from '@/components/giftcard/GiftCard'
 const CheckoutLayout = ({ configdata }) => {
     const { cartList } = useSelector((state) => state.cart)
     const { token } = useSelector((state) => state.userToken)
@@ -21,19 +22,17 @@ const CheckoutLayout = ({ configdata }) => {
 
     return (
         <>
-        <HomeGuard from="checkout" page={page}>
             <CssBaseline />
             <CustomContainer>
                 <CustomStackFullWidth sx={{ marginTop: '5rem' }}>
                     <Meta
-                        title={`Checkout on ONDC`}
+                        title={`Giftcards on ONDC`}
                         description=""
                         keywords=""
                     />
-                    <CheckOut />
+                    <GiftCard/>
                 </CustomStackFullWidth>
             </CustomContainer>
-        </HomeGuard>
         </>
     )
 }

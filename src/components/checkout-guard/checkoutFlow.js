@@ -104,6 +104,7 @@ export const useCheckoutFlow = () => {
   }
 
   const onFetchQuote = (message_ids) => {
+    console.log('inside fetch quote 1...',message_ids);
     dispatch(setIsLoading(true))
     eventTimeOutRef.current = []
 
@@ -111,12 +112,15 @@ export const useCheckoutFlow = () => {
     const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
     message_ids.forEach((id) => {
+      console.log('respective message ids are ',id);
       let es = new EventSourcePolyfill(
         `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`,
         { headers }
       )
 
+      console.log('inside fetch quote es is...',es);
       es.addEventListener("on_select", (e) => {
+        console.log('on select triggered',e);
         const { messageId } = JSON.parse(e.data)
         onGetQuote(messageId)
       })
@@ -195,14 +199,15 @@ export const useCheckoutFlow = () => {
 
       dispatch(setIsLoading(true))
       const data = await postCall("/clientApis/v2/select", [selectPayload])
-      console.log('inside hook ',  data )
+      console.log('inside get quote 1...',data);
 
       dispatch(setIsLoading(false))
 
       const isNACK = data.find(item => item?.error && item?.message?.ack?.status === "NACK")
-      console.log('inside hook ',  isNACK )
+      console.log('inside get quote 2...',isNACK);
 
       if (isNACK) {
+        console.log('NACK in get quote');
         CustomToaster('error', `${isNACK.error.message}`)
       } else {
         onFetchQuote(data.map(txn => txn.context?.message_id))
@@ -216,10 +221,10 @@ export const useCheckoutFlow = () => {
   const handleCheckoutFlow = async (cartItems, location) => {
     const token = getValueFromCookie("token");
 
-    if (!token) {
-      dispatch(setAuthModalOpen(true))
-      return
-    }
+    // if (!token) {
+    //   dispatch(setAuthModalOpen(true))
+    //   return
+    // }
     if (cartItems.length > 0) {
       const items = cartItems.map(item => item.item)
       const request_object = constructQouteObject(items)

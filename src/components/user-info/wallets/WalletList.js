@@ -253,7 +253,7 @@ const Wallet = ({ page }) => {
     return (
         <>
             <Meta
-                title={` My Wallet-${global?.business_name}`}
+                title={` My Wallet-ONDC`}
                 description=""
                 keywords=""
             />

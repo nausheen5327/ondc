@@ -61,7 +61,7 @@ const ReferCodePage = () => {
     return (
         <>
             <Meta
-                title={` My Referral -${global?.business_name}`}
+                title={` My Referral -ONDC`}
                 description=""
                 keywords=""
             />

@@ -27,6 +27,8 @@ import { ConfigApi } from '@/hooks/react-query/config/useConfig'
 import { useQuery } from 'react-query'
 import { onSingleErrorResponse } from '@/components/ErrorResponse'
 import { setGlobalSettings } from '@/redux/slices/global'
+import CategoryMenu from './category-navbar.js'
+import { Box, styled } from '@mui/system'
 
 const Navigation = () => {
     // const SecondNavbar = dynamic(() => import('./second-navbar/SecondNavbar'), {
@@ -123,8 +125,50 @@ const Navigation = () => {
     //     }
     // }, [data])
 
+
+    const NavigationWrapper = styled('div')({
+        width: '100%',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 1200,
+      });
+      
+      // Top navigation bar wrapper
+      const TopNavWrapper = styled(Box)({
+        width: '100%',
+        // height: '64px',
+        backgroundColor: '#fff',
+        position: 'relative',
+        zIndex: 1202,
+      });
+      
+      // Second navigation bar wrapper
+      const SecondNavWrapper = styled(Box)(({ theme, isSticky }) => ({
+        width: '100%',
+        // height: '64px',
+        backgroundColor: theme.palette.navbarBg || '#fff',
+        position: 'relative',
+        zIndex: 1201,
+        boxShadow: '0px 5px 15px 0px rgba(0, 0, 0, 0.05)',
+        transition: 'transform 0.3s ease',
+        transform: isSticky ? 'translateY(0)' : 'translateY(-100%)',
+      }));
+      
+      // Category menu wrapper
+      const CategoryMenuWrapper = styled(Box)(({ theme }) => ({
+        width: '100%',
+        backgroundColor: '#1E1E1E',
+        position: 'relative',
+        zIndex: 1200,
+      }));
+      
+   
+
+
     
     return (
+        <NavigationWrapper hasSecondNav={!!userLocation} isSmall={isSmall}>
         <AppBarStyle
             disableGutters={true}
             scrolling={
@@ -133,17 +177,24 @@ const Navigation = () => {
             isSmall={isSmall}
         >
             { (
-                <TopNav  />
+               <TopNavWrapper>
+               <TopNav />
+           </TopNavWrapper>
             )}
-            {
                 <SecondNavbar
                     isSticky={isSticky}
                     
                     location={userLocation}
                 />
-            }
+                {/* {isSmall && (
+                    <CategoryMenuWrapper>
+                        <CategoryMenu />
+                    </CategoryMenuWrapper>
+                )}             */}
         </AppBarStyle>
+        </NavigationWrapper>
     )
 }
+
 
 export default Navigation

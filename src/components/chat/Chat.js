@@ -262,7 +262,7 @@ const Chat = ({ page }) => {
     return (
         <PushNotificationLayout refetch={refetch} pathName="info">
             <Meta
-                title={` My Inbox-${global?.business_name}`}
+                title={` My Inbox-ONDC`}
                 description=""
                 keywords=""
             />

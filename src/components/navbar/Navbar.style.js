@@ -69,29 +69,54 @@ export const SearchProduct = styled(Paper)(({ theme, borderColor }) => ({
     display: 'flex',
     alignItems: 'center',
 }))
+// export const AppBarStyle = styled(AppBar)(({ theme, scrolling, isSmall }) => ({
+//     background: 'transparent !important',
+//     boxShadow: 'none !important',
+//     top: !scrolling ? "0" : isSmall ? "0" : "-50px",
+//     WebkitAnimation: !isSmall && scrolling ? "fadeInUp 0.4s" : "fadeInDown 0.4s",
+//     animation: !isSmall && scrolling ? "fadeInUp 0.4s" : "fadeInDown 0.4s",
+//     "@keyframes fadeInUp": {
+//         "0%": {
+//             transform: "translateY(30px)",
+//         },
+//         "100%": {
+//             transform: "translateY(0)",
+//         },
+//     },
+//     "@keyframes fadeInDown": {
+//         "0%": {
+//             transform: "translateY(-30px)",
+//         },
+//         "100%": {
+//             transform: "translateY(0)",
+//         },
+//     },
+// }))
 export const AppBarStyle = styled(AppBar)(({ theme, scrolling, isSmall }) => ({
-    background: 'transparent !important',
-    boxShadow: 'none !important',
+    background: '#fff !important', // Changed from transparent to ensure content doesn't show through
+    boxShadow: scrolling ? '0 2px 4px rgba(0,0,0,0.1) !important' : 'none !important',
+    position: 'fixed',
     top: !scrolling ? "0" : isSmall ? "0" : "-50px",
     WebkitAnimation: !isSmall && scrolling ? "fadeInUp 0.4s" : "fadeInDown 0.4s",
     animation: !isSmall && scrolling ? "fadeInUp 0.4s" : "fadeInDown 0.4s",
+    zIndex: 1100, // Ensure it's above other content
     "@keyframes fadeInUp": {
-        "0%": {
-            transform: "translateY(30px)",
-        },
-        "100%": {
-            transform: "translateY(0)",
-        },
+      "0%": {
+        transform: "translateY(30px)",
+      },
+      "100%": {
+        transform: "translateY(0)",
+      },
     },
     "@keyframes fadeInDown": {
-        "0%": {
-            transform: "translateY(-30px)",
-        },
-        "100%": {
-            transform: "translateY(0)",
-        },
+      "0%": {
+        transform: "translateY(-30px)",
+      },
+      "100%": {
+        transform: "translateY(0)",
+      },
     },
-}))
+  }))
 export const NavLinkStyle = styled(Stack)(({ theme, languageDirection }) => ({
     color: `${theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
     marginLeft: `${languageDirection === 'rtl' && '20px'}`,

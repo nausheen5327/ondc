@@ -303,7 +303,6 @@ const FoodDetailModal = ({
           setIsItemAvailableInCart(false);
         }
       }, [cartItems, customization_state]);
-    
       // Helper function to process customization state
 const processCustomizationState = (customizationState, customisationItems) => {
     if (!customizationState || !customisationItems) return [];
@@ -387,6 +386,36 @@ const processCustomizationState = (customizationState, customisationItems) => {
       totalPrice: totalPrice
     };
   };
+
+  const updateCartInLocalStorage = (newItem) => {
+    try {
+      // Get existing items from localStorage
+      const existingItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      
+      // Find if item with same _id exists
+      const existingItemIndex = existingItems.findIndex(
+        item => item._id === newItem._id
+      );
+      
+      if (existingItemIndex !== -1) {
+        // Replace existing item
+        existingItems[existingItemIndex] = {
+          ...existingItems[existingItemIndex],
+          ...newItem
+        };
+      } else {
+        // Add new item to array
+        existingItems.push(newItem);
+      }
+      
+      // Save updated array back to localStorage
+      localStorage.setItem('cartItemsPreAuth', JSON.stringify(existingItems));
+      
+    } catch (error) {
+      console.error('Error updating cart in localStorage:', error);
+    }
+  };
+
   const addToCart = async (navigate = false, isIncrement = true) => {
     setAddToCartLoading(true);
     try {
@@ -460,6 +489,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
             handleCheckoutFlow([res], location)
             return;
         }
+        updateCartInLocalStorage(res);
         CustomToaster('success', "Item added to cart successfully.");
       } else {
         const currentCount = parseInt(cartItem[0].item.quantity.count);
@@ -472,6 +502,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
             return;
         }
           CustomToaster('success', "Item quantity updated in your cart.");
+          updateCartInLocalStorage(res);
         } else {
           CustomToaster('error', "Maximum available quantity already in cart.");
         }
@@ -499,7 +530,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
           );
           setProductPayload(data);
           setModalData([data])
-          getCartItems();
+        //   getCartItems();
         } catch (error) {
             CustomToaster('error',error)
         } finally {

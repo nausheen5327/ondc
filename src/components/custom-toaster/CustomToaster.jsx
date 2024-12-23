@@ -165,7 +165,7 @@ export const CustomToaster = (
         }
     }
     toast.custom(
-        <CustomToast
+        title && <CustomToast
             status={status}
             icon={toasterIcon}
             title={title}

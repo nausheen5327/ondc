@@ -40,7 +40,7 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
       const storedLocation = localStorage.getItem('location')
       const storedUser = localStorage.getItem('user')
 
-      const storedCartItems = localStorage.getItem('cartItems')
+      const storedCartItems = localStorage.getItem('cartItemsPreAuth')
       
       console.log("Stored data present:", {
           hasStoredLocation: !!storedLocation,
