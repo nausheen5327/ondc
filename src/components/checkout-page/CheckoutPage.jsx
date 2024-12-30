@@ -54,7 +54,7 @@ import {
 } from '@/redux/slices/OfflinePayment'
 import { setCartList, setWalletAmount } from '@/redux/slices/cart'
 import { setUser } from '@/redux/slices/customer'
-import { setAuthModalOpen, setIsLoading, setZoneData } from '@/redux/slices/global'
+import { setZoneData } from '@/redux/slices/global'
 import {
     CustomPaperBigCard,
     CustomStackFullWidth,
@@ -182,8 +182,8 @@ const CheckoutPage = () => {
     const { method } = router.query
     const [offlineCheck, setOfflineCheck] = useState(false)
     const [openAddressModal, setOpenAddressModal] = useState(false);
- 
-   
+
+
     const handleSelectAddress = () => {
       setOpenAddressModal(true);
   };
@@ -204,7 +204,12 @@ const CheckoutPage = () => {
 
 
    
-   
+    const { token } = useSelector((state) => state.userToken)
+    const { guestUserInfo } = useSelector((state) => state.guestUserInfo)
+    const [subscriptionStates, subscriptionDispatch] = useReducer(
+        subscriptionReducer,
+        subscriptionsInitialState
+    )
 
     //additional information
     const [additionalInformationStates, additionalInformationDispatch] =
@@ -507,7 +512,6 @@ useEffect(() => {
 const handleOrderSuccess = () => {
   if (!isUnmounted.current) {
     // Clean up event listeners and refs first
-    dispatch(setIsLoading(true));
     eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
       if (eventSource) {
         eventSource.close()
@@ -519,8 +523,7 @@ const handleOrderSuccess = () => {
     
     // Clear cart and navigate
     dispatch(setCartList([]))
-    dispatch(setIsLoading(false));
-    router.replace(`/info?page=order&orderId=${paymentEventData[0]?.message?.order?.id}`)
+    router.push(`/info?page=order&orderId=${paymentEventData[0]?.message?.order?.id}`)
   }
 };
 console.log("payment event data",paymentEventData);
@@ -1091,11 +1094,9 @@ useEffect(() => {
 const getCartItems = async () => {
   try {
   //   setLoading(true);
-  dispatch(setIsLoading(true));
   const user = JSON.parse(getValueFromCookie("user"));
     const url = `/clientApis/v2/cart/${user.id}`;
     const res = await getCall(url);
-    dispatch(setIsLoading(false));
     console.log("cart...",res);
     dispatch(setCartList(res));
     //add in cart 
@@ -1106,10 +1107,8 @@ const getCartItems = async () => {
   //   }
   } catch (error) {
     console.log("Error fetching cart items:", error);
-    dispatch(setIsLoading(false));
   //   setLoading(false);
   } finally {
-    dispatch(setIsLoading(false));
   //   setLoading(false);
   }
 };
@@ -1118,11 +1117,9 @@ const dispatchError = (message)=>{
 }
 const onConfirmOrder = async (message_id) => {
   try {
-    dispatch(setIsLoading(true));
     const data = await cancellablePromise(
       getCall(`clientApis/v2/on_confirm_order?messageIds=${message_id}`)
     );
-    dispatch(setIsLoading(false));
     responseRef.current = [...responseRef.current, data[0]];
     setPaymentEventData((paymentEventData) => [...paymentEventData, data[0]]);
     dispatch(setPayment_Response(data[0]));
@@ -1131,8 +1128,6 @@ const onConfirmOrder = async (message_id) => {
   } catch (err) {
     dispatchError(err?.response?.data?.error?.message);
     setConfirmOrderLoading(false);
-    dispatch(setIsLoading(false));
-
   }
   // eslint-disable-next-line
 };
@@ -1148,11 +1143,6 @@ function onConfirm(message_id) {
   eventTimeOutRef.current = []
 
   const token = getValueFromCookie("token");
-  useEffect(()=>{
-    if (!token) {
-      dispatch(setAuthModalOpen(true))
-    }
-  },[token])
   let header = {
     headers: {
       ...(token && {
@@ -1246,12 +1236,10 @@ const verifyPayment = async (items, method) => {
     };
 
     console.log("Verify api payload: ", payloadData);
-    dispatch(setIsLoading(true));
+
     const data = await cancellablePromise(
       postCall("clientApis/v2/razorpay/verify/process", payloadData)
     );
-    dispatch(setIsLoading(false));
-
     // Error handling workflow eg, NACK
     // const isNACK = data.find(
     //   (item) => item.error && item.message.ack.status === "NACK"
@@ -1260,22 +1248,18 @@ const verifyPayment = async (items, method) => {
     if (isNACK) {
       dispatchError(isNACK.error.message);
       setConfirmOrderLoading(false);
-      dispatch(setIsLoading(false));
     } else {
-      dispatch(setIsLoading(true));
       onConfirm(
         data?.map((txn) => {
           const { context } = txn;
           return context?.message_id;
         })
       );
-      dispatch(setIsLoading(false));
     }
   } catch (err) {
     console.log(err);
     dispatchError(err?.response?.data?.error?.message);
     setConfirmOrderLoading(false);
-    dispatch(setIsLoading(false));
   }
   // eslint-disable-next-line
 };
@@ -1346,15 +1330,12 @@ const verifyPayment = async (items, method) => {
     const getKeys = async () => {
         const url = "/clientApis/v2/razorpay/razorPay/keys";
         try {
-          dispatch(setIsLoading(true));
           const res = await cancellablePromise(getCall(url));
           setPaymentKey(res.keyId);
-          dispatch(setIsLoading(false));
           return res.keyId;
         } catch (error) {
             CustomToaster('error',error);
           console.log("keys error: ", error);
-          dispatch(setIsLoading(false));
         }
       };
 
@@ -1448,16 +1429,12 @@ const verifyPayment = async (items, method) => {
           amount,
         };
         try {
-          dispatch(setIsLoading(true));
           const res = await cancellablePromise(postCall(url, data));
           setPaymentParams(res.data);
-          dispatch(setIsLoading(false));
-
           return res.data;
         } catch (error) {
             CustomToaster('error', error)
           console.log("create payment error: ", error);
-          dispatch(setIsLoading(false));
         }
       };
       console.log('payment params',paymentParams)
@@ -1518,12 +1495,9 @@ const verifyPayment = async (items, method) => {
               },
             },
           ];
-          dispatch(setIsLoading(true));
           const data = await cancellablePromise(
             postCall("clientApis/v2/confirm_order", queryParams)
           );
-          dispatch(setIsLoading(false));
-
           //Error handling workflow eg, NACK
           // const isNACK = data.find(
           //   (item) => item.error && item.message.ack.status === "NACK"
@@ -1532,21 +1506,17 @@ const verifyPayment = async (items, method) => {
           if (isNACK) {
             dispatchError(isNACK.error.message);
             setConfirmOrderLoading(false);
-            dispatch(setIsLoading(false));
           } else {
-            dispatch(setIsLoading(true));
             onConfirm(
               data?.map((txn) => {
                 const { context } = txn;
                 return context?.message_id;
               })
             );
-            dispatch(setIsLoading(false));
           }
         } catch (err) {
           dispatchError(err?.response?.data?.error?.message);
           setConfirmOrderLoading(false);
-          dispatch(setIsLoading(false));
         }
         // eslint-disable-next-line
       };
@@ -1592,10 +1562,8 @@ const verifyPayment = async (items, method) => {
         // AddCookie("checkout_details", JSON.stringify(checkoutObj));
         localStorage.setItem("checkout_details", JSON.stringify(checkoutObj));
         // handleNext();
-        dispatch(setIsLoading(true));
         await getKeys();
         await createPayment();
-        dispatch(setIsLoading(false));
         handleProceedToPay();
       };
       const setUpdateCartItemsDataOnInitialize=(data) => {
@@ -1606,12 +1574,11 @@ const verifyPayment = async (items, method) => {
         // setInitializeOrderLoading(true);
         console.log("bhai inside oninitialize order");
         try {
-          dispatch(setIsLoading(true));
           localStorage.setItem("selectedItems", JSON.stringify(updatedCartItems));
           const data = await cancellablePromise(getCall(`/clientApis/v2/on_initialize_order?messageIds=${message_id}`));
           responseRef.current = [...responseRef.current, data[0]];
           setEventData((eventData) => [...eventData, data[0]]);
-          dispatch(setIsLoading(false));
+    
           let oldData = updatedCartItems;
           oldData[0].message.quote.quote = data[0].message.order.quote;
           oldData[0].message.quote.payment = data[0].message.order.payment;
@@ -1620,7 +1587,6 @@ const verifyPayment = async (items, method) => {
           handleSuccess();
         } catch (err) {
           CustomToaster("error", err);
-          dispatch(setIsLoading(false));
         //   setInitializeOrderLoading(false);
         //   updateInitLoading(false);
         }
@@ -1700,8 +1666,7 @@ const verifyPayment = async (items, method) => {
         let fulfillments = updatedCartItems[0]?.message?.quote?.fulfillments
         responseRef.current = [];
         // setInitializeOrderLoading(true);
-        try {  
-          dispatch(setIsLoading(true)); 
+        try {   
           const data = await cancellablePromise(
             postCall(
               "/clientApis/v2/initialize_order",
@@ -1761,12 +1726,10 @@ const verifyPayment = async (items, method) => {
               })
             )
           );
-          dispatch(setIsLoading(false));
           //Error handling workflow eg, NACK
           const isNACK = data.find((item) => item.error && item.message.ack.status === "NACK");
           if (isNACK) {
             CustomToaster('error',isNACK.error.message)
-            dispatch(setIsLoading(false));
             // setInitializeOrderLoading(false);
             // updateInitLoading(false);
           } else {
@@ -1792,7 +1755,6 @@ const verifyPayment = async (items, method) => {
         } catch (err) {
           console.log(err);
           CustomToaster('error',err)
-          dispatch(setIsLoading(false));
         //   setInitializeOrderLoading(false);
         //   updateInitLoading(false);
         }
@@ -1849,8 +1811,8 @@ const verifyPayment = async (items, method) => {
                             setOrderType={setOrderType}
                             orderType={orderType}
                             setAddress={setAddress}
-                            handleSelectAddress={()=>setOpenAddressModal(true)}
-                            handleCloseAddress={()=>handleCloseAddress(false)}
+                            handleSelectAddress={handleSelectAddress}
+                            handleCloseAddress={handleCloseAddress}
                             address={address}
                             page={page}
                             setPaymenMethod={setPaymenMethod}
@@ -1913,7 +1875,76 @@ const verifyPayment = async (items, method) => {
                                 global={global}
                             />
                         </SimpleBar>
-                        
+                        <Stack>
+                            
+                                    <Box mb={1}>
+                                        <Cutlery
+                                            isChecked={cutlery}
+                                            handleChange={handleCutlery}
+                                        />
+                                    </Box>
+                                
+                            {orderType !== 'take_away' && (
+                                <Box mb={1}>
+                                    <ItemSelectWithChip
+                                        title="Add More Delivery Instruction"
+                                        data={deliveryInstructions}
+                                        handleChange={
+                                            handleDeliveryInstructionNote
+                                        }
+                                    />
+                                </Box>
+                            )}
+
+                            
+                                      <Stack
+                                          direction="row"
+                                          justifyContent="space-between"
+                                          alignItems="center"
+                                          boxShadow={theme.shadows2[0]}
+                                          borderRadius="8px"
+                                          minHeight="50px"
+                                          py={0.5}
+                                          px={2}
+                                      >
+                                          <FormControlLabel
+                                              onChange={(e) =>
+                                                  handleExtraPackaging(e)
+                                              }
+                                              control={<Checkbox />}
+                                              label={
+                                                  <Typography
+                                                      fontWeight="700"
+                                                      fontSize="14px"
+                                                      color={
+                                                          theme.palette.primary
+                                                              .main
+                                                      }
+                                                  >
+                                                      {t(
+                                                          'Need Extra Packaging'
+                                                      )}
+                                                  </Typography>
+                                              }
+                                          />
+                                          <Typography
+                                              component="span"
+                                              m="0"
+                                              fontWeight="700"
+                                              fontSize="14px"
+                                              mt="6px"
+                                          >
+                                              {/* {getAmount(
+                                                  restaurantData.data
+                                                      .extra_packaging_amount,
+                                                  currencySymbolDirection,
+                                                  currencySymbol,
+                                                  digitAfterDecimalPoint
+                                              )} */}
+                                          </Typography>
+                                      </Stack>
+                                 
+                        </Stack>
 
                         <OrderCalculation
                             cartList={cartList

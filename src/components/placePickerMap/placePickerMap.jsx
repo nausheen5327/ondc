@@ -374,6 +374,7 @@ const PlacePickerMap = (props) => {
             boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             zIndex: 1000,
             textAlign: "center",
+            color: "black"
           }}
         >
           <div style={{ marginBottom: "8px", fontSize: "14px" }}>

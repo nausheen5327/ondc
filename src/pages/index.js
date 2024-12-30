@@ -149,7 +149,7 @@ const getCartItems = async () => {
           router.replace('/home')
         }
       }
-  }, [token, userData, locationData])
+  }, [])
 
   // Render validation
   useEffect(() => {

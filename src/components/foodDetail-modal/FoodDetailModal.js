@@ -394,7 +394,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
       
       // Find if item with same _id exists
       const existingItemIndex = existingItems.findIndex(
-        item => item._id === newItem._id
+        item => item._id === newItem?._id
       );
       
       if (existingItemIndex !== -1) {

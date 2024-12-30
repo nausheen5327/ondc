@@ -103,42 +103,110 @@ export const useCheckoutFlow = () => {
     }
   }
 
+  // const onFetchQuote = (message_ids) => {
+  //   console.log('inside fetch quote 1...',message_ids);
+  //   dispatch(setIsLoading(true))
+  //   eventTimeOutRef.current = []
+
+  //   const token = getValueFromCookie("token")
+  //   const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+  //   message_ids.forEach((id) => {
+  //     console.log('respective message ids are ',id);
+  //     let es = new EventSourcePolyfill(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`,
+  //       { headers }
+  //     )
+
+  //     console.log('inside fetch quote es is...',es);
+  //     es.addEventListener("on_select", (e) => {
+  //       console.log('on select triggered',e);
+  //       const { messageId } = JSON.parse(e.data)
+  //       onGetQuote(messageId)
+  //     })
+
+  //     const timer = setTimeout(() => {
+  //       eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
+  //         eventSource.close()
+  //         clearTimeout(timer)
+  //       })
+
+  //       if (responseRef.current.length <= 0) {
+  //         dispatch(setIsLoading(false))
+  //         CustomToaster('error', 'Cannot fetch details for this product')
+  //         router.replace("/")
+  //         return
+  //       }
+  //     }, 20000)
+
+  //     dispatch(setIsLoading(false))
+  //     eventTimeOutRef.current.push({ eventSource: es, timer })
+  //   })
+  // }
   const onFetchQuote = (message_ids) => {
-    console.log('inside fetch quote 1...',message_ids);
+    console.log('inside fetch quote 1...', message_ids);
     dispatch(setIsLoading(true))
     eventTimeOutRef.current = []
-
-    const token = getValueFromCookie("token")
-    const headers = token ? { Authorization: `Bearer ${token}` } : {}
-
+  
     message_ids.forEach((id) => {
-      console.log('respective message ids are ',id);
-      let es = new EventSourcePolyfill(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`,
-        { headers }
-      )
-
-      console.log('inside fetch quote es is...',es);
-      es.addEventListener("on_select", (e) => {
-        console.log('on select triggered',e);
-        const { messageId } = JSON.parse(e.data)
-        onGetQuote(messageId)
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`
+      
+      let es = new EventSourcePolyfill(url, {
+        // Add these options to help with connection
+        reconnectInterval: 3000,
+        heartbeatTimeout: 30000,
       })
-
+  
+      // Monitor connection state changes
+      es.onopen = () => {
+        console.log('Connection opened for messageId:', id)
+      }
+  
+      es.onerror = (error) => {
+        console.error('EventSource error for messageId:', id)
+        console.error('Connection state:', es.readyState)
+        // 0 = connecting, 1 = open, 2 = closed
+        
+        if (es.readyState === 2) {
+          // Connection is closed, attempt to reconnect
+          console.log('Attempting to reconnect...')
+          es.close() // Clean up existing connection
+          
+          // Create new connection after a short delay
+          setTimeout(() => {
+            es = new EventSourcePolyfill(url, {
+              reconnectInterval: 3000,
+              heartbeatTimeout: 30000,
+            })
+          }, 1000)
+        }
+      }
+  
+      es.addEventListener("on_select", (e) => {
+        console.log('on select triggered', e);
+        if (e && e.data) {
+          try {
+            const { messageId } = JSON.parse(e.data)
+            onGetQuote(messageId)
+          } catch (error) {
+            console.error('Error parsing event data:', error)
+          }
+        }
+      })
+  
       const timer = setTimeout(() => {
-        eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
-          eventSource.close()
-          clearTimeout(timer)
-        })
-
+        if (es && es.readyState !== 2) { // Only close if not already closed
+          es.close()
+        }
+        clearTimeout(timer)
+  
         if (responseRef.current.length <= 0) {
           dispatch(setIsLoading(false))
           CustomToaster('error', 'Cannot fetch details for this product')
           router.replace("/")
-          return
         }
       }, 20000)
-
+  
       dispatch(setIsLoading(false))
       eventTimeOutRef.current.push({ eventSource: es, timer })
     })

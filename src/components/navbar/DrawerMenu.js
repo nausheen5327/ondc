@@ -151,35 +151,30 @@ const DrawerMenu = ({  cartListRefetch }) => {
     )
    
 
-    const { data, refetch, isRefetching } = useGetCuisines()
-    useEffect(() => {
-        if (cuisines?.length === 0) {
-            refetch()
-        }
-    }, [])
+   
 
-    useEffect(() => {
-        if (categoryData) {
-            dispatch(setFeaturedCategories(categoryData?.data))
-        }
-        if (data) {
-            dispatch(setCuisines(data?.Cuisines))
-        }
-    }, [categoryData, data])
+    // useEffect(() => {
+    //     if (categoryData) {
+    //         dispatch(setFeaturedCategories(categoryData?.data))
+    //     }
+    //     if (data) {
+    //         dispatch(setCuisines(data?.Cuisines))
+    //     }
+    // }, [categoryData])
     const collapsableMenu = {
         cat: {
             text: 'Categories',
-            items: featuredCategories?.map((item) => item),
+            items: [],
             path: '/category',
         },
         res: {
             text: 'Restaurants',
-            items: popularRestuarants?.data?.map((i) => i),
+            items: [],
             path: '/restaurant',
         },
         cuisine: {
             text: 'Cuisines',
-            items: cuisines?.map((i) => i),
+            items: [],
             path: '/cuisines',
         },
         profile: {
