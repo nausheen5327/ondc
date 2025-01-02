@@ -59,6 +59,7 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { AddCookie } from '@/utils/cookies'
 import { setAuthModalOpen } from '@/redux/slices/global'
 import { useAuthData } from '../authSuccessHandler'
+import { postCall } from '@/api/MainApi'
 const auth = getAuth();
 const provider = new GoogleAuthProvider().setCustomParameters({
     prompt: 'select_account'
@@ -260,7 +261,7 @@ const SignInPage = ({
         }
     }
 
-    const formSubmitHandler = (values) => {
+    const formSubmitHandler = async(values) => {
         const numberOrEmail = checkInput(values?.email_or_phone)
         console.log("hello...",numberOrEmail, values)
         let newValues = {}
@@ -277,11 +278,13 @@ const SignInPage = ({
             }
         }
         setLoginValue(newValues)
-        signInWithEmailAndPassword(auth, values?.email_or_phone, values?.password)
-      .then((result) => {
-        console.log("result");
+        const data = await postCall('/auth/start',{
+            p_n: values?.phone
+          })
+        console.log("response from api call is...", data);
+        //on success open otp ui       
+        setOpenOtpModal(true)
 
-      }).catch((error) => {}).finally(()=>{})
     }
 
     const handleOnChange = (value) => {
@@ -329,40 +332,18 @@ const SignInPage = ({
         }
     }
 
-    const otpFormSubmitHandler = (values) => {
-        if (global?.firebase_otp_verification === 1) {
-            const temValue = {
-                session_info: verificationId,
-                phone: values.phone,
-                otp: values.reset_token,
-                login_type: 'otp',
-                guest_id: getGuestId(),
-            }
-            fireBaseOtpMutation(temValue, {
-                onSuccess: (res) => {
-                    if (res) {
-                        handleLoginInfo(res, values)
-                    }
-                },
-                onError: onErrorResponse,
-            })
-        } else {
-            let tempValues = {
-                phone: values.phone,
-                otp: values.reset_token,
-                login_type: otpData?.login_type,
-                verification_type: otpData?.verification_type,
-                guest_id: getGuestId(),
-            }
-            const onSuccessHandler = (res) => {
-                if (res) {
-                    handleLoginInfo(res, values)
-                }
-            }
-            otpVerifyMutate(tempValues, {
-                onSuccess: onSuccessHandler,
-                onError: onSingleErrorResponse,
-            })
+    const otpFormSubmitHandler = async(values) => {
+        console.log(values);
+        
+        try {
+            const data = await postCall('/auth/validate',{
+                p_n: values?.phone,
+                otp: values?.otp
+              })
+              handleLoginInfo(res, values)
+
+        } catch (error) {
+            CustomToaster('error','Invalid OTP')
         }
     }
 
@@ -618,19 +599,15 @@ const SignInPage = ({
                                 width: { xs: '100%', sm: '100%', md: 0 },
                             }}
                         >
-                            <ManualLogin
-                                loginFormik={loginFormik}
-                                showPassword={showPassword}
-                                setShowPassword={setShowPassword}
-                                global={global}
-                                handleOnChange={handleOnChange}
-                                        rememberMeHandleChange={rememberMeHandleChange}
-                                handleClick={handleClick}
-                                gotoForgotPassword={gotoForgotPassword}
-                                setModalFor={setModalFor}
-                                setForWidth={setForWidth}
-                                fireBaseId={fireBaseId}
-                            />
+                            <OtpLogin
+                        otpHandleChange={otpHandleChange}
+                        otpLoginFormik={otpLoginFormik}
+                        global={global}
+                        handleClick={handleClick}
+                        rememberMeHandleChange={rememberMeHandleChange}
+                        fireBaseId={fireBaseId}
+                    />
+                
                         </Stack>
                         <Line type={'signIn'}/>
                         <Stack
@@ -652,7 +629,7 @@ const SignInPage = ({
                                 signInWithGoogle={signInWithGoogle}
                                 all
                             />
-                            <CustomGoogleButton
+                            {/* <CustomGoogleButton
                                 direction="row"
                                 spacing={1}
                                 onClick={selectedOtp}
@@ -668,7 +645,7 @@ const SignInPage = ({
                                 <Typography fontSize="14px" fontWeight="600">
                                     {t('OTP Sign in')}
                                 </Typography>
-                            </CustomGoogleButton>
+                            </CustomGoogleButton> */}
                             <CustomStackFullWidth
                                 alignItems="center"
                                 spacing={0.5}

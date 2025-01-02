@@ -20,9 +20,9 @@ import OutLineGroupButtons from './OutLineGroupButtons'
 import CustomEmptyResult from '../empty-view/CustomEmptyResult'
 
 export const buttonsData = [
-    { title: 'Ongoing', value: 'running-orders' },
-    { title: 'Previous', value: 'list' },
-    { title: 'Subscription', value: 'order-subscription-list' },
+    { title: 'Ongoing', value: 'Created,Accepted,In-progress' },
+    { title: 'Completed', value: 'Completed' },
+    { title: 'Cancelled', value: 'Cancelled' },
 ]
 import Meta from '../Meta'
 import { noOrderFound } from '../../utils/LocalImages'
@@ -40,10 +40,19 @@ const OrderHistoryPage = () => {
     const [offset, setOffset] = useState(1)
     const isXSmall = useMediaQuery(theme.breakpoints.down('sm'))
     const { isLoading, data, isError, error, refetch } = useQuery(
-        [orderType === 'orders-list', orderType, limit, offset],
+        [ orderType, limit, offset],
         () => OrderApi.orderHistory(orderType, limit, offset),
         {
             onError: onSingleErrorResponse,
+            select: (data) => {
+                // Transform ONDC API response to match existing structure
+                return {
+                    data: {
+                        orders: data.orders || [], // Direct mapping from new format
+                        total_size: data.totalCount // Use totalCount from new format
+                    }
+                }
+            }
         }
     )
     const handleOrderType = (value) => {
@@ -51,10 +60,9 @@ const OrderHistoryPage = () => {
         dispatch(setOrderType(value))
     }
     useEffect(() => {
-        dispatch(setOrderType(orderType ? orderType : 'running-orders'))
+        dispatch(setOrderType(orderType ? orderType : 'Created,Accepted,In-progress'))
         orderType && refetch()
     }, [])
-
     return (
         <>
             <Meta

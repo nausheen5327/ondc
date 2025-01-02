@@ -17,10 +17,9 @@ export const RTL = (props) => {
     useEffect(() => {
         document.dir = direction
     }, [direction])
-
-    // if (direction === 'rtl') {
-    //     return <CacheProvider value={styleCache()}>{children}</CacheProvider>
-    // }
+    if (direction === 'rtl') {
+        return <CacheProvider value={styleCache()}>{children}</CacheProvider>
+    }
 
     return <>{children}</>
 }

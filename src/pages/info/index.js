@@ -9,7 +9,7 @@ import jwt from "base-64";
 import HomeGuard from "../../components/home-guard/HomeGuard";
 const index = () => {
     const router = useRouter()
-    const { page, orderId, token } = router.query
+    const { page, orderId, token, ticketId } = router.query
     const [attributeId, setAttributeId] = useState('')
 
   
@@ -19,7 +19,7 @@ const index = () => {
         {/* <HomeGuard> */}
             <CssBaseline />
             <CustomContainer>
-                    {page && <UserInfo page={page} orderId={orderId ?? attributeId} setAttributeId={setAttributeId}/>}
+                    {page && <UserInfo page={page} orderId={orderId ?? attributeId} setAttributeId={setAttributeId} ticketId={ticketId}/>}
             </CustomContainer>
         {/* </HomeGuard> */}
         </div>

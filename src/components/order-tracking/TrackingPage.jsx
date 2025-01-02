@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Box,
     Grid,
@@ -11,6 +11,7 @@ import {
     IconButton
 } from "@mui/material";
 import { CustomStepperStyled } from "./CustomStepper";
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import {
     OrderDetailBox,
     HeadingBox,
@@ -32,14 +33,19 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { RTL } from "../RTL/RTL";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import { useGeolocated } from "react-geolocated";
+import { postCall } from "@/api/MainApi";
+import { CustomToaster } from "../custom-toaster/CustomToaster";
+import { getValueFromCookie } from "@/utils/cookies";
+import { useRouter } from "next/router";
 
-const TrackingPage = ({ data }) => {
+const TrackingPage = ({OrderData}) => {
     const [actStep, setActStep] = useState(1);
     const [rerenderMap, setRerenderMap] = useState(false);
     const { t } = useTranslation();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
+    const [trakingDetails, setTrakingDetails] = useState(null);
+    // const [OrderData, setOrderData] = useState(null);
     // ONDC Status mapping
     const orderStates = {
         "Created": 1,
@@ -53,11 +59,11 @@ const TrackingPage = ({ data }) => {
     const steps = [
         {
             label: "Order placed",
-            time: data?.order?.createdAt
+            time: OrderData?.order?.createdAt
         },
         {
             label: "Order Confirmed",
-            time: data?.order?.fulfillments[0]?.start?.time?.range?.start
+            time: OrderData?.order?.fulfillments[0]?.start?.time?.range?.start
         },
         {
             label: "Preparing Order",
@@ -69,24 +75,27 @@ const TrackingPage = ({ data }) => {
         },
         {
             label: "Delivered",
-            time: data?.order?.fulfillments[0]?.end?.time?.range?.end
+            time: OrderData?.order?.fulfillments[0]?.end?.time?.range?.end
         }
     ];
 
     useEffect(() => {
         // Set active step based on order state
-        const currentState = data?.order?.state || "Created";
+        const currentState = OrderData?.order?.state || "Created";
         setActStep(orderStates[currentState] || 1);
-    }, [data]);
+    }, [OrderData]);
 
     const [userLocation, setUserLocation] = useState({
-        lat: "",
-        lng: "",
+        lat: "28.77",
+        lng: "77.01",
     });
-
+        const [resLocation, setResLocation] = useState({
+            lat: "28.45",
+            lng: "77.99",
+        });
     useEffect(() => {
         // Extract coordinates from fulfillment end location
-        const deliveryLocation = data?.order?.fulfillments[0]?.end?.location;
+        const deliveryLocation = OrderData?.order?.fulfillments[0]?.end?.location;
         if (deliveryLocation?.gps) {
             const [lat, lng] = deliveryLocation.gps.split(",").map(coord => parseFloat(coord.trim()));
             setUserLocation({
@@ -94,13 +103,9 @@ const TrackingPage = ({ data }) => {
                 lng
             });
         }
-    }, [data]);
+    }, [OrderData]);
 
-    // Extract restaurant coordinates
-    const restaurantLocation = data?.order?.fulfillments[0]?.start?.location;
-    const [resLat, resLong] = restaurantLocation?.gps
-        ? restaurantLocation.gps.split(",").map(coord => parseFloat(coord.trim()))
-        : [0, 0];
+   
 
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
@@ -128,6 +133,170 @@ const TrackingPage = ({ data }) => {
         }
     }, []);
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const [trackOrderLoading, setTrackOrderLoading] = useState(false);
+  const trackOrderRef = useRef(null);
+  const trackEventSourceResponseRef = useRef(null);
+    const eventTimeOutRef = useRef([]);
+    const router = useRouter();
+    const { orderId, phone, isTrackOrder } = router.query;
+
+// const getItemDetails = async () => {
+//     try {
+//       const url = `/clientApis/v2/orders/${orderId}`;
+//       const res = await getCall(url);
+//       setOrderData(res[0]);
+//       await getIssue(res[0]?.parentOrderId);
+//     } catch (error) {
+//       console.log("Error fetching item:", error);
+//     }
+//   };
+
+
+    async function handleFetchTrackOrderDetails() {
+        trackEventSourceResponseRef.current = [];
+        setTrackOrderLoading(true);
+        const transaction_id = OrderData?.transactionId;
+        const bpp_id = OrderData?.bppId;
+        const order_id = OrderData?.id;
+        try {
+          const data = await 
+            postCall("/clientApis/v2/track", [
+              {
+                context: {
+                  transaction_id,
+                  bpp_id,
+                },
+                message: {
+                  order_id,
+                },
+              },
+            ]);
+          fetchTrackingDataThroughEvents(data[0]?.context?.message_id);
+        } catch (err) {
+          setTrackOrderLoading(false);
+          CustomToaster('error',err?.message);
+        }
+      }
+
+
+       // use this function to fetch tracking info through events
+  function fetchTrackingDataThroughEvents(message_id) {
+    const token = getValueFromCookie("token");
+    let header = {
+      headers: {
+        ...(token && {
+          Authorization: `Bearer ${token}`,
+        }),
+      },
+    };
+    let es = new EventSourcePolyfill(
+      `${process.env.NEXT_PUBLIC_BASE_URL}clientApis/events?messageId=${message_id}`,
+      header
+    );
+    es.addEventListener("on_track", (e) => {
+      const { messageId } = JSON.parse(e?.data);
+      getTrackOrderDetails(messageId);
+    });
+
+    const timer = setTimeout(() => {
+      es.close();
+      if (trackEventSourceResponseRef.current.length <= 0) {
+        CustomToaster("error",
+          "Cannot proceed with you request now! Please try again"
+        );
+        setTrackOrderLoading(false);
+      }
+    }, 20000);
+
+    eventTimeOutRef.current = [
+      ...eventTimeOutRef.current,
+      {
+        eventSource: es,
+        timer,
+      },
+    ];
+  }
+
+
+  // on track order
+  async function getTrackOrderDetails(message_id) {
+    try {
+      const data = await 
+        getCall(`/clientApis/v2/on_track?messageIds=${message_id}`);
+      setTrackOrderLoading(false);
+      trackEventSourceResponseRef.current = [
+        ...trackEventSourceResponseRef.current,
+        data[0],
+      ];
+      const { message } = data[0];
+      if (message.tracking.status === "active" && message.tracking.url === "") {
+        onUpdateTrakingDetails(null);
+        setTrackOrderLoading(false);
+        CustomToaster("error",
+          "Tracking information is not provided by the provider."
+        );
+        return;
+      } else if (message?.tracking?.url === "") {
+        onUpdateTrakingDetails(null);
+        setTrackOrderLoading(false);
+        CustomToaster("error",
+          "Tracking information not available for this product"
+        );
+        return;
+      } else if (
+        message.tracking.status === "active" &&
+        message?.tracking?.url
+      ) {
+        console.log("message?.tracking?.url=====>", message?.tracking?.url);
+        setTrackOrderLoading(false);
+        trackOrderRef.current.href = message?.tracking?.url;
+        trackOrderRef.current.target = "_blank";
+        trackOrderRef.current.click();
+        onUpdateTrakingDetails(null);
+      } else if (
+        message.tracking.status === "active" &&
+        message?.tracking?.location?.gps
+      ) {
+        onUpdateTrakingDetails(message?.tracking);
+      } else {
+        onUpdateTrakingDetails(null);
+        setTrackOrderLoading(false);
+        CustomToaster("error",
+          "Tracking information is not provided by the provider."
+        );
+        return;
+      }
+    } catch (err) {
+      setTrackOrderLoading(false);
+      CustomToaster("error",err?.message);
+      eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
+        eventSource.close();
+        clearTimeout(timer);
+      });
+    }
+  }
+
+  const onUpdateTrakingDetails=(data)=>{
+        setTrakingDetails(data);
+  }
+ 
+
+  useEffect(()=>{
+     if(OrderData)handleFetchTrackOrderDetails();
+  },[OrderData])
+console.log("order details ",orderId);
+
+//   useEffect(() => {
+//       if (orderId) {
+//         console.log("order id ",orderId)
+//         getItemDetails();
+//       }
+//     }, [orderId]);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     return (
         <RTL direction={languageDirection}>
             <CustomStackFullWidth>
@@ -141,7 +310,7 @@ const TrackingPage = ({ data }) => {
                                             <Step key={index}>
                                                 <StepLabel>
                                                     <Typography>{t(label.label)}</Typography>
-                                                    {data ? (
+                                                    {OrderData ? (
                                                         <Typography 
                                                             fontSize={{ xs: "10px", sm: "12px" }}
                                                             color={theme.palette.neutral[600]}
@@ -162,12 +331,12 @@ const TrackingPage = ({ data }) => {
                         </SimpleBar>
                     </Grid>
 
-                    <Grid item md={12} xs={12} p="1.4rem" sx={{ position: "relative" }}>
+                   {trakingDetails&& <Grid item md={12} xs={12} p="1.4rem" sx={{ position: "relative" }}>
                         <MapComponent
                             key={rerenderMap}
-                            isRestaurant
-                            latitude={resLat}
-                            longitude={resLong}
+                            isRestaurant={true}
+                            latitude={resLocation?.lat}
+                            longitude={resLocation?.lng}
                             userLat={userLocation?.lat}
                             userLong={userLocation?.lng}
                         />
@@ -183,9 +352,9 @@ const TrackingPage = ({ data }) => {
                         >
                             <GpsFixedIcon color="primary" />
                         </IconButton>
-                    </Grid>
+                    </Grid>}
 
-                    {data?.order?.fulfillments?.[0]?.type === "Delivery" && (
+                    {OrderData?.order?.fulfillments?.[0]?.type === "Delivery" && (
                         <Grid item md={12} xs={12} align="center" p="1.4rem">
                             {data ? (
                                 data?.order?.fulfillments?.[0]?.agent ? (

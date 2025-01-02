@@ -80,7 +80,7 @@ import { useCheckoutFlow } from '../checkout-guard/checkoutFlow';
 
 const FloatingCart = (props) => {
   const { handleCheckoutFlow } = useCheckoutFlow()
-  const { sideDrawerOpen, setSideDrawerOpen } = props
+  const {sideDrawerOpen, setSideDrawerOpen } = props
   const theme = useTheme()
   const { t } = useTranslation()
   const [openGuestModal, setOpenGuestModal] = useState(false);
@@ -100,6 +100,9 @@ const FloatingCart = (props) => {
   if (typeof window !== 'undefined') {
     token = localStorage.getItem('token')
   }
+
+ 
+ 
   const { isFilterDrawerOpen } = useSelector(
     (state) => state.searchFilterStore
   )
@@ -210,8 +213,8 @@ const FloatingCart = (props) => {
           try {
             dispatch(setIsLoading(true));
             await putCall(url, payload);
-            dispatch(setIsLoading(false));
-            setLoading(false);
+            // dispatch(setIsLoading(false));
+            // setLoading(false);
             await getCartItems();
           } catch (error) {
             console.error("Error updating cart:", error);
@@ -276,7 +279,6 @@ const FloatingCart = (props) => {
     const url = `/clientApis/v2/cart/${user}/${itemId}`;
     const res = await deleteCall(url);
     dispatch(setIsLoading(false));
-
     getCartItems();
   };
 

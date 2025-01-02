@@ -10,8 +10,11 @@ import Chat from '../../chat/Chat'
 import WishlistPage from '../../wishlist-page/WishlistPage'
 import { RTL } from '../../RTL/RTL'
 import OrderDetail from '../../order-details/OrderDetail'
+import Complaint from '@/components/order-details/Complaints'
+import ComplaintHistory from '@/components/order-details/Complaints'
+import ComplaintDetail from '@/components/order-details/ComplaintDetail'
 
-const ProfileBody = ({ page, orderId }) => {
+const ProfileBody = ({ page, orderId,ticketId }) => {
     let languageDirection = undefined
     if (typeof window !== 'undefined') {
         languageDirection = localStorage.getItem('direction')
@@ -23,6 +26,14 @@ const ProfileBody = ({ page, orderId }) => {
         if ((page === "order" || page === "order?flag=success" || page === "order?flag=cancel") && orderId) {
 
             return (<OrderDetail orderId={orderId} />)
+        }
+        if (page === "ticket" && !ticketId)
+        {
+            return <ComplaintHistory />
+        }
+        if(page === "ticket")
+        {
+            return <ComplaintDetail ticketId={ticketId}/>
         }
         if (
             page === 'wallets' ||

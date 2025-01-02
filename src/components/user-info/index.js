@@ -9,7 +9,7 @@ import 'simplebar-react/dist/simplebar.min.css'
 import ScrollerProvider from '../scroller-provider'
 import { getToken } from '../checkout-page/functions/getGuestUserId'
 
-const UserInfo = ({ page, orderId,setAttributeId }) => {
+const UserInfo = ({ page, orderId,setAttributeId,ticketId }) => {
     const theme = useTheme();
     const token = getToken()
     const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -43,9 +43,9 @@ const UserInfo = ({ page, orderId,setAttributeId }) => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={token ? 9 : 12} mb={isXs ? "20px" : "20px"}>
                     {isXs ? (
-                        <ProfileBody page={page} orderId={orderId} />
+                        <ProfileBody page={page} orderId={orderId} ticketId={ticketId} />
                     ) : (
-                        <ProfileBody page={page} orderId={orderId} />
+                        <ProfileBody page={page} orderId={orderId} ticketId={ticketId} />
                     )
 
                     }

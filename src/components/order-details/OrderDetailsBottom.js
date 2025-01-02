@@ -33,8 +33,7 @@ const OrderDetailsBottom = ({
     useEffect(() => {
         refetch()
     }, [])
-    const { mutate: orderCancelMutation, isLoading: orderLoading } =
-        useMutation('order-cancel', OrderApi.CancelOrder)
+    
     const handleTrackOrderClick = () => {
         //Router.push(`/tracking/${id}`)
         Router.push({
@@ -48,34 +47,13 @@ const OrderDetailsBottom = ({
         })
     }
 
-    const handleOnSuccess = () => {
-        if (!cancelReason) {
-            toast.error('Please select a cancellation reason')
-        } else {
-            const handleSuccess = (response) => {
-                //toast.success(response.data.message)
-                refetchOrderDetails()
-                refetchTrackData()
-                setOpenModal(false)
-            }
-            const formData = {
-                guest_id: getGuestId(),
-                order_id: id,
-                reason: cancelReason,
-                _method: 'put',
-            }
-            orderCancelMutation(formData, {
-                onSuccess: handleSuccess,
-                onError: onErrorResponse,
-            })
-        }
-    }
+   
 
     return (
         <>
             <Stack width="100%" gap="15px" flexDirection="row" justifyContent={{ xs: "center", sm: "flex-end", md: "flex-end" }}>
                 
-                    <>{!isTrackOrder &&
+                    <>
                         <CustomButton
                             variant="contained"
                             onClick={handleTrackOrderClick}
@@ -83,12 +61,12 @@ const OrderDetailsBottom = ({
                             <Typography variant="h5">
                                 {t('Track Order')}
                             </Typography>
-                        </CustomButton>}</>
+                        </CustomButton></>
 
                 
                 
-                   { trackData?.paymentStatus!=='PAID' && !isTrackOrder &&(
-                        <CustomButton
+                   
+                        {/* <CustomButton
                             variant="outlined"
                             onClick={() => setOpenModal(true)}
                         >
@@ -98,39 +76,10 @@ const OrderDetailsBottom = ({
                             >
                                 {t('Cancel Order')}
                             </Typography>
-                        </CustomButton>
-                    )
-                }
+                        </CustomButton> */}
+                    
             </Stack>
-            <CustomModal
-                //dialogTexts="Are you sure you want to cancel this order?"
-                openModal={openModal}
-                setModalOpen={setOpenModal}
-                maxWidth="350px"
-
-            // onSuccess={handleOnSuccess}
-            >
-                <CancelOrder
-                    cancelReason={cancelReason}
-                    setCancelReason={setCancelReason}
-                    cancelReasonsData={cancelReasonsData}
-                    setModalOpen={setOpenModal}
-                    handleOnSuccess={handleOnSuccess}
-                    orderLoading={orderLoading}
-                />
-            </CustomModal>
-            <CustomModal
-                openModal={openModalForPayment}
-                setModalOpen={setModalOpenForPayment}
-            >
-                <DigitalPaymentManage
-                    setModalOpenForPayment={setModalOpenForPayment}
-                    setModalOpen={setOpenModal}
-                    refetchOrderDetails={refetchOrderDetails}
-                    refetchTrackData={refetchTrackData}
-                    id={trackData?.data?.id}
-                />
-            </CustomModal>
+            
         </>
     )
 }

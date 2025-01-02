@@ -16,14 +16,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setEditProfile } from '../../redux/slices/editProfile'
 import { RTL } from '../RTL/RTL'
 
+
 const SideDrawer = ({ page, setAttributeId }) => {
     const theme = useTheme()
+    const router = useRouter()
     const dispatch = useDispatch();
     const [pageTitle, setPageTitle] = useState(page)
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
     const [languageDirection, setLanguageDirection] = useState('ltr')
     const { isEditProfile } = useSelector((state) => state.isEditProfile);
     const [open, setOpen] = useState(false)
+    const { orderId } = router.query;
+    const {isTrackOrder} = router.query
     useEffect(() => {
         if (page === 'profile') {
             if (isEditProfile === true) {
@@ -35,14 +39,18 @@ const SideDrawer = ({ page, setAttributeId }) => {
             setPageTitle("My Coupons")
         }
         else if(page === "order" || page === "order?flag=success" || page === "order?flag=cancel"){
-            setPageTitle("Order")
+            setPageTitle("Order History")
+            if(orderId && !isTrackOrder)setPageTitle("Order Summary")
+            if(isTrackOrder&&orderId) setPageTitle("Track Order")   
+        } else if(page === 'ticket'){
+            setPageTitle("Complaints")
         }
         else {
             dispatch(setEditProfile(false))
             setPageTitle(page)
         }
     }, [page, pageTitle, isEditProfile])
-
+    console.log('page is...',page)
     useEffect(() => {
         if (localStorage.getItem('direction')) {
             setLanguageDirection(localStorage.getItem('direction'))

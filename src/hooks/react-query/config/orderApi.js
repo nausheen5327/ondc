@@ -1,4 +1,4 @@
-import MainApi from '../../../api/MainApi'
+import MainApi, { getCall } from '../../../api/MainApi'
 import { getToken } from "../../../components/checkout-page/functions/getGuestUserId";
 
 let token = undefined
@@ -10,9 +10,19 @@ export const OrderApi = {
         return MainApi.post('/api/v1/customer/order/place', formData)
     },
     orderHistory: (orderType, limit, offset) => {
-        return MainApi.get(
-            `/api/v1/customer/order/${orderType}?limit=${limit}&offset=${offset}`
-        )
+        // New ONDC API integration
+        return getCall('/clientApis/v2/orders', {
+            limit: limit,
+            pageNumber: offset,
+            state: orderType
+        })
+    },
+    ticketHistory: ( limit, offset) => {
+        // New ONDC API integration
+        return getCall('/issueApis/v1/getIssues', {
+            limit: limit,
+            pageNumber: offset,
+        })
     },
     orderDetails: (order_id, phone, guestId) => {
         const params = !getToken()

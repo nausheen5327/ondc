@@ -44,12 +44,12 @@ export const tabData = [
         value: "wallets",
         img: wallet,
     },
-    // {
-    //     id: 6,
-    //     label: 'Loyalty Points',
-    //     value: "loyalty",
-    //     img: loyalty,
-    // },
+    {
+        id: 6,
+        label: 'Tickets',
+        value: "ticket",
+        img: loyalty,
+    },
     {
         id: 7,
         label: 'Referral Code',

@@ -143,10 +143,11 @@ const RegularOrders = () => {
     let convenienceFee = 0;
     let taxOnDelivery = 0;
 
-    quote?.breakup?.forEach(item => {
+    quote?.breakup?.forEach((item,index) => {
+        console.log("packing charges...", index)
       if (item['@ondc/org/title_type'] === 'delivery') {
         deliveryCharges += Number(item.price.value);
-      } else if (item['@ondc/org/title_type'] === 'packing') {
+      } else if (item['@ondc/org/title_type'] === 'packing' && index === 0) {
         packingCharges += Number(item.price.value);
       } else if (item['@ondc/org/title_type'] === 'misc') {
         convenienceFee += Number(item.price.value);

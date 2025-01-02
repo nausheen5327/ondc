@@ -199,7 +199,7 @@ const OtpForm = ({
                                             otp
                                         )
                                     }
-                                    numInputs={6}
+                                    numInputs={4}
                                     onBlur={otpFormik.handleBlur('reset_token')}
                                     renderInput={(props) => (
                                         <input {...props} />
@@ -225,7 +225,7 @@ const OtpForm = ({
                                 loading={isLoading}
                                 disabled={
                                     !otpFormik.values.reset_token ||
-                                    otpFormik.values.reset_token.length !== 6
+                                    otpFormik.values.reset_token.length !== 4
                                 }
                             >
                                 {t('Verify')}
