@@ -32,7 +32,7 @@ const CustomerDetails = ({ orderData }) => {
   };
 
   const valueStyle = {
-    fontSize: '10px',
+    fontSize: '12px',
     color: 'white',
     fontWeight: '500'
   };

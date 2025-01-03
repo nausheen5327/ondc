@@ -77,16 +77,6 @@ export const AuthDataListener = () => {
         if (token) {
             fetchUserData();
         }
-
-        // Optional: Setup listener for token changes
-        const handleStorageChange = (e) => {
-            if (e.key === 'token' && e.newValue) {
-                fetchUserData();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
     return null;

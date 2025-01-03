@@ -87,7 +87,7 @@ const FloatingCart = (props) => {
   const router = useRouter()
   const dispatch = useDispatch()
   const [open, setDrawerOpen] = useState(false)
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const { cartList } = useSelector((state) => state.cart)
   const cartItems = useSelector(state => state.cart.cartList)
   const [modalFor, setModalFor] = useState('sign-in')
@@ -219,7 +219,7 @@ const FloatingCart = (props) => {
           } catch (error) {
             console.error("Error updating cart:", error);
             CustomToaster('error', 'Failed to update cart');
-            setLoading(false);
+            // setLoading(false);
             dispatch(setIsLoading(false));
           }
 
@@ -254,12 +254,12 @@ const FloatingCart = (props) => {
             dispatch(setIsLoading(true));
             await putCall(url, payload);
             dispatch(setIsLoading(false));
-            setLoading(false);
+            // setLoading(false);
             await getCartItems();
           } catch (error) {
             console.error("Error updating cart:", error);
             CustomToaster('error', 'Failed to update cart');
-            setLoading(false);
+            // setLoading(false);
             dispatch(setIsLoading(false));
           }
         }
@@ -267,7 +267,7 @@ const FloatingCart = (props) => {
     } catch (error) {
       console.error("Error in updateCartItem:", error);
       CustomToaster('error', 'Failed to update cart');
-      setLoading(false);
+      // setLoading(false);
       dispatch(setIsLoading(false));
     }
   };
@@ -796,3 +796,4 @@ const FloatingCart = (props) => {
 }
 
 export default FloatingCart
+

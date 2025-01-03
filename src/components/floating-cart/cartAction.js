@@ -104,7 +104,7 @@ const CartActions = ({
         alignItems="center"
       >
         <Typography fontSize="14px" fontWeight={500}>
-          {t('Total Price')}
+          Total Price
         </Typography>
         <Typography fontSize="15px" fontWeight={700}>
           {getFormattedPrice(
@@ -129,7 +129,7 @@ const CartActions = ({
           borderRadius="7px"
           disabled={hasDifferentProviders}
         >
-          {t('Proceed To Checkout')}
+          Proceed To Checkout
         </PrimaryButton>
       </Stack>
     </Stack>

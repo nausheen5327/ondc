@@ -24,7 +24,8 @@ import {
 import Meta from "../Meta";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import CustomDivider from "../CustomDivider";
-import { useRouter } from "next/router";
+import Router from 'next/router'
+import {  useRouter } from "next/router";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { CustomPaperBigCard } from "@/styled-components/CustomStyles.style";
@@ -605,7 +606,15 @@ const OrderDetails = () => {
   if (isTrackOrder) {
     return <TrackingPage OrderData={order} />;
   }
+const handleTrackIssue=()=>{
+  Router.push({
+    pathname: '/info',
+    query: {
+        page: "ticket"
 
+    },
+})
+}
   // on status
   async function getUpdatedStatus(message_id) {
     try {
@@ -920,7 +929,7 @@ const OrderDetails = () => {
             handleCancelOrder={() => setOpenCancelModal(true)}
             handleGetStatus={handleFetchUpdatedStatus}
             handleRaiseIssue={handleRaiseIssue}
-            handleTrackIssue={() => console.log("1")}
+            handleTrackIssue={handleTrackIssue}
             trackIssue={issueDetailData?.issueExistance}
           />
         </Grid>

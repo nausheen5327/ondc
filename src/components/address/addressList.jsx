@@ -26,9 +26,8 @@ const AddressList = (props) => {
     // setFetchDeliveryAddressLoading(true);
     try {
       dispatch(setIsLoading(true));
-        let data = await cancellablePromise(
-          getCall("/clientApis/v1/delivery_address")
-        );
+        let data = await 
+          getCall("/clientApis/v1/delivery_address");
         if(updatedAddedAddr)
         {
             const findIndex = data.findIndex((item) => item.id === updatedAddedAddr.id);
@@ -93,7 +92,7 @@ const AddressList = (props) => {
     console.log("addr to be updated",address);
     try {
       dispatch(setIsLoading(true));
-      const data = await cancellablePromise(
+      const data = await 
         postCall(`/clientApis/v1/delivery_address`, {
           descriptor: {
             name: address.descriptor.name.trim(),
@@ -113,8 +112,7 @@ const AddressList = (props) => {
             lat: address.address.lat,
             lng: address.address.lng,
           },
-        })
-      );
+        });
       console.log("updated addr", data);
       dispatch(setIsLoading(false));
       setUpdatedAddedAddr(data);

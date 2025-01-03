@@ -214,12 +214,13 @@ const SignInPage = ({
 
 
     };
-    
+    console.log('login value is...',loginValue)
     
 
     const signInWithGoogle = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
+                console.log('response from google', result)
                 handleCallBackResponse(result);
             })
             .catch((error) => {
@@ -278,12 +279,22 @@ const SignInPage = ({
             }
         }
         setLoginValue(newValues)
-        const data = await postCall('/auth/start',{
-            p_n: values?.phone
-          })
-        console.log("response from api call is...", data);
-        //on success open otp ui       
-        setOpenOtpModal(true)
+        try {
+            const data = await postCall('/auth/start',{
+                p_n: values?.phone
+              })
+              console.log('response from generate is...',data);
+            if(!data.i_s){
+                CustomToaster('error',"Please recheck your phone number");
+                return;
+            }
+            setMainToken(data?.token);
+            setOpenOtpModal(true)
+            console.log("response from api call is...", data);
+        } catch (error) {
+            CustomToaster('error', error);
+        }
+        
 
     }
 
@@ -312,38 +323,61 @@ const SignInPage = ({
 
   
 
-    const handleLoginInfo = (res, values) => {
+    const handleLoginInfo = ( response,values) => {
         // Common logic to set login info based on response
         setLoginInfo({
-            ...res,
             phone: values.phone,
             otp: values?.reset_token,
-        })
-
+        })        
         // Determine which modal to show based on the response
-        if (res?.is_personal_info === 0) {
-            setModalFor('user_info')
-        } else if (res?.is_exist_user !== null) {
-            setModalFor('is_exist_user')
-        } else {
             setOpenOtpModal(false)
-            handleTokenAfterSignIn(res)
+            let token = mainToken.split(' ')[1];
+            const userObj = jwtDecode(token);
+            // setJwtToken(token); // Use the access token for your JWT
+            // setUserInfo(userObj);
+            localStorage.setItem('user',JSON.stringify(response.user))
+            localStorage.setItem("transaction_id", uuidv4());
+            const { displayName, email, uid } = response.user;
+            AddCookie("token", token);
+            AddCookie(
+                "user",
+                JSON.stringify({ name: displayName, id: uid, email })
+              );
+            localStorage.setItem('token',token )
+            dispatch(setToken(token));
+            CustomToaster('success', loginSuccessFull)
+            dispatch(setAuthModalOpen(false));
+            fetchUserData();
             handleClose()
-        }
+        
     }
 
     const otpFormSubmitHandler = async(values) => {
-        console.log(values);
-        
+        let phone  = loginValue?.phone;
+        phone = phone?.substring(3);
         try {
             const data = await postCall('/auth/validate',{
-                p_n: values?.phone,
-                otp: values?.otp
+                p_n: phone,
+                otp: values?.reset_token,
+                user: {
+                    uid: `user+${phone}`,
+                    expiresIn: "3600",
+                    idToken: mainToken?.split(" ")[1],
+                    localId: `user+${phone}`,
+                }
               })
-              handleLoginInfo(res, values)
-
+              console.log("response from validation is", data)
+             if(!data?.statusCode===200){
+                CustomToaster('error','Invalid Otp')
+                return;
+             } 
+            handleLoginInfo(data,{
+                phone: phone,
+                otp: values?.reset_token
+            })
+            //   handleLoginWithOtpInfo(res, values)
         } catch (error) {
-            CustomToaster('error','Invalid OTP')
+            CustomToaster('error',error)
         }
     }
 
