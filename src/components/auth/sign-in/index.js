@@ -60,6 +60,7 @@ import { AddCookie } from '@/utils/cookies'
 import { setAuthModalOpen } from '@/redux/slices/global'
 import { useAuthData } from '../authSuccessHandler'
 import { postCall } from '@/api/MainApi'
+import { setCustomerInfo, setlocation } from '@/redux/slices/addressData'
 const auth = getAuth();
 const provider = new GoogleAuthProvider().setCustomParameters({
     prompt: 'select_account'
@@ -133,6 +134,8 @@ const SignInPage = ({
     if (typeof window !== 'undefined') {
         userDatafor = JSON.parse(localStorage.getItem('userDatafor'))
     }
+        const customerInfo = useSelector((state) => state.addressData.customerInfo)
+    
     const loginFormik = useFormik({
         initialValues: {
             email_or_phone: '',
@@ -338,6 +341,16 @@ const SignInPage = ({
             localStorage.setItem('user',JSON.stringify(response.user))
             localStorage.setItem("transaction_id", uuidv4());
             const { displayName, email, uid } = response.user;
+            const updatedCustomerInfo = {
+                            ...customerInfo,
+                            customer: {
+                                ...customerInfo?.customer,
+                                phone: values.phone
+                            }
+                        }
+                        
+                        // Dispatch action to update Redux store
+                        dispatch(setCustomerInfo(updatedCustomerInfo))
             AddCookie("token", token);
             AddCookie(
                 "user",
@@ -348,10 +361,10 @@ const SignInPage = ({
             CustomToaster('success', loginSuccessFull)
             dispatch(setAuthModalOpen(false));
             fetchUserData();
-            handleClose()
+            // handleClose();
         
     }
-
+    console.log('location in sign in',customerInfo);
     const otpFormSubmitHandler = async(values) => {
         let phone  = loginValue?.phone;
         phone = phone?.substring(3);

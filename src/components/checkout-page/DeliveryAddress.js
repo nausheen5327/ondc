@@ -24,6 +24,7 @@ import AddNewAddress from "@/components/user-info/address/AddNewAddress";
 import { PrimaryButton } from "@/components/products-page/FoodOrRestaurant";
 import { ACTIONS } from "@/components/checkout-page/states/additionalInformationStates";
 import AddressList from '../address/addressList'
+import { EditIcon } from 'lucide-react'
 
 const getZoneWiseAddresses = (addresses, restaurantId) => {
     const newArray = []
@@ -39,12 +40,12 @@ const DeliveryAddress = ({
     renderOnNavbar,
     additionalInformationDispatch,
     restaurantId, token, handleAddressSetSuccess,
-    handleSelectAddress,handleCloseAddress
+    handleSelectAddress, handleCloseAddress
 }) => {
     const theme = useTheme()
     const { t } = useTranslation()
     const [allAddress, setAllAddress] = useState()
-    const [selectedAddress,setSelectedAddress] = useState({})
+    const [selectedAddress, setSelectedAddress] = useState({})
     const [data, setData] = useState(null)
     const mainAddress = {
         ...address,
@@ -71,60 +72,67 @@ const DeliveryAddress = ({
             onError: onSingleErrorResponse,
         }
     )
-   
+
     useEffect(() => {
         data && setAllAddress([mainAddress, ...data.addresses])
     }, [data])
 
     const handleLatLng = (values) => {
-        if(renderOnNavbar==="true")
-        {
+        if (renderOnNavbar === "true") {
             setAddress({ ...values, lat: values.latitude, lng: values.longitude })
-            localStorage.setItem('currentLatLng', JSON.stringify({lat: values.latitude, lng: values.longitude}))
-        }else{
+            localStorage.setItem('currentLatLng', JSON.stringify({ lat: values.latitude, lng: values.longitude }))
+        } else {
             // setAddress({ ...values, lat: values.latitude, lng: values.longitude })
-            setSelectedAddress({ ...values, lat: values.latitude, lng: values.longitude})
+            setSelectedAddress({ ...values, lat: values.latitude, lng: values.longitude })
         }
 
     }
 
-   
-    const handleSelectedAddress =() => {
+
+    const handleSelectedAddress = () => {
         setAddress(selectedAddress)
-        if(additionalInformationDispatch){
-            additionalInformationDispatch({type:ACTIONS.setStreetNumber , payload:selectedAddress?.road|| '' })
-            additionalInformationDispatch({type:ACTIONS.setHouseNumber, payload:selectedAddress?.house|| '' })
-            additionalInformationDispatch({type:ACTIONS.setFloor , payload:selectedAddress?.floor || '' })
-            additionalInformationDispatch({type:ACTIONS.setAddressType , payload:selectedAddress?.address_type || '' })
+        if (additionalInformationDispatch) {
+            additionalInformationDispatch({ type: ACTIONS.setStreetNumber, payload: selectedAddress?.road || '' })
+            additionalInformationDispatch({ type: ACTIONS.setHouseNumber, payload: selectedAddress?.house || '' })
+            additionalInformationDispatch({ type: ACTIONS.setFloor, payload: selectedAddress?.floor || '' })
+            additionalInformationDispatch({ type: ACTIONS.setAddressType, payload: selectedAddress?.address_type || '' })
         }
         handleCloseAddress()
     }
     console.log('address 1234567', address)
     return (
         <>
-            
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                    <DeliveryCaption>{t('Delivery Addresses')}</DeliveryCaption>
-                    <SaveAddressBox onClick={handleSelectAddress}>
+
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <DeliveryCaption>{t('Delivery Addresses')}</DeliveryCaption>
+                <SaveAddressBox onClick={handleSelectAddress}>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
                         <Typography
                             color={theme.palette.primary.main}
                             sx={{ cursor: 'pointer' }}
                             fontSize="12px"
-                            // onClick={handleRoute}
                         >
                             {t('Saved Address')}
                         </Typography>
-                    </SaveAddressBox>
-               </Stack>
-            
-            
-                <AddressSelectionField
-                    theme={theme}
-                    address={address}
-                    t={t}
-                />
-            
-           
+                        <EditIcon
+                            sx={{
+                                fontSize: '14px',
+                                color: theme.palette.primary.main,
+                                cursor: 'pointer'
+                            }}
+                        />
+                    </Stack>
+                </SaveAddressBox>
+            </Stack>
+
+
+            <AddressSelectionField
+                theme={theme}
+                address={address}
+                t={t}
+            />
+
+
 
         </>
     )

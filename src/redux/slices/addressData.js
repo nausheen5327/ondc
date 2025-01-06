@@ -5,6 +5,7 @@ const initialState = {
     formatted_address:"",
     zoneId:null,
     userLocationUpdate:false,
+    customerInfo:null
 }
 
 export const AddressDataSlice = createSlice({
@@ -13,6 +14,9 @@ export const AddressDataSlice = createSlice({
     reducers: {
         setlocation: (state, action) => { 
             state.location = {...action.payload}
+        },
+        setCustomerInfo: (state, action) => { 
+            state.customerInfo = {...action.payload}
         },
         setFormattedAddress:(state, action) =>{
             state.formatted_address = action.payload
@@ -27,5 +31,5 @@ export const AddressDataSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setlocation,setFormattedAddress,setZoneIds } = AddressDataSlice.actions
+export const { setlocation,setFormattedAddress,setZoneIds,setCustomerInfo } = AddressDataSlice.actions
 export default AddressDataSlice.reducer

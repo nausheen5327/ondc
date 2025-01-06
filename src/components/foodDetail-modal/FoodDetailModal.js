@@ -65,6 +65,7 @@ import { getValueFromCookie } from '@/utils/cookies'
 import { updateCartItem } from '@/utils/checkout/cart/updateCartItem'
 import { setAuthModalOpen, setSideDrawerOpen } from '@/redux/slices/global'
 import { useCheckoutFlow } from '../checkout-guard/checkoutFlow'
+import { RTL } from '../RTL/RTL'
 const FoodDetailModal = ({
     product,
     image,
@@ -1079,6 +1080,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 disableAutoFocus={true}
             >
                 <FoodDetailModalStyle sx={{ bgcolor: 'background.paper' }}>
+                    <RTL direction='ltr'>
                                 <CustomStackFullWidth>
                                     <FoodModalTopSection
                                         product={modalData[0]}
@@ -1431,6 +1433,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
                                         </Grid>
                                     </CustomStackFullWidth>
                                 </CustomStackFullWidth>
+                                </RTL>
                 </FoodDetailModalStyle>
             </Modal>
             <CartClearModal

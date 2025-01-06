@@ -16,6 +16,7 @@ import { Typography } from "@mui/material";
 import CheckoutSelectedAddressGuest from "./guest-user/CheckoutSelectedAddressGuest";
 import { getToken } from "./functions/getGuestUserId";
 import useGetMostTrips from "@/hooks/react-query/useGetMostTrips";
+import AddressWarning from './AddressValidation'
 
 const DeliveryDetails = (props) => {
     const {
@@ -38,7 +39,7 @@ const DeliveryDetails = (props) => {
         handleSelectAddress,handleCloseAddress
     } = props
     const { t } = useTranslation()
-
+    console.log('address in checkout', address);
     const handleChange = (e) => {
         if (e.target.value === 'take_away') {
             setDeliveryTip(0)
@@ -79,7 +80,7 @@ const DeliveryDetails = (props) => {
                 </FormControl>
                 
                     <>
-                        
+                    <AddressWarning address={address?.address} />
                             <DeliveryAddress
                                 setAddress={setAddress}
                                 address={address}

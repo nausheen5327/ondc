@@ -1,55 +1,7 @@
-// import React from 'react'
-// import { DeliveryCaption, DeliveryTitle } from './CheckOut.style'
-// import { useTranslation } from 'react-i18next'
-// import FormControl from '@mui/material/FormControl'
-// import RadioGroup from '@mui/material/RadioGroup'
-// import FormControlLabel from '@mui/material/FormControlLabel'
-// import Radio from '@mui/material/Radio'
-// import DeliveryAddress from './DeliveryAddress'
-// import {
-//     CustomPaperBigCard,
-//     CustomStackFullWidth,
-// } from "@/styled-components/CustomStyles.style"
-// import OrderType from './order-type'
-// import AdditionalAddresses from './AdditionalAddresses'
-// import { Typography } from "@mui/material";
-// import CheckoutSelectedAddressGuest from "./guest-user/CheckoutSelectedAddressGuest";
-// import { getToken } from "./functions/getGuestUserId";
-// import useGetMostTrips from "@/hooks/react-query/useGetMostTrips";
-// import { useSelector } from 'react-redux'
-
-// const CustomerInfoPage = () => {
-//     const { t } = useTranslation()
-//     const location = useSelector((state)=>state.addressData.location)
-
-//     console.log('location in cart',location);
-
-    
-//     return (
-//         <CustomPaperBigCard>
-//             <CustomStackFullWidth>
-//                 <DeliveryTitle>
-//                     {t('CUSTOMER INFO')}
-//                 </DeliveryTitle>
-//                 <Typography variant="body" sx={{ fontWeight: 600 }}>
-//                 {location?.descriptor.name}
-//               </Typography>
-//               <Typography variant="body" sx={{ fontWeight: 600 }}>
-//               {location.descriptor.email}
-//               </Typography>
-//             </CustomStackFullWidth>
-//         </CustomPaperBigCard>
-//     )
-// }
-
-// CustomerInfoPage.propTypes = {}
-
-// export default React.memo(CustomerInfoPage)
-
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DeliveryCaption, DeliveryTitle } from './CheckOut.style'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
     CustomPaperBigCard,
     CustomStackFullWidth,
@@ -60,16 +12,30 @@ import {
     Button,
     Box
 } from "@mui/material"
+import { setCustomerInfo } from '@/redux/slices/addressData'
 
 const CustomerInfoPage = () => {
     const { t } = useTranslation()
-    const location = useSelector((state) => state.addressData.location)
+    const customerInfo = useSelector((state) => state.addressData.customerInfo)
+    const dispatch = useDispatch()
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: ''
     })
     const [errors, setErrors] = useState({})
+    const [isEditing, setIsEditing] = useState(false)
+
+    // Auto-fill form when customerInfo data is present
+    useEffect(() => {
+        if (customerInfo?.customer) {
+            setFormData({
+                name: customerInfo?.customer?.name || '',
+                email: customerInfo?.customer?.email || '',
+                phone: customerInfo?.customer?.phone || ''
+            })
+        }
+    }, [customerInfo])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -105,12 +71,26 @@ const CustomerInfoPage = () => {
     const handleSubmit = () => {
         const formErrors = validateForm()
         if (Object.keys(formErrors).length === 0) {
-            // Handle form submission here
-            console.log('Form submitted:', formData)
+            const updatedCustomerInfo = {
+                ...customerInfo,
+                customer: {
+                    ...customerInfo?.customer,
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone
+                }
+            }
+            dispatch(setCustomerInfo(updatedCustomerInfo))
+            setIsEditing(false)
         } else {
             setErrors(formErrors)
         }
     }
+
+    const handleEdit = () => {
+        setIsEditing(true)
+    }
+
 
     return (
         <CustomPaperBigCard>
@@ -119,14 +99,25 @@ const CustomerInfoPage = () => {
                     {t('CUSTOMER INFO')}
                 </DeliveryTitle>
                 
-                {location?.descriptor?.name && location?.descriptor?.email ? (
+                {customerInfo?.customer?.name && customerInfo?.customer?.email && customerInfo?.customer?.phone && !isEditing ? (
                     <>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            {location.descriptor.name}
+                            {customerInfo.customer.name}
                         </Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            {location.descriptor.email}
+                            {customerInfo.customer.email}
                         </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                            {customerInfo.customer.phone}
+                        </Typography>
+                        <Button 
+                            variant="outlined" 
+                            color="primary"
+                            onClick={handleEdit}
+                            sx={{ mt: 2 }}
+                        >
+                            {t('Edit Information')}
+                        </Button>
                     </>
                 ) : (
                     <Box component="form" sx={{ width: '100%' }} spacing={3}>
@@ -167,6 +158,7 @@ const CustomerInfoPage = () => {
                             fullWidth
                             onClick={handleSubmit}
                             sx={{ mt: 2 }}
+                            disabled={!formData.name || !formData.email || !formData.phone}
                         >
                             {t('Continue')}
                         </Button>
