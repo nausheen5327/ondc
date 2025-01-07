@@ -1797,7 +1797,7 @@ const verifyPayment = async (items, method) => {
             container
             spacing={3}
             mb="2rem"
-            paddingTop={{ xs: '0px', md: '60px' }}
+            paddingTop={{ xs: '0px !important', md: '60px' }}
         >
             <Grid item xs={12} md={7}>
                 {method !== 'offline' ? (

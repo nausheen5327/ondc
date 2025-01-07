@@ -84,7 +84,7 @@ const FoodDetailModal = ({
     const { t } = useTranslation()
     const dispatch = useDispatch()
     const [forSignup, setForSignup] = useState('')
-    const cartItems = useSelector(state=>state.cart.cartList);
+    const cartItems = useSelector(state => state.cart.cartList);
     const theme = useTheme()
     const [selectedOptions, setSelectedOptions] = useState([])
     const [isLocation, setIsLocation] = useState(false)
@@ -104,7 +104,7 @@ const FoodDetailModal = ({
     const [variationStock, setVariationStock] = useState(false)
     const [errorCode, setErrorCode] = useState('')
     const [productPayload, setProductPayload] = useState();
-    const location = useSelector(state=>state.addressData.location);
+    const location = useSelector(state => state.addressData.location);
     const [productUpdate, setProductUpdate] = useState(false);
     // const { mutate: addToCartMutate, isLoading: addToCartLoading } =
     //     useAddCartItem()
@@ -132,450 +132,450 @@ const FoodDetailModal = ({
     }
 
     const { cancellablePromise } = useCancellablePromise();
-  const [isItemAvailableInCart, setIsItemAvailableInCart] = useState(false);
-  const [itemAvailableInCart, setItemAvailableInCart] = useState(null);
-  const [productDetails, setProductDetails] = useState({});
+    const [isItemAvailableInCart, setIsItemAvailableInCart] = useState(false);
+    const [itemAvailableInCart, setItemAvailableInCart] = useState(null);
+    const [productDetails, setProductDetails] = useState({});
 
-  const [customization_state, setCustomizationState] = useState({});
-  const [variationState, setVariationState] = useState([]);
+    const [customization_state, setCustomizationState] = useState({});
+    const [variationState, setVariationState] = useState([]);
 
-  const [activeImage, setActiveImage] = useState("");
-  const [activeSize, setActiveSize] = useState("");
+    const [activeImage, setActiveImage] = useState("");
+    const [activeSize, setActiveSize] = useState("");
 
-  const [customizationPrices, setCustomizationPrices] = useState(0);
-  const [itemOutOfStock, setItemOutOfStock] = useState(false);
-  const [addToCartLoading, setAddToCartLoading] = useState(false);
+    const [customizationPrices, setCustomizationPrices] = useState(0);
+    const [itemOutOfStock, setItemOutOfStock] = useState(false);
+    const [addToCartLoading, setAddToCartLoading] = useState(false);
 
-  const [productAvailability, setProductAvailability] = useState(true);
+    const [productAvailability, setProductAvailability] = useState(true);
 
-  const deleteCartItem = async (itemId) => {
-    // const user = JSON.parse(getValueFromCookie("user"));
-    const user = localStorage.getItem("userId")
-    const url = `/clientApis/v2/cart/${user}/${itemId}`;
-    const res = await deleteCall(url);
-    getCartItems();
-  };
-    
-      const calculateSubtotal = (groupId, customization_state) => {
+    const deleteCartItem = async (itemId) => {
+        // const user = JSON.parse(getValueFromCookie("user"));
+        const user = localStorage.getItem("userId")
+        const url = `/clientApis/v2/cart/${user}/${itemId}`;
+        const res = await deleteCall(url);
+        getCartItems();
+    };
+
+    const calculateSubtotal = (groupId, customization_state) => {
         let group = customization_state[groupId];
         if (!group) return;
-    
+
         let prices = group.selected.map((s) => s.price);
         setCustomizationPrices((prevState) => {
-          return prevState + prices.reduce((a, b) => a + b, 0);
+            return prevState + prices.reduce((a, b) => a + b, 0);
         });
-    
+
         group?.childs?.map((child) => {
-          calculateSubtotal(child, customization_state);
+            calculateSubtotal(child, customization_state);
         });
-      };
-    
-      let selectedCustomizationIds = [];
-    
-      const getCustomization_ = (groupId) => {
+    };
+
+    let selectedCustomizationIds = [];
+
+    const getCustomization_ = (groupId) => {
         let group = customization_state[groupId];
         if (!group) return;
-    
+
         let customizations = group.selected.map((s) =>
-          selectedCustomizationIds.push(s.id)
+            selectedCustomizationIds.push(s.id)
         );
         group?.childs?.map((child) => {
-          getCustomization_(child);
+            getCustomization_(child);
         });
-      };
-    
-      const getCustomizations = () => {
+    };
+
+    const getCustomizations = () => {
         const { customisation_items } = productPayload;
-    
+
         if (!customisation_items.length) return null;
         const customizations = [];
-    
+
         const firstGroupId = customization_state["firstGroup"]?.id;
-    
+
         if (!firstGroupId) return;
         selectedCustomizationIds = [];
         getCustomization_(firstGroupId);
-    
+
         for (const cId of selectedCustomizationIds) {
-          let c = customisation_items.find((item) => item.local_id === cId);
-          if (c) {
-            c = {
-              ...c,
-              quantity: {
-                count: 1,
-              },
-            };
-            customizations.push(c);
-          }
+            let c = customisation_items.find((item) => item.local_id === cId);
+            if (c) {
+                c = {
+                    ...c,
+                    quantity: {
+                        count: 1,
+                    },
+                };
+                customizations.push(c);
+            }
         }
-    
+
         return customizations;
-      };
-    
-      function findMinMaxSeq(customizationGroups) {
+    };
+
+    function findMinMaxSeq(customizationGroups) {
         if (!customizationGroups || customizationGroups.length === 0) {
-          return { minSeq: undefined, maxSeq: undefined };
+            return { minSeq: undefined, maxSeq: undefined };
         }
-    
+
         let minSeq = Infinity;
         let maxSeq = -Infinity;
-    
+
         customizationGroups.forEach((group) => {
-          const seq = group.seq;
-          if (seq < minSeq) {
-            minSeq = seq;
-          }
-          if (seq > maxSeq) {
-            maxSeq = seq;
-          }
+            const seq = group.seq;
+            if (seq < minSeq) {
+                minSeq = seq;
+            }
+            if (seq > maxSeq) {
+                maxSeq = seq;
+            }
         });
-    
+
         return { minSeq, maxSeq };
-      }
-    
-      function areCustomisationsSame(existingIds, currentIds) {
+    }
+
+    function areCustomisationsSame(existingIds, currentIds) {
         if (existingIds.length !== currentIds.length) {
-          return false;
+            return false;
         }
-    
+
         existingIds.sort();
         currentIds.sort();
-    
+
         for (let i = 0; i < existingIds.length; i++) {
-          if (existingIds[i] !== currentIds[i]) {
-            return false;
-          }
+            if (existingIds[i] !== currentIds[i]) {
+                return false;
+            }
         }
-    
+
         return true;
-      }
-    
-      const checkCustomisationIsAvailableInCart = (
+    }
+
+    const checkCustomisationIsAvailableInCart = (
         customisations,
         cartItemData
-      ) => {
+    ) => {
         const cartItem = Object.assign(
-          {},
-          JSON.parse(JSON.stringify(cartItemData))
+            {},
+            JSON.parse(JSON.stringify(cartItemData))
         );
         let matchingCustomisation = null;
         if (customisations) {
-          const currentIds = customisations.map((item) => item.id);
-          let existingIds = cartItem.item.customisations.map((item) => item.id);
-          const areSame = areCustomisationsSame(existingIds, currentIds);
-          if (areSame) {
-            matchingCustomisation = cartItem;
-          }
+            const currentIds = customisations.map((item) => item.id);
+            let existingIds = cartItem.item.customisations.map((item) => item.id);
+            const areSame = areCustomisationsSame(existingIds, currentIds);
+            if (areSame) {
+                matchingCustomisation = cartItem;
+            }
         } else {
         }
         return matchingCustomisation ? true : false;
-      };
-    
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         if (
-          productPayload &&
-          productPayload?.id &&
-          cartItems &&
-          cartItems.length > 0
+            productPayload &&
+            productPayload?.id &&
+            cartItems &&
+            cartItems.length > 0
         ) {
-          let isItemAvailable = false;
-          let findItem = null;
-          if (productPayload?.context.domain === "ONDC:RET11") {
-            const customisations = getCustomizations() ?? null;
-    
-            findItem = customisations
-              ? cartItems.find(
-                  (item) =>
-                    item.item.id === productPayload.id &&
-                    checkCustomisationIsAvailableInCart(customisations, item)
-                )
-              : cartItems.find((item) => item.item.id === productPayload.id);
-          } else {
-            findItem = cartItems.find((item) => item.item.id === productPayload.id);
-          }
-          if (findItem) {
-            isItemAvailable = true;
-            setItemAvailableInCart(findItem);
-          } else {
-          }
-          setIsItemAvailableInCart(isItemAvailable);
+            let isItemAvailable = false;
+            let findItem = null;
+            if (productPayload?.context.domain === "ONDC:RET11") {
+                const customisations = getCustomizations() ?? null;
+
+                findItem = customisations
+                    ? cartItems.find(
+                        (item) =>
+                            item.item.id === productPayload.id &&
+                            checkCustomisationIsAvailableInCart(customisations, item)
+                    )
+                    : cartItems.find((item) => item.item.id === productPayload.id);
+            } else {
+                findItem = cartItems.find((item) => item.item.id === productPayload.id);
+            }
+            if (findItem) {
+                isItemAvailable = true;
+                setItemAvailableInCart(findItem);
+            } else {
+            }
+            setIsItemAvailableInCart(isItemAvailable);
         } else {
-          setItemAvailableInCart(null);
-          setIsItemAvailableInCart(false);
+            setItemAvailableInCart(null);
+            setIsItemAvailableInCart(false);
         }
-      }, [cartItems, customization_state]);
-      // Helper function to process customization state
-const processCustomizationState = (customizationState, customisationItems) => {
-    if (!customizationState || !customisationItems) return [];
-    
-    let selectedCustomizations = [];
-  
-    const processGroup = (groupId) => {
-      const group = customizationState[groupId];
-      if (!group || !group.selected) return;
-  
-      // Add selected items from current group
-      group.selected.forEach(selection => {
-        const matchingItem = customisationItems.find(item => item.local_id === selection.id);
-        if (matchingItem) {
-          selectedCustomizations.push({
-            ...matchingItem,
-            quantity: { count: 1 }
-          });
-        }
-      });
-  
-      // Process child groups recursively
-      if (group.childs) {
-        group.childs.forEach(childId => processGroup(childId));
-      }
-    };
-  
-    // Start processing from the first group
-    if (customizationState.firstGroup) {
-      processGroup(customizationState.firstGroup.id);
-    }
-  
-    return selectedCustomizations;
-  };
-  
-  // Calculate total price including customizations
-  const calculateTotalPrice = (basePrice, customizations) => {
-    if (!customizations) return basePrice;
-    
-    const customizationTotal = customizations.reduce((total, item) => {
-      return total + (item.price?.value || 0);
-    }, 0);
-  
-    return basePrice + customizationTotal;
-  };
-  
-  // Prepare cart payload
-  const prepareCartPayload = (productData, customizationState, quantity = 1) => {
-    if (!productData) return null;
-  
-    const customisations = processCustomizationState(
-      customizationState, 
-      productData.customisation_items
-    );
-  
-    const basePrice = productData.item_details?.price?.value || 0;
-    const totalPrice = calculateTotalPrice(basePrice, customisations);
-  
-    return {
-      id: productData.id,
-      local_id: productData.local_id,
-      bpp_id: productData.bpp_details.bpp_id,
-      bpp_uri: productData.context.bpp_uri,
-      domain: productData.context.domain,
-      tags: productData.item_details.tags,
-      customisationState: customizationState,
-      contextCity: productData.context.city,
-      quantity: { count: quantity },
-      provider: {
-        id: productData.bpp_details.bpp_id,
-        locations: productData.locations,
-        ...productData.provider_details,
-      },
-      product: {
-        id: productData.id,
-        subtotal: basePrice,
-        ...productData.item_details,
-      },
-      customisations: customisations,
-      hasCustomisations: customisations && customisations.length > 0,
-      totalPrice: totalPrice
-    };
-  };
+    }, [cartItems, customization_state]);
+    // Helper function to process customization state
+    const processCustomizationState = (customizationState, customisationItems) => {
+        if (!customizationState || !customisationItems) return [];
 
-  const updateCartInLocalStorage = (newItem) => {
-    try {
-      // Get existing items from localStorage
-      const existingItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-      
-      // Find if item with same _id exists
-      const existingItemIndex = existingItems.findIndex(
-        item => item._id === newItem?._id
-      );
-      
-      if (existingItemIndex !== -1) {
-        // Replace existing item
-        existingItems[existingItemIndex] = {
-          ...existingItems[existingItemIndex],
-          ...newItem
+        let selectedCustomizations = [];
+
+        const processGroup = (groupId) => {
+            const group = customizationState[groupId];
+            if (!group || !group.selected) return;
+
+            // Add selected items from current group
+            group.selected.forEach(selection => {
+                const matchingItem = customisationItems.find(item => item.local_id === selection.id);
+                if (matchingItem) {
+                    selectedCustomizations.push({
+                        ...matchingItem,
+                        quantity: { count: 1 }
+                    });
+                }
+            });
+
+            // Process child groups recursively
+            if (group.childs) {
+                group.childs.forEach(childId => processGroup(childId));
+            }
         };
-      } else {
-        // Add new item to array
-        existingItems.push(newItem);
-      }
-      
-      // Save updated array back to localStorage
-      localStorage.setItem('cartItemsPreAuth', JSON.stringify(existingItems));
-      
-    } catch (error) {
-      console.error('Error updating cart in localStorage:', error);
-    }
-  };
 
-  const addToCart = async (navigate = false, isIncrement = true) => {
-    setAddToCartLoading(true);
-    try {
-    //   const user = JSON.parse(getValueFromCookie("user"));
-    const user = localStorage.getItem("userId")
-      const url = `/clientApis/v2/cart/${user}`;
-      
-      // Get selected customizations
-      const selectedCustomizations = selectedOptions.map(option => {
-        const customizationItem = modalData[0].customisation_items.find(
-          item => item.local_id === option.id
+        // Start processing from the first group
+        if (customizationState.firstGroup) {
+            processGroup(customizationState.firstGroup.id);
+        }
+
+        return selectedCustomizations;
+    };
+
+    // Calculate total price including customizations
+    const calculateTotalPrice = (basePrice, customizations) => {
+        if (!customizations) return basePrice;
+
+        const customizationTotal = customizations.reduce((total, item) => {
+            return total + (item.price?.value || 0);
+        }, 0);
+
+        return basePrice + customizationTotal;
+    };
+
+    // Prepare cart payload
+    const prepareCartPayload = (productData, customizationState, quantity = 1) => {
+        if (!productData) return null;
+
+        const customisations = processCustomizationState(
+            customizationState,
+            productData.customisation_items
         );
+
+        const basePrice = productData.item_details?.price?.value || 0;
+        const totalPrice = calculateTotalPrice(basePrice, customisations);
+
         return {
-          ...customizationItem,
-          quantity: { count: 1 }
+            id: productData.id,
+            local_id: productData.local_id,
+            bpp_id: productData.bpp_details.bpp_id,
+            bpp_uri: productData.context.bpp_uri,
+            domain: productData.context.domain,
+            tags: productData.item_details.tags,
+            customisationState: customizationState,
+            contextCity: productData.context.city,
+            quantity: { count: quantity },
+            provider: {
+                id: productData.bpp_details.bpp_id,
+                locations: productData.locations,
+                ...productData.provider_details,
+            },
+            product: {
+                id: productData.id,
+                subtotal: basePrice,
+                ...productData.item_details,
+            },
+            customisations: customisations,
+            hasCustomisations: customisations && customisations.length > 0,
+            totalPrice: totalPrice
         };
-      });
-  
-      // Calculate total price including customizations
-      const basePrice = modalData[0]?.item_details?.price?.value || 0;
-      const customizationTotal = selectedCustomizations.reduce((total, item) => {
-        return total + (item.price?.value || 0);
-      }, 0);
-      const totalPrice = basePrice + customizationTotal;
-  
-      const payload = {
-        id: modalData[0].id,
-        local_id: modalData[0].local_id,
-        bpp_id: modalData[0].bpp_details.bpp_id,
-        bpp_uri: modalData[0].context.bpp_uri,
-        domain: modalData[0].context.domain,
-        tags: modalData[0].item_details.tags,
-        customisationState: selectedOptions.length ? {
-          firstGroup: {
-            id: modalData[0].customisation_groups[0]?.id,
-            selected: selectedOptions
-          }
-        } : null,
-        contextCity: modalData[0].context.city,
-        quantity: { count: 1 },
-        provider: {
-          id: modalData[0].bpp_details.bpp_id,
-          locations: modalData[0].locations,
-          ...modalData[0].provider_details,
-        },
-        product: {
-          id: modalData[0].id,
-          subtotal: basePrice,
-          ...modalData[0].item_details,
-        },
-        customisations: selectedCustomizations,
-        hasCustomisations: selectedCustomizations.length > 0,
-        totalPrice
-      };
-  
-      let cartItem = cartItems.filter(ci => ci.item.id === payload.id);
-      
-      if (selectedCustomizations.length > 0) {
-        cartItem = cartItem.filter(ci => {
-          if (!ci.item.customisations) return false;
-          const existingIds = ci.item.customisations.map(c => c.local_id).sort();
-          const newIds = selectedCustomizations.map(c => c.local_id).sort();
-          return JSON.stringify(existingIds) === JSON.stringify(newIds);
-        });
-      }
-  
-      if (cartItem.length === 0) {
-        const res = await postCall(url, payload);
-        if(navigate){
-            handleModalClose();
-            handleCheckoutFlow([res], location)
-            return;
+    };
+
+    const updateCartInLocalStorage = (newItem) => {
+        try {
+            // Get existing items from localStorage
+            const existingItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+            // Find if item with same _id exists
+            const existingItemIndex = existingItems.findIndex(
+                item => item._id === newItem?._id
+            );
+
+            if (existingItemIndex !== -1) {
+                // Replace existing item
+                existingItems[existingItemIndex] = {
+                    ...existingItems[existingItemIndex],
+                    ...newItem
+                };
+            } else {
+                // Add new item to array
+                existingItems.push(newItem);
+            }
+
+            // Save updated array back to localStorage
+            localStorage.setItem('cartItemsPreAuth', JSON.stringify(existingItems));
+
+        } catch (error) {
+            console.error('Error updating cart in localStorage:', error);
         }
-        updateCartInLocalStorage(res);
-        CustomToaster('success', "Item added to cart successfully.");
-      } else {
-        const currentCount = parseInt(cartItem[0].item.quantity.count);
-        const maxCount = parseInt(cartItem[0].item.product.quantity.maximum.count);
-        if (currentCount < maxCount) {
-          const res = await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
-          if(navigate){
-            handleModalClose();
-            handleCheckoutFlow([res], location)
-            return;
+    };
+
+    const addToCart = async (navigate = false, isIncrement = true) => {
+        setAddToCartLoading(true);
+        try {
+            //   const user = JSON.parse(getValueFromCookie("user"));
+            const user = localStorage.getItem("userId")
+            const url = `/clientApis/v2/cart/${user}`;
+
+            // Get selected customizations
+            const selectedCustomizations = selectedOptions.map(option => {
+                const customizationItem = modalData[0].customisation_items.find(
+                    item => item.local_id === option.id
+                );
+                return {
+                    ...customizationItem,
+                    quantity: { count: 1 }
+                };
+            });
+
+            // Calculate total price including customizations
+            const basePrice = modalData[0]?.item_details?.price?.value || 0;
+            const customizationTotal = selectedCustomizations.reduce((total, item) => {
+                return total + (item.price?.value || 0);
+            }, 0);
+            const totalPrice = basePrice + customizationTotal;
+
+            const payload = {
+                id: modalData[0].id,
+                local_id: modalData[0].local_id,
+                bpp_id: modalData[0].bpp_details.bpp_id,
+                bpp_uri: modalData[0].context.bpp_uri,
+                domain: modalData[0].context.domain,
+                tags: modalData[0].item_details.tags,
+                customisationState: selectedOptions.length ? {
+                    firstGroup: {
+                        id: modalData[0].customisation_groups[0]?.id,
+                        selected: selectedOptions
+                    }
+                } : null,
+                contextCity: modalData[0].context.city,
+                quantity: { count: 1 },
+                provider: {
+                    id: modalData[0].bpp_details.bpp_id,
+                    locations: modalData[0].locations,
+                    ...modalData[0].provider_details,
+                },
+                product: {
+                    id: modalData[0].id,
+                    subtotal: basePrice,
+                    ...modalData[0].item_details,
+                },
+                customisations: selectedCustomizations,
+                hasCustomisations: selectedCustomizations.length > 0,
+                totalPrice
+            };
+
+            let cartItem = cartItems.filter(ci => ci.item.id === payload.id);
+
+            if (selectedCustomizations.length > 0) {
+                cartItem = cartItem.filter(ci => {
+                    if (!ci.item.customisations) return false;
+                    const existingIds = ci.item.customisations.map(c => c.local_id).sort();
+                    const newIds = selectedCustomizations.map(c => c.local_id).sort();
+                    return JSON.stringify(existingIds) === JSON.stringify(newIds);
+                });
+            }
+
+            if (cartItem.length === 0) {
+                const res = await postCall(url, payload);
+                if (navigate) {
+                    handleModalClose();
+                    handleCheckoutFlow([res], location)
+                    return;
+                }
+                updateCartInLocalStorage(res);
+                CustomToaster('success', "Item added to cart successfully.");
+            } else {
+                const currentCount = parseInt(cartItem[0].item.quantity.count);
+                const maxCount = parseInt(cartItem[0].item.product.quantity.maximum.count);
+                if (currentCount < maxCount) {
+                    const res = await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
+                    if (navigate) {
+                        handleModalClose();
+                        handleCheckoutFlow([res], location)
+                        return;
+                    }
+                    CustomToaster('success', "Item quantity updated in your cart.");
+                    updateCartInLocalStorage(res);
+                } else {
+                    CustomToaster('error', "Maximum available quantity already in cart.");
+                }
+            }
+
+            getCartItems();
+            //   if (navigate){
+            //     handleModalClose();
+            //     handleCheckoutFlow(cartItems, location)
+            //     // dispatch(setSideDrawerOpen(true))
+            //   } 
+
+        } catch (error) {
+            console.error('Add to cart error:', error);
+            CustomToaster('error', "Failed to add item to cart");
+        } finally {
+            setAddToCartLoading(false);
         }
-          CustomToaster('success', "Item quantity updated in your cart.");
-          updateCartInLocalStorage(res);
-        } else {
-          CustomToaster('error', "Maximum available quantity already in cart.");
-        }
-      }
-      
-      getCartItems();
-    //   if (navigate){
-    //     handleModalClose();
-    //     handleCheckoutFlow(cartItems, location)
-    //     // dispatch(setSideDrawerOpen(true))
-    //   } 
-      
-    } catch (error) {
-      console.error('Add to cart error:', error);
-      CustomToaster('error', "Failed to add item to cart");
-    } finally {
-      setAddToCartLoading(false);
-    }
-  };
+    };
     const getProductDetails = async (productId) => {
         try {
-        //   setProductLoading(true);
-          const data = await cancellablePromise(
-            getCall(`/clientApis/v2/item-details?id=${productId}`)
-          );
-          setProductPayload(data);
-          setModalData([data])
-        //   getCartItems();
+            //   setProductLoading(true);
+            const data = await cancellablePromise(
+                getCall(`/clientApis/v2/item-details?id=${productId}`)
+            );
+            setProductPayload(data);
+            setModalData([data])
+            //   getCartItems();
         } catch (error) {
-            CustomToaster('error',error)
+            CustomToaster('error', error)
         } finally {
-        //   setProductLoading(false);
+            //   setProductLoading(false);
         }
-      };
-      
-      
-      const getCartItems = async () => {
+    };
+
+
+    const getCartItems = async () => {
         try {
-        //   setLoading(true);
-        // const user = JSON.parse(getValueFromCookie("user"));
-        const user = localStorage.getItem("userId")
-          const url = `/clientApis/v2/cart/${user}`;
-          const res = await getCall(url);
-          console.log("cart...",res);
-          dispatch(setCartList(res));
-          localStorage.setItem('cartItems',JSON.stringify(res));
+            //   setLoading(true);
+            // const user = JSON.parse(getValueFromCookie("user"));
+            const user = localStorage.getItem("userId")
+            const url = `/clientApis/v2/cart/${user}`;
+            const res = await getCall(url);
+            console.log("cart...", res);
+            dispatch(setCartList(res));
+            localStorage.setItem('cartItems', JSON.stringify(res));
 
-          
 
-          const matchingItems = res.filter(cartItem => 
-            cartItem.item.id === product.id
-          );
-        
-          if (matchingItems.length === 0) return 0;
-          const totalQuantity = matchingItems.reduce((sum, item) => {
-            return sum + (item.item.quantity?.count || 0);
-          }, 0);
 
-          setQuantity(totalQuantity)
+            const matchingItems = res.filter(cartItem =>
+                cartItem.item.id === product.id
+            );
+
+            if (matchingItems.length === 0) return 0;
+            const totalQuantity = matchingItems.reduce((sum, item) => {
+                return sum + (item.item.quantity?.count || 0);
+            }, 0);
+
+            setQuantity(totalQuantity)
         } catch (error) {
-          console.log("Error fetching cart items:", error);
-        //   setLoading(false);
+            console.log("Error fetching cart items:", error);
+            //   setLoading(false);
         } finally {
-        //   setLoading(false);
+            //   setLoading(false);
         }
-      };
-     
-      
+    };
 
-    
+
+
+
     useEffect(() => {
-            getProductDetails(product?.id)
+        getProductDetails(product?.id)
     }, [])
     useEffect(() => {
         if (productPayload) {
@@ -643,7 +643,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 }
             })
             // dispatch(setCart(product))
-            console.log("products123456",product);
+            console.log("products123456", product);
             CustomToaster('success', 'Item added to cart')
             handleClose()
             //dispatch()
@@ -698,15 +698,15 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 add_on_ids:
                     add_on?.length > 0
                         ? add_on?.map((add) => {
-                              return add.id
-                          })
+                            return add.id
+                        })
                         : [],
                 add_on_qtys:
                     add_on?.length > 0
                         ? add_on?.map((add) => {
-                              totalQty = add.quantity
-                              return totalQty
-                          })
+                            totalQty = add.quantity
+                            return totalQty
+                        })
                         : [],
                 item_id: product?.id,
                 price: getConvertDiscount(
@@ -723,15 +723,15 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 variations:
                     getNewVariationForDispatch()?.length > 0
                         ? getNewVariationForDispatch()?.map((variation) => {
-                              return {
-                                  name: variation.name,
-                                  values: {
-                                      label: handleValuesFromCartItems(
-                                          variation.values
-                                      ),
-                                  },
-                              }
-                          })
+                            return {
+                                name: variation.name,
+                                values: {
+                                    label: handleValuesFromCartItems(
+                                        variation.values
+                                    ),
+                                },
+                            }
+                        })
                         : [],
             }
 
@@ -755,15 +755,15 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 add_on_ids:
                     add_on?.length > 0
                         ? add_on?.map((add) => {
-                              return add.id
-                          })
+                            return add.id
+                        })
                         : [],
                 add_on_qtys:
                     add_on?.length > 0
                         ? add_on?.map((add) => {
-                              totalQty = add.quantity
-                              return totalQty
-                          })
+                            totalQty = add.quantity
+                            return totalQty
+                        })
                         : [],
                 item_id: modalData[0]?.id,
                 price: getConvertDiscount(
@@ -777,15 +777,15 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 variations:
                     getNewVariationForDispatch()?.length > 0
                         ? getNewVariationForDispatch()?.map((variation) => {
-                              return {
-                                  name: variation.name,
-                                  values: {
-                                      label: handleValuesFromCartItems(
-                                          variation.values
-                                      ),
-                                  },
-                              }
-                          })
+                            return {
+                                name: variation.name,
+                                values: {
+                                    label: handleValuesFromCartItems(
+                                        variation.values
+                                    ),
+                                },
+                            }
+                        })
                         : [],
                 variation_options: selectedOptions?.map(
                     (item) => item.option_id
@@ -804,27 +804,27 @@ const processCustomizationState = (customizationState, customisationItems) => {
             //     },
             // })
             //add to cart API
-            addToCart(false,true)
+            addToCart(false, true)
             // .then(
             //     handleSuccess
             // ).catch(
             //     CustomToaster('error','Failed to add product to cart')
             // )
-            
+
         }
         // handleClose?.()
     }
-    console.log(cartItems,'CartItem...');
-   
-    
-    
+    console.log(cartItems, 'CartItem...');
 
-   
 
-    
-   
 
-    
+
+
+
+
+
+
+
     const addToCard = () => {
         // call add to cart api
     }
@@ -848,8 +848,8 @@ const processCustomizationState = (customizationState, customisationItems) => {
     }
     const handleClose = () => setOpen(false)
 
-    
-    
+
+
     const changeAddOns = (checkTrue, addOn) => {
         let filterAddOn = add_on.filter((item) => item.name !== addOn.name)
         if (checkTrue) {
@@ -858,7 +858,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
             setAddOns(filterAddOn)
         }
     }
-    
+
     useEffect(() => {
         if (modalData[0]) {
             handleTotalPrice()
@@ -918,22 +918,22 @@ const processCustomizationState = (customizationState, customisationItems) => {
         }
     }
 
-    
+
 
     const onSuccessHandlerForDelete = (res) => {
         dispatch(removeWishListFood(product.id))
         CustomToaster('success', res.message)
     }
-    
+
     const isInCart = (id) => {
-            const isInCart = cartList.filter((item) => item?.item?.id === id)
-            console.log("same hai kya...", id === cartList?.[0]?.item?.id);
-            if (isInCart.length > 0) {
-                return true
-            } else {
-                return false
-            }
-        
+        const isInCart = cartList.filter((item) => item?.item?.id === id)
+        console.log("same hai kya...", id === cartList?.[0]?.item?.id);
+        if (isInCart.length > 0) {
+            return true
+        } else {
+            return false
+        }
+
 
         // return !!cartList.find((item) => item.id === id)
     }
@@ -942,11 +942,11 @@ const processCustomizationState = (customizationState, customisationItems) => {
         return !!wishLists?.food?.find((wishFood) => wishFood.id === id)
     }
     //auth modal
-    const authModalOpen = useSelector(state=>state.globalSettings.authModalOpen)    
+    const authModalOpen = useSelector(state => state.globalSettings.authModalOpen)
     const orderNow = () => {
-        
+
     }
-    console.log("auth modal open",authModalOpen);
+    console.log("auth modal open", authModalOpen);
     const getFullFillRequirements = () => {
         let isdisabled = false
         if (modalData[0]?.variations?.length > 0) {
@@ -993,7 +993,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
         }, 0);
         return basePrice + customizationPrice;
     };
-    
+
     // Modify handleTotalPrice function
     const handleTotalPrice = () => {
         if (modalData[0]) {
@@ -1002,7 +1002,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
             setTotalPrice(total);
         }
     };
-    
+
     // Update your existing price calculations in handleChange
     const changeChoices = (
         isSingle,
@@ -1058,7 +1058,7 @@ const processCustomizationState = (customizationState, customisationItems) => {
     };
     //////////////////////////////////////////////////////////////////////////
 
-    
+
     const isVegItem = (data) => {
         const vegTag = data.item_details.tags.find(tag => tag.code === "veg_nonveg");
         if (vegTag) {
@@ -1081,210 +1081,210 @@ const processCustomizationState = (customizationState, customisationItems) => {
             >
                 <FoodDetailModalStyle sx={{ bgcolor: 'background.paper' }}>
                     <RTL direction='ltr'>
-                                <CustomStackFullWidth>
-                                    <FoodModalTopSection
-                                        product={modalData[0]}
-                                        image={image}
-                                        handleModalClose={handleModalClose}
-                                        isInList={isInList}
-                                    />
+                        <CustomStackFullWidth>
+                            <FoodModalTopSection
+                                product={modalData[0]}
+                                image={image}
+                                handleModalClose={handleModalClose}
+                                isInList={isInList}
+                            />
 
-                                    <CustomStackFullWidth
-                                        sx={{ padding: '20px' }}
-                                        spacing={2}
-                                    >
-                                        <SimpleBar
-                                            style={{
-                                                maxHeight: '35vh',
-                                                paddingRight: '10px',
-                                            }}
-                                            className="test123"
+                            <CustomStackFullWidth
+                                sx={{ padding: '20px' }}
+                                spacing={2}
+                            >
+                                <SimpleBar
+                                    style={{
+                                        maxHeight: '35vh',
+                                        paddingRight: '10px',
+                                    }}
+                                    className="test123"
+                                >
+                                    <CustomStackFullWidth spacing={0.5}>
+                                        <Stack
+                                            direction="row"
+                                            justifyContent="flex-start"
+                                            alignItems="center"
+                                            flexWrap="wrap"
+                                            spacing={0.5}
                                         >
-                                            <CustomStackFullWidth spacing={0.5}>
-                                                <Stack
-                                                    direction="row"
-                                                    justifyContent="flex-start"
-                                                    alignItems="center"
-                                                    flexWrap="wrap"
-                                                    spacing={0.5}
-                                                >
-                                                    <Typography variant="h4">
-                                                        {modalData.length > 0 &&
-                                                            modalData[0]?.item_details?.descriptor?.name}
-                                                    </Typography>
-                                                    <VagSvg
-                                                        color={
-                                                            Number(
-                                                                vegStatus
-                                                            ) === 0
-                                                                ? theme.palette
-                                                                      .nonVeg
-                                                                : theme.palette
-                                                                      .success
-                                                                      .light
-                                                        }
-                                                    />
-                                                    {modalData[0]
-                                                        ?.halal_tag_status ===
-                                                        1 &&
-                                                        modalData[0]
-                                                            ?.is_halal ===
-                                                            1 && (
-                                                            <Tooltip
-                                                                arrow
-                                                                title={t(
-                                                                    'This is a halal food'
-                                                                )}
-                                                            >
-                                                                <IconButton
-                                                                    sx={{
-                                                                        padding:
-                                                                            '0px',
-                                                                    }}
-                                                                >
-                                                                    <HalalSvg />
-                                                                </IconButton>
-                                                            </Tooltip>
+                                            <Typography variant="h4">
+                                                {modalData.length > 0 &&
+                                                    modalData[0]?.item_details?.descriptor?.name}
+                                            </Typography>
+                                            <VagSvg
+                                                color={
+                                                    Number(
+                                                        vegStatus
+                                                    ) === 0
+                                                        ? theme.palette
+                                                            .nonVeg
+                                                        : theme.palette
+                                                            .success
+                                                            .light
+                                                }
+                                            />
+                                            {modalData[0]
+                                                ?.halal_tag_status ===
+                                                1 &&
+                                                modalData[0]
+                                                    ?.is_halal ===
+                                                1 && (
+                                                    <Tooltip
+                                                        arrow
+                                                        title={t(
+                                                            'This is a halal food'
                                                         )}
-                                                    {quantity >=
-                                                        modalData[0]
-                                                            ?.item_stock &&
-                                                        modalData[0]
-                                                            ?.stock_type !==
-                                                            'unlimited' && (
-                                                            <Typography
-                                                                fontSize="12px"
-                                                                color={
-                                                                    quantity >=
-                                                                        modalData[0]
-                                                                            ?.item_stock &&
-                                                                    theme
-                                                                        .palette
-                                                                        .info
-                                                                        .main
-                                                                }
-                                                            >
-                                                                ({text1}{' '}
-                                                                {
-                                                                    modalData[0]
-                                                                        ?.item_stock
-                                                                }{' '}
-                                                                {text2})
-                                                            </Typography>
-                                                        )}
-                                                </Stack>
-                                                <ReadMore
-                                                    limits="100"
-                                                    color={
-                                                        theme.palette
-                                                            .neutral[400]
-                                                    }
-                                                >
-                                                    {modalData?.length > 0 &&
-                                                        modalData[0]
-                                                            ?.item_details?.descriptor?.short_desc}
-                                                </ReadMore>
-                                                {modalData[0]?.nutritions_name
-                                                    ?.length > 0 && (
-                                                    <>
-                                                        <Typography
-                                                            fontSize="14px"
-                                                            fontWeight="500"
-                                                            mt="5px"
+                                                    >
+                                                        <IconButton
+                                                            sx={{
+                                                                padding:
+                                                                    '0px',
+                                                            }}
                                                         >
-                                                            {t(
-                                                                'Nutrition Details'
-                                                            )}
-                                                        </Typography>
-
-                                
-                                                    </>
+                                                            <HalalSvg />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 )}
-                                                {modalData[0]?.allergies_name
-                                                    ?.length > 0 && (
-                                                    <>
-                                                        <Typography
-                                                            fontSize="14px"
-                                                            fontWeight="500"
-                                                            mt="5px"
-                                                        >
-                                                            {t(
-                                                                'Allergic Ingredients'
-                                                            )}
-                                                        </Typography>
+                                            {quantity >=
+                                                modalData[0]
+                                                    ?.item_stock &&
+                                                modalData[0]
+                                                    ?.stock_type !==
+                                                'unlimited' && (
+                                                    <Typography
+                                                        fontSize="12px"
+                                                        color={
+                                                            quantity >=
+                                                            modalData[0]
+                                                                ?.item_stock &&
+                                                            theme
+                                                                .palette
+                                                                .info
+                                                                .main
+                                                        }
+                                                    >
+                                                        ({text1}{' '}
+                                                        {
+                                                            modalData[0]
+                                                                ?.item_stock
+                                                        }{' '}
+                                                        {text2})
+                                                    </Typography>
+                                                )}
+                                        </Stack>
+                                        <ReadMore
+                                            limits="100"
+                                            color={
+                                                theme.palette
+                                                    .neutral[400]
+                                            }
+                                        >
+                                            {modalData?.length > 0 &&
+                                                modalData[0]
+                                                    ?.item_details?.descriptor?.short_desc}
+                                        </ReadMore>
+                                        {modalData[0]?.nutritions_name
+                                            ?.length > 0 && (
+                                                <>
+                                                    <Typography
+                                                        fontSize="14px"
+                                                        fontWeight="500"
+                                                        mt="5px"
+                                                    >
+                                                        {t(
+                                                            'Nutrition Details'
+                                                        )}
+                                                    </Typography>
 
-                                                        <Stack
-                                                            direction="row"
-                                                            spacing={0.5}
-                                                        >
-                                                            {modalData[0]?.allergies_name?.map(
-                                                                (
-                                                                    item,
-                                                                    index
-                                                                ) => (
-                                                                    <Typography
-                                                                        fontSize="12px"
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        color={
-                                                                            theme
-                                                                                .palette
-                                                                                .neutral[400]
-                                                                        }
-                                                                    >
-                                                                        {item}
-                                                                        {index !==
+
+                                                </>
+                                            )}
+                                        {modalData[0]?.allergies_name
+                                            ?.length > 0 && (
+                                                <>
+                                                    <Typography
+                                                        fontSize="14px"
+                                                        fontWeight="500"
+                                                        mt="5px"
+                                                    >
+                                                        {t(
+                                                            'Allergic Ingredients'
+                                                        )}
+                                                    </Typography>
+
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={0.5}
+                                                    >
+                                                        {modalData[0]?.allergies_name?.map(
+                                                            (
+                                                                item,
+                                                                index
+                                                            ) => (
+                                                                <Typography
+                                                                    fontSize="12px"
+                                                                    key={
+                                                                        index
+                                                                    }
+                                                                    color={
+                                                                        theme
+                                                                            .palette
+                                                                            .neutral[400]
+                                                                    }
+                                                                >
+                                                                    {item}
+                                                                    {index !==
                                                                         modalData[0]
                                                                             ?.allergies_name
                                                                             .length -
-                                                                            1
-                                                                            ? ','
-                                                                            : '.'}
-                                                                    </Typography>
-                                                                )
-                                                            )}
-                                                        </Stack>
-                                                    </>
-                                                )}
-                                                <Stack
-                                                    spacing={1}
-                                                    direction={{
-                                                        xs: 'row',
-                                                        sm: 'row',
-                                                        md: 'row',
-                                                    }}
-                                                    justifyContent={{
-                                                        xs: 'space-between',
-                                                        sm: 'space-between',
-                                                        md: 'space-between',
-                                                    }}
-                                                    alignItems="center"
-                                                >
-                                                    <StartPriceView
-                                                        data={modalData[0]}
-                                                        currencySymbolDirection={
-                                                            'left'
-                                                        }
-                                                        currencySymbol={
-                                                            '₹'
-                                                        }
-                                                        digitAfterDecimalPoint={
-                                                            2
-                                                        }
-                                                        hideStartFromText="false"
-                                                        handleBadge={
-                                                            handleBadge
-                                                        }
-                                                        selectedOptions={
-                                                            selectedOptions
-                                                        }
-                                                    />
+                                                                        1
+                                                                        ? ','
+                                                                        : '.'}
+                                                                </Typography>
+                                                            )
+                                                        )}
+                                                    </Stack>
+                                                </>
+                                            )}
+                                        <Stack
+                                            spacing={1}
+                                            direction={{
+                                                xs: 'row',
+                                                sm: 'row',
+                                                md: 'row',
+                                            }}
+                                            justifyContent={{
+                                                xs: 'space-between',
+                                                sm: 'space-between',
+                                                md: 'space-between',
+                                            }}
+                                            alignItems="center"
+                                        >
+                                            <StartPriceView
+                                                data={modalData[0]}
+                                                currencySymbolDirection={
+                                                    'left'
+                                                }
+                                                currencySymbol={
+                                                    '₹'
+                                                }
+                                                digitAfterDecimalPoint={
+                                                    2
+                                                }
+                                                hideStartFromText="false"
+                                                handleBadge={
+                                                    handleBadge
+                                                }
+                                                selectedOptions={
+                                                    selectedOptions
+                                                }
+                                            />
 
-                                                    
-                                                </Stack>
-                                            </CustomStackFullWidth>
-                                            {/* {modalData?.length > 0 &&
+
+                                        </Stack>
+                                    </CustomStackFullWidth>
+                                    {/* {modalData?.length > 0 &&
                                                 modalData[0]?.variations
                                                     ?.length > 0 && (
                                                     <VariationsManager
@@ -1320,120 +1320,120 @@ const processCustomizationState = (customizationState, customisationItems) => {
                                                         }
                                                     />
                                                 )} */}
-                                                {modalData?.length > 0 && modalData[0]?.customisation_groups?.length > 0 && (
-                                                <Stack spacing={3} sx={{ my: 2 }}>
-                                                    {modalData[0]?.customisation_groups?.map(group => {
-                                                    const groupItems = modalData[0].customisation_items?.filter(
-                                                        item => item.customisation_group_id === group.id
-                                                    );
-                                                    
-                                                    return (
-                                                        <CustomizationSection
+                                    {modalData?.length > 0 && modalData[0]?.customisation_groups?.length > 0 && (
+                                        <Stack spacing={3} sx={{ my: 2 }}>
+                                            {modalData[0]?.customisation_groups?.map(group => {
+                                                const groupItems = modalData[0].customisation_items?.filter(
+                                                    item => item.customisation_group_id === group.id
+                                                );
+
+                                                return (
+                                                    <CustomizationSection
                                                         key={group.id}
                                                         group={group}
                                                         items={groupItems}
                                                         selectedOptions={selectedOptions}
                                                         onCustomizationChange={changeChoices}
                                                         quantity={quantity}
-                                                        />
-                                                    );
-                                                    })}
-                                                </Stack>
-                                                )}
-                                            {modalData?.length > 0 &&
-                                                modalData[0]?.add_ons?.length >
-                                                    0 && (
-                                                    <AddOnsManager
-                                                        t={t}
-                                                        modalData={modalData}
-                                                        setTotalPrice={
-                                                            setTotalPrice
-                                                        }
-                                                        setVarPrice={
-                                                            setVarPrice
-                                                        }
-                                                        changeAddOns={
-                                                            changeAddOns
-                                                        }
-                                                        setProductAddOns={
-                                                            setProductAddOns
-                                                        }
-                                                        product={modalData[0]}
-                                                        setAddOns={setAddOns}
-                                                        add_on={add_on}
-                                                        quantity={quantity}
-                                                        cartList={cartList}
-                                                        itemIsLoading={
-                                                            isRefetching
-                                                        }
                                                     />
-                                                )}
-                                                <RestaurantMDetails data={modalData[0]} />
-                                        </SimpleBar>
-                                        <Grid container direction="column">
-                                            <Grid
-                                                item
-                                                md={7}
-                                                sm={12}
-                                                xs={12}
-                                                alignSelf="center"
-                                            >
-                                                <TotalAmountVisibility
-    modalData={modalData}
-    selectedOptions={selectedOptions}
-    quantity={quantity}
-    currencySymbolDirection={currencySymbolDirection}
-    currencySymbol={currencySymbol}
-    digitAfterDecimalPoint={digitAfterDecimalPoint}
-    t={t}
-/>
-
-                                            </Grid>
-                                            <Grid
-                                                item
-                                                md={
-                                                    !modalData[0].in_stock
-                                                        ? 12
-                                                        : 5
+                                                );
+                                            })}
+                                        </Stack>
+                                    )}
+                                    {modalData?.length > 0 &&
+                                        modalData[0]?.add_ons?.length >
+                                        0 && (
+                                            <AddOnsManager
+                                                t={t}
+                                                modalData={modalData}
+                                                setTotalPrice={
+                                                    setTotalPrice
                                                 }
-                                                sm={12}
-                                                xs={12}
-                                            >
-                                                {modalData?.length > 0
-                                                &&(
-                                                    <>
-                                                        
-                                                        
-                                                            <AddOrderToCart
-                                                                addToCartLoading={
-                                                                    false
-                                                                }
-                                                                isInCart = {isInCart(
-                                                                    modalData[0].id
-                                                                )}
-                                                                product={
-                                                                    modalData[0]
-                                                                }
-                                                                t={t}
-                                                                addToCard={
-                                                                    () => addToCart(false, true)
-                                                                }
-                                                                orderNow={
-                                                                    () => addToCart(true)
+                                                setVarPrice={
+                                                    setVarPrice
+                                                }
+                                                changeAddOns={
+                                                    changeAddOns
+                                                }
+                                                setProductAddOns={
+                                                    setProductAddOns
+                                                }
+                                                product={modalData[0]}
+                                                setAddOns={setAddOns}
+                                                add_on={add_on}
+                                                quantity={quantity}
+                                                cartList={cartList}
+                                                itemIsLoading={
+                                                    isRefetching
+                                                }
+                                            />
+                                        )}
+                                    <RestaurantMDetails data={modalData[0]} />
+                                </SimpleBar>
+                                <Grid container direction="column">
+                                    <Grid
+                                        item
+                                        md={7}
+                                        sm={12}
+                                        xs={12}
+                                        alignSelf="center"
+                                    >
+                                        <TotalAmountVisibility
+                                            modalData={modalData}
+                                            selectedOptions={selectedOptions}
+                                            quantity={quantity}
+                                            currencySymbolDirection={currencySymbolDirection}
+                                            currencySymbol={currencySymbol}
+                                            digitAfterDecimalPoint={digitAfterDecimalPoint}
+                                            t={t}
+                                        />
 
-                                                                }
-                                                                incrementItem={() => addToCart(false, true)}
-                                                                decrementItem={quantity>1?() => addToCart(false, false):()=>deleteCartItem(itemAvailableInCart._id)}
-                                                                quantity={quantity}
-                                                            />
-                                                        
-                                                    </>
-                                                )}
-                                            </Grid>
-                                        </Grid>
-                                    </CustomStackFullWidth>
-                                </CustomStackFullWidth>
-                                </RTL>
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        md={
+                                            !modalData[0].in_stock
+                                                ? 12
+                                                : 5
+                                        }
+                                        sm={12}
+                                        xs={12}
+                                    >
+                                        {modalData?.length > 0
+                                            && (
+                                                <>
+
+
+                                                    <AddOrderToCart
+                                                        addToCartLoading={
+                                                            false
+                                                        }
+                                                        isInCart={isInCart(
+                                                            modalData[0].id
+                                                        )}
+                                                        product={
+                                                            modalData[0]
+                                                        }
+                                                        t={t}
+                                                        addToCard={
+                                                            () => addToCart(false, true)
+                                                        }
+                                                        orderNow={
+                                                            () => addToCart(true)
+
+                                                        }
+                                                        incrementItem={() => addToCart(false, true)}
+                                                        decrementItem={quantity > 1 ? () => addToCart(false, false) : () => deleteCartItem(itemAvailableInCart._id)}
+                                                        quantity={quantity}
+                                                    />
+
+                                                </>
+                                            )}
+                                    </Grid>
+                                </Grid>
+                            </CustomStackFullWidth>
+                        </CustomStackFullWidth>
+                    </RTL>
                 </FoodDetailModalStyle>
             </Modal>
             <CartClearModal
@@ -1443,13 +1443,13 @@ const processCustomizationState = (customizationState, customisationItems) => {
                 addToCard={addToCard}
             />
             {authModalOpen && (
-                 <AuthModal
-                 open={authModalOpen}
-                 handleClose={false}
-                 forSignup={forSignup}
-                 modalFor={modalFor}
-                 setModalFor={setModalFor}
-             />
+                <AuthModal
+                    open={authModalOpen}
+                    handleClose={false}
+                    forSignup={forSignup}
+                    modalFor={modalFor}
+                    setModalFor={setModalFor}
+                />
             )}
         </>
     )

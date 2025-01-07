@@ -17,6 +17,7 @@ import { useTheme } from "@mui/material/styles";
 import MapPointer from "../placePickerMap/placePickerMap";
 import PlacePickerMap from "../placePickerMap/placePickerMap";
 import { useSelector } from "react-redux";
+import { RTL } from "../RTL/RTL";
 const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddAddress }) => {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -175,6 +176,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
         gap: "16px",
       }}
     >
+      <RTL direction="ltr">
       {addresses.length>0 && addresses.map((address) => (
         <Card
           key={address.id}
@@ -441,6 +443,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
           </Button>
         </DialogActions>
       </Dialog>
+      </RTL>
     </div>
   );
 };

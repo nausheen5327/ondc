@@ -121,12 +121,12 @@ const FloatingCart = (props) => {
   const getCartItems = async () => {
     try {
       //   setLoading(true);
-      dispatch(setIsLoading(true));
+      // dispatch(setIsLoading(true));
       // const user = JSON.parse(getValueFromCookie("user"));
       const user = JSON.parse(localStorage.getItem('userId'))
       const url = `/clientApis/v2/cart/${user}`;
       const res = await getCall(url);
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
       console.log("cart...", res);
       dispatch(setCartList(res));
 
@@ -161,7 +161,7 @@ const FloatingCart = (props) => {
 
   const updateCartItem = async (itemId, increment, uniqueId) => {
     try {
-      dispatch(setIsLoading(true));
+      // dispatch(setIsLoading(true));
       // const user = JSON.parse(getValueFromCookie("user"));
       const user = JSON.parse(localStorage.getItem('userId'))
       const url = `/clientApis/v2/cart/${user}/${uniqueId}`;
@@ -211,7 +211,7 @@ const FloatingCart = (props) => {
           }
 
           try {
-            dispatch(setIsLoading(true));
+            // dispatch(setIsLoading(true));
             await putCall(url, payload);
             // dispatch(setIsLoading(false));
             // setLoading(false);
@@ -220,7 +220,7 @@ const FloatingCart = (props) => {
             console.error("Error updating cart:", error);
             CustomToaster('error', 'Failed to update cart');
             // setLoading(false);
-            dispatch(setIsLoading(false));
+            // dispatch(setIsLoading(false));
           }
 
         } else {
@@ -251,16 +251,16 @@ const FloatingCart = (props) => {
           }
 
           try {
-            dispatch(setIsLoading(true));
+            // dispatch(setIsLoading(true));
             await putCall(url, payload);
-            dispatch(setIsLoading(false));
+            // dispatch(setIsLoading(false));
             // setLoading(false);
             await getCartItems();
           } catch (error) {
             console.error("Error updating cart:", error);
             CustomToaster('error', 'Failed to update cart');
             // setLoading(false);
-            dispatch(setIsLoading(false));
+            // dispatch(setIsLoading(false));
           }
         }
       }
@@ -268,17 +268,17 @@ const FloatingCart = (props) => {
       console.error("Error in updateCartItem:", error);
       CustomToaster('error', 'Failed to update cart');
       // setLoading(false);
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
     }
   };
 
   const deleteCartItem = async (itemId) => {
-    dispatch(setIsLoading(true));
+    // dispatch(setIsLoading(true));
     // const user = JSON.parse(getValueFromCookie("user"));
     const user = JSON.parse(localStorage.getItem('userId'))
     const url = `/clientApis/v2/cart/${user}/${itemId}`;
     const res = await deleteCall(url);
-    dispatch(setIsLoading(false));
+    // dispatch(setIsLoading(false));
     getCartItems();
   };
 
@@ -382,11 +382,11 @@ const FloatingCart = (props) => {
           },
         };
         console.log("select payload", selectPayload);
-        dispatch(setIsLoading(true));
+        // dispatch(setIsLoading(true));
         const data = await cancellablePromise(
           postCall("/clientApis/v2/select", [selectPayload])
         );
-        dispatch(setIsLoading(false));
+        // dispatch(setIsLoading(false));
         console.log("select payload data", data);
         //Error handling workflow eg, NACK
         const isNACK = data.find(
@@ -400,7 +400,7 @@ const FloatingCart = (props) => {
         } else {
           // fetch through events
           console.log("select payload inside else", selectPayload);
-          dispatch(setIsLoading(true));
+          // dispatch(setIsLoading(true));
 
           onFetchQuote(
             data?.map((txn) => {
@@ -408,7 +408,7 @@ const FloatingCart = (props) => {
               return context?.message_id;
             })
           );
-          dispatch(setIsLoading(false));
+          // dispatch(setIsLoading(false));
         }
       } catch (err) {
         // dispatch({
@@ -434,7 +434,7 @@ const FloatingCart = (props) => {
   const eventTimeOutRef = useRef([]);
 
   function onFetchQuote(message_id) {
-    dispatch(setIsLoading(true));
+    // dispatch(setIsLoading(true));
     eventTimeOutRef.current = [];
 
     const token = getValueFromCookie("token");
@@ -464,7 +464,7 @@ const FloatingCart = (props) => {
         if (responseRef.current.length <= 0) {
           //   setGetQuoteLoading(false);
           //   setCheckoutLoading(false);
-          dispatch(setIsLoading(false));
+          // dispatch(setIsLoading(false));
           CustomToaster('error', 'Cannot fetch details for this product')
           router.replace("/");
           return;
@@ -480,7 +480,7 @@ const FloatingCart = (props) => {
         }
         setToggleInit(true);
       }, 20000);
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
       eventTimeOutRef.current = [
         ...eventTimeOutRef.current,
         {
@@ -496,7 +496,7 @@ const FloatingCart = (props) => {
   const onGetQuote = async (message_id) => {
     try {
       //   setCheckoutLoading(true);
-      dispatch(setIsLoading(true));
+      // dispatch(setIsLoading(true));
       const data = await cancellablePromise(
         getCall(`/clientApis/v2/on_select?messageIds=${message_id}`)
       );
@@ -535,13 +535,13 @@ const FloatingCart = (props) => {
           non_additive_offer: selectedNonAdditiveOffer,
         })
       );
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
 
       router.push(`/checkout`);
     } catch (err) {
       //   setCheckoutLoading(false);
       CustomToaster('error', err.message);
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
 
       //   setGetQuoteLoading(false);
     }
@@ -618,7 +618,7 @@ const FloatingCart = (props) => {
         />
       )}
 
-      {/* <RTL direction={languageDirection}> */}
+      <RTL direction={languageDirection}>
         <Drawer
           anchor="right"
           open={sideDrawerOpen}
@@ -789,7 +789,8 @@ const FloatingCart = (props) => {
             </>
           )}
         </Drawer>
-      {/* </RTL> */}
+      </RTL>
+    
     </>
   )
   //}

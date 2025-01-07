@@ -76,7 +76,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     const [authModalOpen, setOpen] = useState(false)
     const [showSearch, setShowSearch] = useState(false)
     const [openPopover, setOpenPopover] = useState(false)
-    let languageDirection = 'rtl'
+    let languageDirection = 'ltr'
     const [openWishlistModal, setOpenWishlistModal] = useState(false)
     const { userData } = useSelector((state) => state.user)
     const { t } = useTranslation()
@@ -130,7 +130,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     }, [])
     const handleAuthBasedOnRoute = () => {
         return (
-            <RTL direction={'rtl'}>
+            <RTL direction={'ltr'}>
 
                 <>
                     <Stack direction="row" spacing={1}>
@@ -231,7 +231,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     }
     const currentPath = router.pathname;
     console.log(currentPath, 'currentPath');
-    if (currentPath === '/checkout') return;
+    if (currentPath === '/checkout' || currentPath==='/info') return;
     return (
         <>
             <FloatingCart

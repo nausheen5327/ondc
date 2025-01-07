@@ -64,11 +64,10 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
     const authModalOpen = useSelector(state => state.globalSettings.authModalOpen)
     // Main content wrapper to provide proper spacing
     const MainContentWrapper = styled('div')(({ hasAllNavs, isSmall }) => ({
-        paddingTop: true
-            ? (isSmall ? '192px' : '64px') // Height of all nav components
-            : '64px', // Height of just top nav
+        paddingTop: router.pathname === '/checkout' || router.pathname === '/info' 
+            ? '0'
+            : (isSmall ? '192px' : '64px'),
         minHeight: '100vh',
-        // backgroundColor: '#f5f5f5',
     }));
     return (
         <ThemeProvider
@@ -112,7 +111,7 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
                     >
                         {
                             router.pathname !==
-                            '/checkout' &&
+                            '/checkout' && router.pathname !=='/info' &&
                             router.pathname !== '/chat' && (
                                 <FloatingCardManagement
                                 />

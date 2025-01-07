@@ -72,7 +72,7 @@ const TicketCard = ({ order, index, offset, limit, refetch }) => {
       pathname: "/info",
       query: {
         page: "ticket",
-        ticketId: order?.issueId,
+        ticketId: order?.transaction_id,
       },
     });
   };
@@ -105,7 +105,7 @@ const TicketCard = ({ order, index, offset, limit, refetch }) => {
   return (
     <Card
       className="w-full p-4 mb-4 rounded-lg bg-white shadow-sm"
-      style={{ padding: "4px" }}
+      style={{ padding: "4px",marginBottom:'20px' }}
     >
       <Grid container spacing={2}>
         {/* Restaurant Info Section */}
@@ -183,7 +183,7 @@ const TicketCard = ({ order, index, offset, limit, refetch }) => {
             >
               <Typography variant="body2" className="text-gray-600">
                 <b>
-                  <CustomFormatedDateTime date={order?.createdAt} />
+                  <CustomFormatedDateTime date={order?.created_at} />
                 </b>
               </Typography>
               {
@@ -191,7 +191,7 @@ const TicketCard = ({ order, index, offset, limit, refetch }) => {
                   variant="contained"
                   size="small"
                   onClick={handleClickSummary}
-                  startIcon={<LocalShippingIcon />}
+                  startIcon={''}
                   className="bg-primary"
                 >
                   {t("View Summary")}

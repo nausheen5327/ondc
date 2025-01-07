@@ -252,12 +252,14 @@ const OrderCalculation = (props) => {
     let packingCharges = 0;
     let convenienceFee = 0;
     let taxOnDelivery = 0;
+    let packingCount=0;
 
     quote?.breakup?.forEach(item => {
       if (item['@ondc/org/title_type'] === 'delivery') {
         deliveryCharges += Number(item.price.value);
       } else if (item['@ondc/org/title_type'] === 'packing') {
-        packingCharges += Number(item.price.value);
+        if(packingCount===0)packingCharges += Number(item.price.value);
+        packingCount++; 
       } else if (item['@ondc/org/title_type'] === 'misc') {
         convenienceFee += Number(item.price.value);
       } else if (item['@ondc/org/title_type'] === 'tax' && item.item?.tags?.some(tag => tag.code === 'quote')) {
