@@ -53,7 +53,7 @@ const AddressList = (props) => {
     console.log("addr to be updated",address);
     try {
       dispatch(setIsLoading(true));
-      const data = await cancellablePromise(
+      const data = await 
         postCall(`/clientApis/v1/update_delivery_address/${address.id}`, {
           descriptor: {
             name: address.descriptor.name.trim(),
@@ -73,8 +73,7 @@ const AddressList = (props) => {
             lat: address.address.lat,
             lng: address.address.lng,
           },
-        })
-      );
+        });
       console.log("updated addr", data);
       setUpdatedAddedAddr(data);
       dispatch(setIsLoading(false));
