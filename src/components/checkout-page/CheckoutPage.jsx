@@ -230,7 +230,7 @@ const CheckoutPage = () => {
     const location = useSelector((state)=>state.addressData.location)
     const billingAddress = useSelector((state)=>state.addressData.location)
     const deliveryAddress = useSelector((state)=>state.addressData.location)
-
+    const customerInfo = useSelector((state)=>state.addressData.customerInfo)
    
     
 
@@ -1773,10 +1773,26 @@ const verifyPayment = async (items, method) => {
         });
         return Array.from(map.values());
       }
-      
+
+      const checkCustomerDetails=()=>{
+        console.log("customerDetails",customerInfo, location);
+        
+        if(!(customerInfo.customer.name && customerInfo.customer.email && customerInfo.customer.phone)){
+          CustomToaster('error', 'Please provide customer details')
+          return false;
+        }
+
+        if(!(location.descriptor.name && location.descriptor.email && location.descriptor.phone && location.address.areaCode && location.address.building && location.address.street && location.address.city && location.address.state && location.address.lat && location.address.lng && location.address.country)){
+          CustomToaster('error', 'Please provide delivery address details')
+          return false;
+        }
+
+        return true;
+      }
       const placeOrder = () => {
         // setInitializeOrderLoading(true);
         // updateInitLoading(true);
+        if(!checkCustomerDetails())return;
         let c = cartItems.map((item) => {
           return item.item;
         });
@@ -1824,6 +1840,7 @@ const verifyPayment = async (items, method) => {
                             setPaymentMethodDetails={setPaymentMethodDetails}
                             setUsePartialPayment={setUsePartialPayment}
                             setSwitchToWallet={setSwitchToWallet}
+
                         />
                         <PaymentOptions
                             global={global}

@@ -224,7 +224,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     const handleShowSearch = () => {
 
         return (
-            <Box sx={{ minWidth: '450px', marginInlineEnd: '20px' }}>
+            <Box sx={{ minWidth: '400px', marginInlineEnd: '20px' }}>
                 <SearchBox query={query} setOpenSearchBox={setOpenSearchBox} />
             </Box>
         )
@@ -239,7 +239,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
                 setSideDrawerOpen={setSideDrawerOpen}
             />
             <NoSsr>
-                <CustomNavBox isSticky={isSticky}>
+                <CustomNavBox isSticky={isSticky} >
                     <CustomContainer>
                         <Toolbar disableGutters={true}>
                             <CustomStackFullWidth

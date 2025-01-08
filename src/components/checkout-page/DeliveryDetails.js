@@ -80,7 +80,7 @@ const DeliveryDetails = (props) => {
                 </FormControl>
                 
                     <>
-                    <AddressWarning address={address?.address} />
+                    {/* <AddressWarning address={address?.address} /> */}
                             <DeliveryAddress
                                 setAddress={setAddress}
                                 address={address}

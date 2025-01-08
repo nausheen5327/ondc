@@ -250,6 +250,17 @@ const SignInPage = ({
         if (response) {
             localStorage.setItem("transaction_id", uuidv4());
             const { displayName, email, photoURL, uid } = response.user;
+            const updatedCustomerInfo = {
+                ...customerInfo,
+                customer: {
+                    ...customerInfo?.customer,
+                    name: displayName,
+                    email: email
+                }
+            }
+            
+            // Dispatch action to update Redux store
+            dispatch(setCustomerInfo(updatedCustomerInfo))
             AddCookie("token", response.user.stsTokenManager.accessToken);
             AddCookie(
               "user",
@@ -369,7 +380,7 @@ const SignInPage = ({
         let phone  = loginValue?.phone;
         phone = phone?.substring(3);
         try {
-            const data = await postCall('/auth/validate',{
+            const response = await postCall('/auth/validate',{
                 p_n: phone,
                 otp: values?.reset_token,
                 user: {
@@ -379,18 +390,18 @@ const SignInPage = ({
                     localId: `user+${phone}`,
                 }
               })
-              console.log("response from validation is", data)
-             if(!data?.statusCode===200){
+              console.log("response from validation is", response)
+             if(!response?.statusCode==='200'){
                 CustomToaster('error','Invalid Otp')
                 return;
              } 
-            handleLoginInfo(data,{
+            handleLoginInfo(response,{
                 phone: phone,
                 otp: values?.reset_token
             })
             //   handleLoginWithOtpInfo(res, values)
         } catch (error) {
-            CustomToaster('error',error)
+            CustomToaster('error','Invalid OTP')
         }
     }
 

@@ -62,6 +62,8 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
         ssr: false,
     })
     const authModalOpen = useSelector(state => state.globalSettings.authModalOpen)
+    const customerInfo = useSelector(state=> state.addressData.customerInfo);
+    console.log("customer info", customerInfo)
     // Main content wrapper to provide proper spacing
     const MainContentWrapper = styled('div')(({ hasAllNavs, isSmall }) => ({
         paddingTop: router.pathname === '/checkout' || router.pathname === '/info' 
