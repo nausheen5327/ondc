@@ -48,12 +48,12 @@ const AddressReselect = ({ location }) => {
 
     const token = localStorage.getItem("token");
     const handleClickToLandingPage = () => {
-            if(token){
-                setOpen(true)
-            }else{
-                setOpenGuestAddr(true);
-            }
-            
+            // if(token){
+            //     setOpen(true)
+            // }else{
+            //     setOpenGuestAddr(true);
+            // }
+        setOpen(true);    
         
     }
     // const handleOpen = () => setOpen(true)
@@ -69,6 +69,12 @@ const AddressReselect = ({ location }) => {
         setOpenGuestAddr(false)
     }
 
+    useEffect(()=>{
+        if(!location)
+        {
+            setOpen(true);
+        }
+    },[location])
 
     return (
         <>{location && Object.keys(location).length>=1 ?
@@ -131,7 +137,7 @@ const AddressReselect = ({ location }) => {
                 coords={coords}
 
             /> */}
-            {openGuestAddr && <GuestAddressList openAddressModal={openGuestAddr} setOpenAddressModal={handleCloseGuest}/>}
+            {/* {openGuestAddr && <GuestAddressList openAddressModal={openGuestAddr} setOpenAddressModal={handleCloseGuest}/>} */}
             {open && <AddressList openAddressModal={open} setOpenAddressModal={handleClose}/>
 }
         </>

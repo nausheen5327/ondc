@@ -17,44 +17,45 @@ const AddressList = (props) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("md"));
   const addresses = useSelector((state) => state.user.addressList);
-  console.log("address list",addresses);
+  console.log("address list", addresses);
   const [updatedAddedAddr, setUpdatedAddedAddr] = useState();
   const dispatch = useDispatch();
-  const {cancellablePromise} = useCancellablePromise()
+  const token = localStorage.getItem("token");
 
   const fetchDeliveryAddress = async () => {
     // setFetchDeliveryAddressLoading(true);
     try {
       dispatch(setIsLoading(true));
-        let data = await 
-          getCall("/clientApis/v1/delivery_address");
-        if(updatedAddedAddr)
-        {
-            const findIndex = data.findIndex((item) => item.id === updatedAddedAddr.id);
-            console.log('findIndex', findIndex);
-            if(findIndex!==-1){
-                dispatch(setlocation(updatedAddedAddr));
-                localStorage.setItem('location',JSON.stringify(data[findIndex]));
-            }
-            dispatch(setlocation(updatedAddedAddr))
+      let data = await getCall("/clientApis/v1/delivery_address");
+      if (updatedAddedAddr) {
+        const findIndex = data.findIndex(
+          (item) => item.id === updatedAddedAddr.id
+        );
+        console.log("findIndex", findIndex);
+        if (findIndex !== -1) {
+          dispatch(setlocation(updatedAddedAddr));
+          localStorage.setItem("location", JSON.stringify(data[findIndex]));
         }
-        dispatch(setAddressList(data));
-        dispatch(setIsLoading(false));
-      } catch (err) {
-        CustomToaster('error',err)
-        dispatch(setIsLoading(false));
-        //toast for error in fetching addresses
-      } finally {
-        dispatch(setIsLoading(false));
-        // setFetchDeliveryAddressLoading(false);
+        dispatch(setlocation(updatedAddedAddr));
       }
+      dispatch(setAddressList(data));
+      dispatch(setIsLoading(false));
+    } catch (err) {
+      CustomToaster("error", err);
+      dispatch(setIsLoading(false));
+      //toast for error in fetching addresses
+    } finally {
+      dispatch(setIsLoading(false));
+      // setFetchDeliveryAddressLoading(false);
+    }
   };
   const onUpdateAddresses = async (address) => {
-    console.log("addr to be updated",address);
+    console.log("addr to be updated", address);
     try {
       dispatch(setIsLoading(true));
-      const data = await 
-        postCall(`/clientApis/v1/update_delivery_address/${address.id}`, {
+      const data = await postCall(
+        `/clientApis/v1/update_delivery_address/${address.id}`,
+        {
           descriptor: {
             name: address.descriptor.name.trim(),
             email: address.descriptor.email.trim(),
@@ -73,13 +74,14 @@ const AddressList = (props) => {
             lat: address.address.lat,
             lng: address.address.lng,
           },
-        });
+        }
+      );
       console.log("updated addr", data);
       setUpdatedAddedAddr(data);
       dispatch(setIsLoading(false));
       fetchDeliveryAddress();
     } catch (err) {
-      CustomToaster('error',err);
+      CustomToaster("error", err);
       dispatch(setIsLoading(false));
     } finally {
       // setAddAddressLoading(false);
@@ -88,36 +90,68 @@ const AddressList = (props) => {
   };
 
   const onAddAddress = async (address) => {
-    console.log("addr to be updated",address);
+    if (!token) {
+      let data = {
+        descriptor: {
+          name: address.descriptor.name.trim(),
+          email: address.descriptor.email.trim(),
+          phone: address.descriptor.phone.trim(),
+        },
+        address: {
+          areaCode: address.address.areaCode.trim(),
+          building: address.address.building.trim(),
+          city: address.address.city.trim(),
+          country: "IND",
+          door: address.address.building.trim(),
+          building: address.address.building.trim(),
+          state: address.address.state.trim(),
+          street: address.address.street.trim(),
+          tag: address.address.tag.trim(),
+          lat: address.address.lat,
+          lng: address.address.lng,
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setUpdatedAddedAddr(data);
+      dispatch(setlocation(data));
+      dispatch(setAddressList([data]));
+      localStorage.setItem("location", JSON.stringify(data));
+      const values = { lat: address.address.lat, lng: address.address.lng };
+      localStorage.setItem("currentLatLng", JSON.stringify(values));
+      setOpenAddressModal(false);
+      CustomToaster("success", "New delivery address selected.");
+      dispatch(setIsLoading(false));
+      return;
+    }
     try {
       dispatch(setIsLoading(true));
-      const data = await 
-        postCall(`/clientApis/v1/delivery_address`, {
-          descriptor: {
-            name: address.descriptor.name.trim(),
-            email: address.descriptor.email.trim(),
-            phone: address.descriptor.phone.trim(),
-          },
-          address: {
-            areaCode: address.address.areaCode.trim(),
-            building: address.address.building.trim(),
-            city: address.address.city.trim(),
-            country: "IND",
-            door: address.address.building.trim(),
-            building: address.address.building.trim(),
-            state: address.address.state.trim(),
-            street: address.address.street.trim(),
-            tag: address.address.tag.trim(),
-            lat: address.address.lat,
-            lng: address.address.lng,
-          },
-        });
+      const data = await postCall(`/clientApis/v1/delivery_address`, {
+        descriptor: {
+          name: address.descriptor.name.trim(),
+          email: address.descriptor.email.trim(),
+          phone: address.descriptor.phone.trim(),
+        },
+        address: {
+          areaCode: address.address.areaCode.trim(),
+          building: address.address.building.trim(),
+          city: address.address.city.trim(),
+          country: "IND",
+          door: address.address.building.trim(),
+          building: address.address.building.trim(),
+          state: address.address.state.trim(),
+          street: address.address.street.trim(),
+          tag: address.address.tag.trim(),
+          lat: address.address.lat,
+          lng: address.address.lng,
+        },
+      });
       console.log("updated addr", data);
       dispatch(setIsLoading(false));
       setUpdatedAddedAddr(data);
       fetchDeliveryAddress();
     } catch (err) {
-      CustomToaster('error',err);
+      CustomToaster("error", err);
       dispatch(setIsLoading(false));
     } finally {
       dispatch(setIsLoading(false));
@@ -148,7 +182,7 @@ const AddressList = (props) => {
           addresses={addresses}
           onUpdateAddresses={onUpdateAddresses}
           onSelectAddress={handleDeliveryAddressSelect}
-          onAddAddress = {onAddAddress}
+          onAddAddress={onAddAddress}
         />
       </Box>
     </CustomModal>

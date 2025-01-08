@@ -1,16 +1,50 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setIsLoading } from '@/redux/slices/global';
 import { setAddressList } from '@/redux/slices/customer';
 import { setlocation } from '@/redux/slices/addressData';
 import { setCartList } from '@/redux/slices/cart';
-import { getCall } from '@/api/MainApi';
+import { getCall, postCall } from '@/api/MainApi';
 import useCancellablePromise from '@/api/cancelRequest';
+import { CustomToaster } from '../custom-toaster/CustomToaster';
 
 export const useAuthData = () => {
     const dispatch = useDispatch();
     const { cancellablePromise } = useCancellablePromise();
-
+    const location = useSelector(state=>state.addressData.location);
+    const postUserLocation = async()=>{
+        try {
+              dispatch(setIsLoading(true));
+              const data = await postCall(`/clientApis/v1/delivery_address`, {
+                descriptor: {
+                  name: location.descriptor.name.trim(),
+                  email: location.descriptor.email.trim(),
+                  phone: location.descriptor.phone.trim(),
+                },
+                address: {
+                  areaCode: location.address.areaCode.trim(),
+                  building: location.address.building.trim(),
+                  city: location.address.city.trim(),
+                  country: "IND",
+                  door: location.address.building.trim(),
+                  building: location.address.building.trim(),
+                  state: location.address.state.trim(),
+                  street: location.address.street.trim(),
+                  tag: location.address.tag.trim(),
+                  lat: location.address.lat,
+                  lng: location.address.lng,
+                },
+              });
+              dispatch(setIsLoading(false));
+              await fetchDeliveryAddress();
+            } catch (err) {
+              CustomToaster("error", err);
+              dispatch(setIsLoading(false));
+            } finally {
+              dispatch(setIsLoading(false));
+              // setAddAddressLoading(false);
+            }
+    }
     const fetchDeliveryAddress = async () => {
         dispatch(setIsLoading(true));
         try {
@@ -56,6 +90,9 @@ export const useAuthData = () => {
     const fetchUserData = () => {
         const token = localStorage.getItem('token');
         if (token) {
+            if(!location?.id) {
+               postUserLocation();
+            }
             fetchDeliveryAddress();
             fetchCartItems();
         }

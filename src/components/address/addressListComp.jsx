@@ -321,7 +321,6 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
             onChange={handleInputChange}
             fullWidth
             margin="normal"
-            disabled
             error={!!formErrors.street}
             helperText={formErrors.street}
           />
@@ -427,14 +426,14 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
           )}
         </DialogContent>
         <DialogActions>
-          <Button
+          {addresses.length>=1 &&<Button
             onClick={() => {
               setIsEditMode(false);
               setIsAddMode(false);
             }}
           >
             Cancel
-          </Button>
+          </Button>}
           <Button
             onClick={handleSaveAddress}
             color="primary"

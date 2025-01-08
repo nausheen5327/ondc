@@ -12,7 +12,12 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+# Add these lines to .gitignore
+.env
+.env.development
+.env.production
+.env.local
+.env.*.local
 # testing
 /coverage
 

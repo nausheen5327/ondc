@@ -12,7 +12,7 @@ import DrawerMenu from '../DrawerMenu'
 import LogoSide from '../second-navbar/LogoSide'
 import ThemeSwitches from './ThemeSwitches'
 import AddressReselect from './address-reselect/AddressReselect'
-import { setLocation } from '@/redux/slices/addressData'
+import { setlocation, setLocation } from '@/redux/slices/addressData'
 import SearchBox from '@/components/home/hero-section-with-search/SearchBox'
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
@@ -27,14 +27,10 @@ const TopNav = ({ cartListRefetch }) => {
     console.log("location...",location);
     const businessLogo = global?.fav_icon_full_url
     
-    
-// useEffect(() => {
-//         let location = undefined
-//         if (typeof window !== 'undefined') {
-//             location = localStorage.getItem('location')
-//         }
-//         dispatch(setLocation(location));
-//     }, [])
+useEffect(() => {
+        let location =localStorage.getItem('location');
+        if(location)dispatch(setlocation(JSON.parse(location)));
+    }, [])
 
     return (
         <NoSsr>
