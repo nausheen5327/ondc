@@ -14,3 +14,5 @@ pnpm dev
 bun dev
 ```
 
+To create build 
+ npm i --legacy-peer-deps npm i axios npm i @reduxjs/toolkit npm install dayjs
