@@ -102,15 +102,29 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
     }
   }, []);
   // Handle form input change
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+    
+  //   setCurrentAddress((prev) => {
+  //     const [mainKey, subKey] = name.split(".");
+  //     localStorage.setItem("currentAddress", JSON.stringify({ ...prev, [mainKey]: { ...prev[mainKey], [subKey]: value }}))
+  //     return { ...prev, [mainKey]: { ...prev[mainKey], [subKey]: value } };
+  //   });
+  // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCurrentAddress((prev) => {
-      const [mainKey, subKey] = name.split(".");
-      localStorage.setItem("currentAddress", JSON.stringify({ ...prev, [mainKey]: { ...prev[mainKey], [subKey]: value }}))
-      return { ...prev, [mainKey]: { ...prev[mainKey], [subKey]: value } };
+    const [mainKey, subKey] = name.split(".");
+    
+    setCurrentAddress(prev => {
+      const newAddress = {
+        ...prev,
+        [mainKey]: { ...prev[mainKey], [subKey]: value }
+      };
+      // Save to localStorage after state update
+      localStorage.setItem("currentAddress", JSON.stringify(newAddress));
+      return newAddress;
     });
   };
-
   const handleCustomTag = (value) => {
     setCustomTag(value);
   };
@@ -173,20 +187,20 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
     return Object.keys(errors).length === 0;
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      const isKeyboardOpen = window.innerHeight < 600; // Adjust threshold for your app
-      const container = document.querySelector(".containerBox");
-      if (container) {
-        container.style.marginBottom = isKeyboardOpen ? "300px" : "0px";
-      }
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const isKeyboardOpen = window.innerHeight < 600; // Adjust threshold for your app
+  //     const container = document.querySelector(".containerBox");
+  //     if (container) {
+  //       container.style.marginBottom = isKeyboardOpen ? "300px" : "0px";
+  //     }
+  //   };
   
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   window.addEventListener("resize", handleResize);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
   
   
@@ -284,6 +298,13 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
         onClose={() => {
           setIsEditMode(false);
           setIsAddMode(false);
+        }}
+        PaperProps={{
+          style: {
+            margin: '16px',
+            maxHeight: '85vh',
+            overflowY: 'auto'
+          }
         }}
       >
         <DialogTitle

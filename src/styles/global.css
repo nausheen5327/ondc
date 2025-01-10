@@ -17,9 +17,20 @@ body {
     text-decoration: none !important;
     color: #b9b9b9;
 }
+
+@media screen and (max-width: 600px) {
+    .MuiDialog-paper {
+      margin: 0;
+      max-height: 100% !important;
+      height: auto !important;
+      position: fixed !important;
+      bottom: 0 !important;
+      top: auto !important;
+    }
+  }
 .containerBox{
  
-        height: calc(100vh - 50px); /* Ensures stability during keyboard appearance */
+        height: calc(100vh - 50%); /* Ensures stability during keyboard appearance */
         overflow-y: auto;
       
       
