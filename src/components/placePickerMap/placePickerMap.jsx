@@ -104,82 +104,82 @@
 //   };
 
 //   // Initialize or update marker
-//   // const updateMarker = useCallback(
-//   //   (position) => {
+//   const updateMarker = useCallback(
+//     (position) => {
       
-//   //     if (!map || !googleRef.current?.maps) return;
+//       if (!map || !googleRef.current?.maps) return;
 
-//   //     const newPosition = new googleRef.current.maps.LatLng(
-//   //       position.lat,
-//   //       position.lng
-//   //     );
+//       const newPosition = new googleRef.current.maps.LatLng(
+//         position.lat,
+//         position.lng
+//       );
 
-//   //     console.log("new position", googleRef.current?.maps);
+//       console.log("new position", googleRef.current?.maps);
 
 
-//   //     if (!markerRef.current) {
-//   //       // Create new marker
-//   //       const markerOptions = {
-//   //         map,
-//   //         position: newPosition,
-//   //         draggable: true,
-//   //       };
+//       if (!markerRef.current) {
+//         // Create new marker
+//         const markerOptions = {
+//           map,
+//           position: newPosition,
+//           draggable: true,
+//         };
 
-//   //       // Use AdvancedMarkerElement if available, fallback to regular Marker
-//   //       markerRef.current = googleRef.current.maps.marker?.AdvancedMarkerElement
-//   //         ? new googleRef.current.maps.marker.AdvancedMarkerElement(
-//   //             markerOptions
-//   //           )
-//   //         : new googleRef.current.maps.Marker(markerOptions);
+//         // Use AdvancedMarkerElement if available, fallback to regular Marker
+//         markerRef.current = googleRef.current.maps.marker?.AdvancedMarkerElement
+//           ? new googleRef.current.maps.marker.AdvancedMarkerElement(
+//               markerOptions
+//             )
+//           : new googleRef.current.maps.Marker(markerOptions);
 
-//   //       // Add drag end listener
-//   //       markerRef.current.addListener("dragend", () => {
-//   //         const pos = markerRef.current.position;
-//   //         const newPos = { lat: pos.lat(), lng: pos.lng() };
-//   //         getAddressFromLatLng(newPos.lat, newPos.lng);
-//   //       });
-//   //     } else {
-//   //       // Update existing marker
-//   //       markerRef.current.setPosition(newPosition);
-//   //     }
-//   //   },
-//   //   [map, getAddressFromLatLng]
-//   // );
+//         // Add drag end listener
+//         markerRef.current.addListener("dragend", () => {
+//           const pos = markerRef.current.position;
+//           const newPos = { lat: pos.lat(), lng: pos.lng() };
+//           getAddressFromLatLng(newPos.lat, newPos.lng);
+//         });
+//       } else {
+//         // Update existing marker
+//         markerRef.current.setPosition(newPosition);
+//       }
+//     },
+//     [map, getAddressFromLatLng]
+//   );
 
-//   const updateMarker = useCallback((position) => {
-//     console.log("Updating marker position:", position);
+//   // const updateMarker = useCallback((position) => {
+//   //   console.log("Updating marker position:", position);
   
-//     if (!map || !googleRef.current?.maps){
-//       console.log("inside update marker position if:", map);
-//       return;
-//     }
+//   //   if (!map || !googleRef.current?.maps){
+//   //     console.log("inside update marker position if:", map);
+//   //     return;
+//   //   }
   
-//     const newPosition = new googleRef.current.maps.LatLng(
-//       position.lat,
-//       position.lng
-//     );
+//   //   const newPosition = new googleRef.current.maps.LatLng(
+//   //     position.lat,
+//   //     position.lng
+//   //   );
   
-//     if (!markerRef.current) {
-//       console.log("Creating new marker");
-//       const markerOptions = {
-//         map,
-//         position: newPosition,
-//         draggable: true,
-//       };
+//   //   if (!markerRef.current) {
+//   //     console.log("Creating new marker");
+//   //     const markerOptions = {
+//   //       map,
+//   //       position: newPosition,
+//   //       draggable: true,
+//   //     };
   
-//       markerRef.current = new googleRef.current.maps.Marker(markerOptions);
+//   //     markerRef.current = new googleRef.current.maps.Marker(markerOptions);
   
-//       markerRef.current.addListener("dragend", () => {
-//         const pos = markerRef.current.position;
-//         const newPos = { lat: pos.lat(), lng: pos.lng() };
-//         console.log("Marker dragged to:", newPos);
-//         getAddressFromLatLng(newPos.lat, newPos.lng);
-//       });
-//     } else {
-//       console.log("Updating existing marker position");
-//       markerRef.current.setPosition(newPosition);
-//     }
-//   }, [map, getAddressFromLatLng]);
+//   //     markerRef.current.addListener("dragend", () => {
+//   //       const pos = markerRef.current.position;
+//   //       const newPos = { lat: pos.lat(), lng: pos.lng() };
+//   //       console.log("Marker dragged to:", newPos);
+//   //       getAddressFromLatLng(newPos.lat, newPos.lng);
+//   //     });
+//   //   } else {
+//   //     console.log("Updating existing marker position");
+//   //     markerRef.current.setPosition(newPosition);
+//   //   }
+//   // }, [map, getAddressFromLatLng]);
   
 //   // Initialize map
 //   const initMap = useCallback(() => {

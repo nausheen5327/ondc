@@ -57,8 +57,11 @@ export const useAuthData = () => {
                 if (findIndex !== -1) {
                     dispatch(setlocation(locationData));
                     localStorage.setItem('location', JSON.stringify(data[findIndex]));
-                }
-            }
+                }}
+            // }else{
+            //     dispatch(setlocation(data[0]));
+            //     localStorage.setItem('location', JSON.stringify(data[0]));
+            // }
             dispatch(setAddressList(data));
         } catch (err) {
             console.error('Error fetching delivery address:', err);

@@ -14,22 +14,26 @@ import ThemeSwitches from './ThemeSwitches'
 import AddressReselect from './address-reselect/AddressReselect'
 import { setlocation, setLocation } from '@/redux/slices/addressData'
 import SearchBox from '@/components/home/hero-section-with-search/SearchBox'
+import { useRouter } from 'next/router'
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
     const theme = useTheme()
     const [query,setQuery] = useState("");
-
+    const router = useRouter()
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     const { global, userLocationUpdate } = useSelector(
         (state) => state.globalSettings
     )
     const location = useSelector((state)=>state.addressData.location)
     console.log("location...",location);
-    const businessLogo = global?.fav_icon_full_url
+    const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
     
 useEffect(() => {
         let location =localStorage.getItem('location');
-        if(location)dispatch(setlocation(JSON.parse(location)));
+        if(location){
+            dispatch(setlocation(JSON.parse(location)))
+            // router.push('/home')
+        };
     }, [])
 
     return (

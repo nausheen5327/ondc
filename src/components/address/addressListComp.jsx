@@ -95,12 +95,18 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
     setIsAddMode(true);
     setCustomTag("");
   };
-
+  useEffect(() => {
+    const savedAddress = localStorage.getItem("currentAddress");
+    if (savedAddress) {
+      setCurrentAddress(JSON.parse(savedAddress));
+    }
+  }, []);
   // Handle form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCurrentAddress((prev) => {
       const [mainKey, subKey] = name.split(".");
+      localStorage.setItem("currentAddress", JSON.stringify({ ...prev, [mainKey]: { ...prev[mainKey], [subKey]: value }}))
       return { ...prev, [mainKey]: { ...prev[mainKey], [subKey]: value } };
     });
   };
@@ -167,6 +173,24 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
     return Object.keys(errors).length === 0;
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      const isKeyboardOpen = window.innerHeight < 600; // Adjust threshold for your app
+      const container = document.querySelector(".containerBox");
+      if (container) {
+        container.style.marginBottom = isKeyboardOpen ? "300px" : "0px";
+      }
+    };
+  
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  
+  
+
   return (
     <div
       style={{
@@ -175,6 +199,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
         flexDirection: "column",
         gap: "16px",
       }}
+      className="containerBox"
     >
       <RTL direction="ltr">
       {addresses.length>0 && addresses.map((address) => (

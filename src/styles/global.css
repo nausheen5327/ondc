@@ -17,6 +17,19 @@ body {
     text-decoration: none !important;
     color: #b9b9b9;
 }
+.containerBox{
+ 
+        height: calc(100vh - 50px); /* Ensures stability during keyboard appearance */
+        overflow-y: auto;
+      
+      
+}
+input, textarea {
+    font-size: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+
+  }
 .grecaptcha-badge{
     display: none !important;
     height: 0px !important;
