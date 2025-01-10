@@ -77,6 +77,7 @@ import { deleteCall, getCall, postCall, putCall } from '@/api/MainApi'
 import { CustomToaster } from '../custom-toaster/CustomToaster'
 import CartActions from './cartAction';
 import { useCheckoutFlow } from '../checkout-guard/checkoutFlow';
+import preAuthCartHelpers from '../foodDetail-modal/PreAuthCartHandler';
 
 const FloatingCart = (props) => {
   const { handleCheckoutFlow } = useCheckoutFlow()
@@ -123,8 +124,8 @@ const FloatingCart = (props) => {
       //   setLoading(true);
       // dispatch(setIsLoading(true));
       // const user = JSON.parse(getValueFromCookie("user"));
-      const user = JSON.parse(localStorage.getItem('userId'))
-      const url = `/clientApis/v2/cart/${user}`;
+      const user = JSON.parse(localStorage.getItem('user'))
+      const url = `/clientApis/v2/cart/${user._id}`;
       const res = await getCall(url);
       // dispatch(setIsLoading(false));
       console.log("cart...", res);
@@ -157,129 +158,223 @@ const FloatingCart = (props) => {
     }
   };
 
+  const getCartItemsPre= async()=>{
+    const res = JSON.parse(localStorage.getItem('cartItemsPreAuth'))
+    const matchingItems = res.filter(cartItem =>
+        cartItem.id === product.id
+    );
+
+    console.log("matching...",matchingItems)
+
+    if (matchingItems.length === 0) return 0;
+    const totalQuantity = matchingItems.reduce((sum, item) => {
+        return sum + (item.quantity?.count || 0);
+    }, 0);
+    console.log("matching...",totalQuantity)
+
+}
 
 
   const updateCartItem = async (itemId, increment, uniqueId) => {
-    try {
-      // dispatch(setIsLoading(true));
-      // const user = JSON.parse(getValueFromCookie("user"));
-      const user = JSON.parse(localStorage.getItem('userId'))
-      const url = `/clientApis/v2/cart/${user}/${uniqueId}`;
-
-      // Find the item
-      const itemIndex = cartItems.findIndex((item) => item._id === uniqueId);
-      if (itemIndex === -1) return;
-
-      // Create a deep copy of the cart item
-      const updatedCartItem = JSON.parse(JSON.stringify(cartItems[itemIndex]));
-
-      if (increment !== null) {
-        if (increment) {
-          const productMaxQuantity = updatedCartItem?.item?.product?.quantity?.maximum;
-
-          if (productMaxQuantity) {
-            if (updatedCartItem.item.quantity.count >= productMaxQuantity.count) {
-              CustomToaster(
-                'error',
-                `Maximum allowed quantity is ${updatedCartItem.item.quantity.count}`
-              );
-              return;
-            }
-          }
-
-          // Create new payload for increment
-          const payload = {
-            ...updatedCartItem.item,
-            id: updatedCartItem.item.id,
-            quantity: {
-              ...updatedCartItem.item.quantity,
-              count: updatedCartItem.item.quantity.count + 1
-            }
-          };
-
-          // Handle customizations for increment
-          if (payload.customisations) {
-            payload.customisations = payload.customisations.map((c) => ({
-              ...c,
-              quantity: {
-                ...c.quantity,
-                count: (c.quantity?.count || 0) + 1
+    let user = localStorage.getItem('user');
+    if(user)
+    {
+      try {
+        // dispatch(setIsLoading(true));
+        // const user = JSON.parse(getValueFromCookie("user"));
+         user = JSON.parse(user)
+        const url = `/clientApis/v2/cart/${user._id}/${uniqueId}`;
+        // Find the item
+        const itemIndex = cartItems.findIndex((item) => item._id === uniqueId);
+        if (itemIndex === -1) return;
+  
+        // Create a deep copy of the cart item
+        const updatedCartItem = JSON.parse(JSON.stringify(cartItems[itemIndex]));
+  
+        if (increment !== null) {
+          if (increment) {
+            const productMaxQuantity = updatedCartItem?.item?.product?.quantity?.maximum;
+  
+            if (productMaxQuantity) {
+              if (updatedCartItem.item.quantity.count >= productMaxQuantity.count) {
+                CustomToaster(
+                  'error',
+                  `Maximum allowed quantity is ${updatedCartItem.item.quantity.count}`
+                );
+                return;
               }
-            }));
-          } else {
-            payload.customisations = null;
-          }
-
-          try {
-            // dispatch(setIsLoading(true));
-            await putCall(url, payload);
-            // dispatch(setIsLoading(false));
-            // setLoading(false);
-            await getCartItems();
-          } catch (error) {
-            console.error("Error updating cart:", error);
-            CustomToaster('error', 'Failed to update cart');
-            // setLoading(false);
-            // dispatch(setIsLoading(false));
-          }
-
-        } else {
-          // Decrement case
-          if (updatedCartItem.item.quantity.count <= 1) return;
-
-          // Create new payload for decrement
-          const payload = {
-            ...updatedCartItem.item,
-            id: updatedCartItem.item.id,
-            quantity: {
-              ...updatedCartItem.item.quantity,
-              count: updatedCartItem.item.quantity.count - 1
             }
-          };
-
-          // Handle customizations for decrement
-          if (payload.customisations) {
-            payload.customisations = payload.customisations.map((c) => ({
-              ...c,
+  
+            // Create new payload for increment
+            const payload = {
+              ...updatedCartItem.item,
+              id: updatedCartItem.item.id,
               quantity: {
-                ...c.quantity,
-                count: Math.max((c.quantity?.count || 0) - 1, 0)
+                ...updatedCartItem.item.quantity,
+                count: updatedCartItem.item.quantity.count + 1
               }
-            }));
+            };
+  
+            // Handle customizations for increment
+            if (payload.customisations) {
+              payload.customisations = payload.customisations.map((c) => ({
+                ...c,
+                quantity: {
+                  ...c.quantity,
+                  count: (c.quantity?.count || 0) + 1
+                }
+              }));
+            } else {
+              payload.customisations = null;
+            }
+  
+            try {
+              // dispatch(setIsLoading(true));
+              await putCall(url, payload);
+              // dispatch(setIsLoading(false));
+              // setLoading(false);
+              await getCartItems();
+            } catch (error) {
+              console.error("Error updating cart:", error);
+              CustomToaster('error', 'Failed to update cart');
+              // setLoading(false);
+              // dispatch(setIsLoading(false));
+            }
+  
           } else {
-            payload.customisations = null;
-          }
-
-          try {
-            // dispatch(setIsLoading(true));
-            await putCall(url, payload);
-            // dispatch(setIsLoading(false));
-            // setLoading(false);
-            await getCartItems();
-          } catch (error) {
-            console.error("Error updating cart:", error);
-            CustomToaster('error', 'Failed to update cart');
-            // setLoading(false);
-            // dispatch(setIsLoading(false));
+            // Decrement case
+            if (updatedCartItem.item.quantity.count <= 1) return;
+  
+            // Create new payload for decrement
+            const payload = {
+              ...updatedCartItem.item,
+              id: updatedCartItem.item.id,
+              quantity: {
+                ...updatedCartItem.item.quantity,
+                count: updatedCartItem.item.quantity.count - 1
+              }
+            };
+  
+            // Handle customizations for decrement
+            if (payload.customisations) {
+              payload.customisations = payload.customisations.map((c) => ({
+                ...c,
+                quantity: {
+                  ...c.quantity,
+                  count: Math.max((c.quantity?.count || 0) - 1, 0)
+                }
+              }));
+            } else {
+              payload.customisations = null;
+            }
+  
+            try {
+              // dispatch(setIsLoading(true));
+              await putCall(url, payload);
+              // dispatch(setIsLoading(false));
+              // setLoading(false);
+              await getCartItems();
+            } catch (error) {
+              console.error("Error updating cart:", error);
+              CustomToaster('error', 'Failed to update cart');
+              // setLoading(false);
+              // dispatch(setIsLoading(false));
+            }
           }
         }
+      } catch (error) {
+        console.error("Error in updateCartItem:", error);
+        CustomToaster('error', 'Failed to update cart');
+        // setLoading(false);
+        // dispatch(setIsLoading(false));
       }
-    } catch (error) {
-      console.error("Error in updateCartItem:", error);
-      CustomToaster('error', 'Failed to update cart');
-      // setLoading(false);
-      // dispatch(setIsLoading(false));
-    }
-  };
+    }else{ try {
+      const item = cartItems.find(item => item._id === uniqueId);
+      if (!item) return;
 
+      const customisations = item.item.customisations || [];
+      const updatedItems = preAuthCartHelpers.updatePreAuthCartItem(
+        itemId, 
+        increment,
+        customisations
+      );
+
+      // Transform the items to match the cart list format
+      const transformedItems = createTransformedArray(updatedItems);
+      dispatch(setCartList(transformedItems));
+      localStorage.setItem('cartListPreAuth',JSON.stringify(transformedItems));
+
+      
+      // Also update the Redux cart state for UI consistency
+      // const cartFormatItems = updatedItems.map(item => ({
+      //   ...item,
+      //   cartItemId: item.id,
+      //   totalPrice: calculateTotalPrice(item),
+      //   selectedAddons: item.customisations || [],
+      //   quantity: item.quantity.count,
+      //   variations: item.variations || [],
+      //   itemBasePrice: calculateBasePrice(item),
+      //   selectedOptions: getSelectedVariations(item.variations || [])
+      // }));
+      // dispatch(setCartList(cartFormatItems));
+
+    } catch (error) {
+      console.error("Error updating pre-auth cart:", error);
+      CustomToaster('error', 'Failed to update cart');
+    }}
+    
+  };
+  
+const createTransformedArray = (dataList) => {
+        const currentTimestamp = new Date().toISOString(); // Current date and time in ISO format
+      
+        return dataList.map((data) => {
+          const transformedItem = {
+            _id: data?.id || "", // Use the `id` field as `_id`, or an empty string if not available
+            cart: data?.provider?.id || "", // Use the `provider.id` field as `cart`, or an empty string if not available
+            item: {
+              ...data
+            },
+            createdAt: currentTimestamp, // Add current timestamp for `createdAt`
+            updatedAt: currentTimestamp, // Add current timestamp for `updatedAt`
+          };
+      
+          return transformedItem;
+        });
+      };
   const deleteCartItem = async (itemId) => {
     // dispatch(setIsLoading(true));
     // const user = JSON.parse(getValueFromCookie("user"));
-    const user = JSON.parse(localStorage.getItem('userId'))
-    const url = `/clientApis/v2/cart/${user}/${itemId}`;
-    const res = await deleteCall(url);
-    // dispatch(setIsLoading(false));
-    getCartItems();
+    let user  = localStorage.getItem("user");
+    if(user)
+    {
+      user = JSON.parse(user)
+      const url = `/clientApis/v2/cart/${user}/${itemId}`;
+      const res = await deleteCall(url);
+      // dispatch(setIsLoading(false));
+      getCartItems();
+    }else {
+      // Handle pre-auth cart deletion
+      try {
+        const item = cartItems.find(item => item._id === itemId);
+        if (!item) return;
+
+        const customisations = item.item.customisations || [];
+        const updatedItems = preAuthCartHelpers.deleteFromPreAuthCart(
+          item.item.id,
+          customisations
+        );
+
+        // Transform the items to match the cart list format
+        const transformedItems = createTransformedArray(updatedItems);
+        dispatch(setCartList(transformedItems));
+        localStorage.setItem('cartListPreAuth',JSON.stringify(transformedItems));
+
+      } catch (error) {
+        console.error("Error deleting from pre-auth cart:", error);
+        CustomToaster('error', 'Failed to delete item from cart');
+      }
+    }
   };
 
   const DrawerHeader = styled('div')(({ theme }) => ({
@@ -549,8 +644,9 @@ const FloatingCart = (props) => {
   };
 
   const handleCheckout = () => {
-    handleCheckoutFlow(cartItems, location)
+    // handleCheckoutFlow(cartItems, location)
     setSideDrawerOpen(false)
+    router.push('/checkout');
   };
 
   // const variationPrice = cartList.map((item) => {
@@ -727,13 +823,13 @@ const FloatingCart = (props) => {
                     <Grid container spacing={{ xs: 1 }}>
                       {cartList?.map((eachItem) => {
                         return (
-                          <React.Fragment key={eachItem.item.itemId}>
+                          <React.Fragment key={eachItem?.item?.itemId}>
                             <CartContent item={eachItem} handleProductUpdateModal={handleProductUpdateModal}
                               productBaseUrl={eachItem?.item?.product?.descriptor?.images[0]}
                               t={t}
-                              handleIncrement={() => updateCartItem(eachItem.item.id, true, eachItem._id)}
-                              handleDecrement={() => updateCartItem(eachItem.item.id, false, eachItem._id)}
-                              handleRemove={() => deleteCartItem(eachItem._id)}
+                              handleIncrement={() => updateCartItem(eachItem?.item?.id, true, eachItem?._id)}
+                              handleDecrement={() => updateCartItem(eachItem?.item?.id, false, eachItem?._id)}
+                              handleRemove={() => deleteCartItem(eachItem?._id)}
                             />
                           </React.Fragment>
                         )

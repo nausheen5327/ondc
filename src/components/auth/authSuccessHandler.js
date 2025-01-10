@@ -13,6 +13,7 @@ export const useAuthData = () => {
     const { cancellablePromise } = useCancellablePromise();
     const location = useSelector(state=>state.addressData.location);
     const postUserLocation = async()=>{
+        console.log('verified 2')
         try {
               dispatch(setIsLoading(true));
               const data = await postCall(`/clientApis/v1/delivery_address`, {
@@ -41,11 +42,13 @@ export const useAuthData = () => {
               CustomToaster("error", err);
               dispatch(setIsLoading(false));
             } finally {
+            console.log('verified 3')
               dispatch(setIsLoading(false));
               // setAddAddressLoading(false);
             }
     }
     const fetchDeliveryAddress = async () => {
+        console.log('verified 4')
         dispatch(setIsLoading(true));
         try {
             const data = await getCall("/clientApis/v1/delivery_address")
@@ -66,6 +69,7 @@ export const useAuthData = () => {
         } catch (err) {
             console.error('Error fetching delivery address:', err);
         } finally {
+            console.log('verified 5')
             dispatch(setIsLoading(false));
         }
     };
@@ -73,28 +77,52 @@ export const useAuthData = () => {
     const fetchCartItems = async () => {
         const userData = localStorage.getItem('user');
         if (!userData) return;
-
+        console.log('verified 6')
         const parsedUser = JSON.parse(userData);
-        if (!parsedUser.localId) return;
+        if (!parsedUser._id) return;
 
-        dispatch(setIsLoading(true));
+        // dispatch(setIsLoading(true));
         try {
-            const url = `/clientApis/v2/cart/${parsedUser.localId}`;
+            const url = `/clientApis/v2/cart/${parsedUser._id}`;
             const res = await getCall(url);
             dispatch(setCartList(res));
         } catch (error) {
             console.error("Error fetching cart items:", error);
         } finally {
-            dispatch(setIsLoading(false));
+            console.log('verified 7')
+            // dispatch(setIsLoading(false));
         }
     };
-
+    const postCartItems=async(preAuthItems)=>{
+        const user = JSON.parse(localStorage.getItem('user'));
+        try {
+            for (const item of preAuthItems) {
+              await postCall(`/clientApis/v2/cart/${user._id}`, item);
+            }
+            
+            // Clear pre-auth cart after successful sync
+            localStorage.removeItem('cartItemsPreAuth');
+            localStorage.removeItem('cartListPreAuth');
+          } catch (error) {
+            console.error('Error syncing pre-auth cart:', error);
+          }
+    }
     // Function to fetch both address and cart
     const fetchUserData = () => {
         const token = localStorage.getItem('token');
+        let cartItemsPreAuth = localStorage.getItem('cartItemsPreAuth');
+        console.log('verified 1',token);
         if (token) {
             if(!location?.id) {
                postUserLocation();
+            }
+            if(cartItemsPreAuth)
+            {
+                cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
+                if(cartItemsPreAuth.length)
+                {
+                   postCartItems(cartItemsPreAuth);
+                }
             }
             fetchDeliveryAddress();
             fetchCartItems();
@@ -108,16 +136,3 @@ export const useAuthData = () => {
     };
 };
 
-// Optional: Auth state listener component
-export const AuthDataListener = () => {
-    const { fetchUserData } = useAuthData();
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchUserData();
-        }
-    }, []);
-
-    return null;
-};

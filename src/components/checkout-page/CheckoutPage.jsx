@@ -1320,7 +1320,7 @@ const verifyPayment = async (items, method) => {
         // }
       }, []);
 
-    const responseReceivedIds = updatedCartItems.map((item) => {
+    const responseReceivedIds = updatedCartItems?.map((item) => {
         const { message } = item;
         return message?.quote?.provider?.id.toString();
       })

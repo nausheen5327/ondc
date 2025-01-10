@@ -8,7 +8,7 @@ import { constructQouteObject } from '@/utils/constructQouteObject'
 import { postCall, getCall } from '@/api/MainApi'
 import useCancellablePromise from '@/api/cancelRequest'
 import { CustomToaster } from '../custom-toaster/CustomToaster'
-import React, { useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { setCartContext } from '@/redux/slices/cart'
 
 export const useCheckoutFlow = () => {
@@ -53,7 +53,9 @@ export const useCheckoutFlow = () => {
 
   const onGetQuote = async (message_id) => {
     try {
-      dispatch(setIsLoading(true))
+      // dispatch(setIsLoading(true))
+      console.log("verified 16");
+
       const data = await getCall(`/clientApis/v2/on_select?messageIds=${message_id}`)
       
       responseRef.current = [...responseRef.current, data[0]];
@@ -75,6 +77,7 @@ export const useCheckoutFlow = () => {
           ].item.product.fulfillments = data[0].message.quote.fulfillments;
         }
       });
+      console.log("verified 17");
 
       localStorage.setItem(
         "cartItems",
@@ -91,13 +94,13 @@ export const useCheckoutFlow = () => {
           non_additive_offer: selectedNonAdditiveOffer,
         })
       );
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
 
-      router.push(`/checkout`);
+      // router.push(`/checkout`);
     } catch (err) {
       //   setCheckoutLoading(false);
       CustomToaster('error', err.message);
-      dispatch(setIsLoading(false));
+      // dispatch(setIsLoading(false));
 
       //   setGetQuoteLoading(false);
     }
@@ -145,9 +148,10 @@ export const useCheckoutFlow = () => {
   // }
   const onFetchQuote = (message_ids) => {
     console.log('inside fetch quote 1...', message_ids);
-    dispatch(setIsLoading(true))
+    // dispatch(setIsLoading(true))
     eventTimeOutRef.current = []
-  
+    console.log("verified 14");
+
     message_ids.forEach((id) => {
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`
       
@@ -186,6 +190,7 @@ export const useCheckoutFlow = () => {
         console.log('on select triggered', e);
         if (e && e.data) {
           try {
+            console.log("verified 15");
             const { messageId } = JSON.parse(e.data)
             onGetQuote(messageId)
           } catch (error) {
@@ -201,13 +206,13 @@ export const useCheckoutFlow = () => {
         clearTimeout(timer)
   
         if (responseRef.current.length <= 0) {
-          dispatch(setIsLoading(false))
+          // dispatch(setIsLoading(false))
           CustomToaster('error', 'Cannot fetch details for this product')
           router.replace("/")
         }
       }, 20000)
   
-      dispatch(setIsLoading(false))
+      // dispatch(setIsLoading(false))
       eventTimeOutRef.current.push({ eventSource: es, timer })
     })
   }
@@ -229,6 +234,7 @@ export const useCheckoutFlow = () => {
       CustomToaster('error', 'Please Select Address')
       return
     }
+    console.log("verified 10");
 
     try {
       const transactionId = localStorage.getItem("transaction_id")
@@ -264,20 +270,25 @@ export const useCheckoutFlow = () => {
           }]
         }
       }
+      console.log("verified 11");
 
-      dispatch(setIsLoading(true))
+      // dispatch(setIsLoading(true))
       const data = await postCall("/clientApis/v2/select", [selectPayload])
       console.log('inside get quote 1...',data);
 
-      dispatch(setIsLoading(false))
+      // dispatch(setIsLoading(false))
 
       const isNACK = data.find(item => item?.error && item?.message?.ack?.status === "NACK")
       console.log('inside get quote 2...',isNACK);
 
       if (isNACK) {
+        console.log("verified 12");
+
         console.log('NACK in get quote');
         CustomToaster('error', `${isNACK.error.message}`)
       } else {
+        console.log("verified 13");
+
         onFetchQuote(data.map(txn => txn.context?.message_id))
       }
     } catch (err) {
@@ -293,6 +304,8 @@ export const useCheckoutFlow = () => {
     //   dispatch(setAuthModalOpen(true))
     //   return
     // }
+    console.log("verified 9");
+    console.log("handle checkout executing",token);
     if (cartItems.length > 0) {
       const items = cartItems.map(item => item.item)
       const request_object = constructQouteObject(items)

@@ -116,7 +116,7 @@ const getCartItems = async () => {
     dispatch(setIsLoading(true))
     try {
         const userForCart = userData || JSON.parse(localStorage.getItem('user'))
-        const url = `/clientApis/v2/cart/${userForCart.localId}`
+        const url = `/clientApis/v2/cart/${userForCart._id}`
         console.log("Fetching cart from URL:", url)
         const res = await getCall(url)
         console.log("Cart response:", res)

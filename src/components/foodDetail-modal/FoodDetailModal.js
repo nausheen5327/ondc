@@ -66,6 +66,7 @@ import { updateCartItem } from '@/utils/checkout/cart/updateCartItem'
 import { setAuthModalOpen, setSideDrawerOpen } from '@/redux/slices/global'
 import { useCheckoutFlow } from '../checkout-guard/checkoutFlow'
 import { RTL } from '../RTL/RTL'
+import preAuthCartHelpers from './PreAuthCartHandler'
 const FoodDetailModal = ({
     product,
     image,
@@ -150,10 +151,23 @@ const FoodDetailModal = ({
 
     const deleteCartItem = async (itemId) => {
         // const user = JSON.parse(getValueFromCookie("user"));
-        const user = localStorage.getItem("userId")
-        const url = `/clientApis/v2/cart/${user}/${itemId}`;
-        const res = await deleteCall(url);
-        getCartItems();
+        let user = localStorage.getItem("user")
+        if(user)
+        {
+            user = JSON.parse(user);
+            const url = `/clientApis/v2/cart/${user._id}/${itemId}`;
+            const res = await deleteCall(url);
+            CustomToaster('success', "Item removed from cart");
+            getCartItems();
+        }
+        else{
+            const updatedPreAuthCart = preAuthCartHelpers.deleteFromPreAuthCart(itemId);
+            const transformedList = createTransformedArray(updatedPreAuthCart);
+            dispatch(setCartList(transformedList));
+            localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
+            getCartItemsPre();
+            CustomToaster('success', "Item removed from cart");
+        }
     };
 
     const calculateSubtotal = (groupId, customization_state) => {
@@ -286,12 +300,12 @@ const FoodDetailModal = ({
                 findItem = customisations
                     ? cartItems.find(
                         (item) =>
-                            item.item.id === productPayload.id &&
+                            item?.item?.id === productPayload?.id &&
                             checkCustomisationIsAvailableInCart(customisations, item)
                     )
-                    : cartItems.find((item) => item.item.id === productPayload.id);
+                    : cartItems.find((item) => item?.item?.id === productPayload?.id);
             } else {
-                findItem = cartItems.find((item) => item.item.id === productPayload.id);
+                findItem = cartItems.find((item) => item?.item?.id === productPayload?.id);
             }
             if (findItem) {
                 isItemAvailable = true;
@@ -388,6 +402,8 @@ const FoodDetailModal = ({
         };
     };
 
+    console.log("cartitems inside food modal",cartItems)
+
     const updateCartInLocalStorage = (newItem) => {
         try {
             // Get existing items from localStorage
@@ -416,112 +432,204 @@ const FoodDetailModal = ({
             console.error('Error updating cart in localStorage:', error);
         }
     };
-
+    const createTransformedArray = (dataList) => {
+        const currentTimestamp = new Date().toISOString(); // Current date and time in ISO format
+      
+        return dataList.map((data) => {
+          const transformedItem = {
+            _id: data?.id || "", // Use the `id` field as `_id`, or an empty string if not available
+            cart: data?.provider?.id || "", // Use the `provider.id` field as `cart`, or an empty string if not available
+            item: {
+              ...data
+            },
+            createdAt: currentTimestamp, // Add current timestamp for `createdAt`
+            updatedAt: currentTimestamp, // Add current timestamp for `updatedAt`
+          };
+      
+          return transformedItem;
+        });
+      };
     const addToCart = async (navigate = false, isIncrement = true) => {
         setAddToCartLoading(true);
-        try {
-            //   const user = JSON.parse(getValueFromCookie("user"));
-            const user = localStorage.getItem("userId")
-            const url = `/clientApis/v2/cart/${user}`;
-
-            // Get selected customizations
-            const selectedCustomizations = selectedOptions.map(option => {
-                const customizationItem = modalData[0].customisation_items.find(
-                    item => item.local_id === option.id
-                );
-                return {
-                    ...customizationItem,
-                    quantity: { count: 1 }
-                };
-            });
-
-            // Calculate total price including customizations
-            const basePrice = modalData[0]?.item_details?.price?.value || 0;
-            const customizationTotal = selectedCustomizations.reduce((total, item) => {
-                return total + (item.price?.value || 0);
-            }, 0);
-            const totalPrice = basePrice + customizationTotal;
-
-            const payload = {
-                id: modalData[0].id,
-                local_id: modalData[0].local_id,
-                bpp_id: modalData[0].bpp_details.bpp_id,
-                bpp_uri: modalData[0].context.bpp_uri,
-                domain: modalData[0].context.domain,
-                tags: modalData[0].item_details.tags,
-                customisationState: selectedOptions.length ? {
-                    firstGroup: {
-                        id: modalData[0].customisation_groups[0]?.id,
-                        selected: selectedOptions
-                    }
-                } : null,
-                contextCity: modalData[0].context.city,
-                quantity: { count: 1 },
-                provider: {
-                    id: modalData[0].bpp_details.bpp_id,
-                    locations: modalData[0].locations,
-                    ...modalData[0].provider_details,
-                },
-                product: {
-                    id: modalData[0].id,
-                    subtotal: basePrice,
-                    ...modalData[0].item_details,
-                },
-                customisations: selectedCustomizations,
-                hasCustomisations: selectedCustomizations.length > 0,
-                totalPrice
-            };
-
-            let cartItem = cartItems.filter(ci => ci.item.id === payload.id);
-
-            if (selectedCustomizations.length > 0) {
-                cartItem = cartItem.filter(ci => {
-                    if (!ci.item.customisations) return false;
-                    const existingIds = ci.item.customisations.map(c => c.local_id).sort();
-                    const newIds = selectedCustomizations.map(c => c.local_id).sort();
-                    return JSON.stringify(existingIds) === JSON.stringify(newIds);
+        let user = localStorage.getItem("user")
+        if(user)
+        {
+            try {
+                //   const user = JSON.parse(getValueFromCookie("user"));
+                
+                if(user)user = JSON.parse(user);
+                const url = `/clientApis/v2/cart/${user?._id}`;
+    
+                // Get selected customizations
+                const selectedCustomizations = selectedOptions.map(option => {
+                    const customizationItem = modalData[0].customisation_items.find(
+                        item => item.local_id === option.id
+                    );
+                    return {
+                        ...customizationItem,
+                        quantity: { count: 1 }
+                    };
                 });
-            }
-
-            if (cartItem.length === 0) {
-                const res = await postCall(url, payload);
-                if (navigate) {
-                    handleModalClose();
-                    handleCheckoutFlow([res], location)
-                    return;
+    
+                // Calculate total price including customizations
+                const basePrice = modalData[0]?.item_details?.price?.value || 0;
+                const customizationTotal = selectedCustomizations.reduce((total, item) => {
+                    return total + (item.price?.value || 0);
+                }, 0);
+                const totalPrice = basePrice + customizationTotal;
+    
+                const payload = {
+                    id: modalData[0].id,
+                    local_id: modalData[0].local_id,
+                    bpp_id: modalData[0].bpp_details.bpp_id,
+                    bpp_uri: modalData[0].context.bpp_uri,
+                    domain: modalData[0].context.domain,
+                    tags: modalData[0].item_details.tags,
+                    customisationState: selectedOptions.length ? {
+                        firstGroup: {
+                            id: modalData[0].customisation_groups[0]?.id,
+                            selected: selectedOptions
+                        }
+                    } : null,
+                    contextCity: modalData[0].context.city,
+                    quantity: { count: 1 },
+                    provider: {
+                        id: modalData[0].bpp_details.bpp_id,
+                        locations: modalData[0].locations,
+                        ...modalData[0].provider_details,
+                    },
+                    product: {
+                        id: modalData[0].id,
+                        subtotal: basePrice,
+                        ...modalData[0].item_details,
+                    },
+                    customisations: selectedCustomizations,
+                    hasCustomisations: selectedCustomizations.length > 0,
+                    totalPrice
+                };
+    
+                let cartItem = cartItems.filter(ci => ci.item.id === payload.id);
+    
+                if (selectedCustomizations.length > 0) {
+                    cartItem = cartItem.filter(ci => {
+                        if (!ci.item.customisations) return false;
+                        const existingIds = ci.item.customisations.map(c => c.local_id).sort();
+                        const newIds = selectedCustomizations.map(c => c.local_id).sort();
+                        return JSON.stringify(existingIds) === JSON.stringify(newIds);
+                    });
                 }
-                updateCartInLocalStorage(res);
-                CustomToaster('success', "Item added to cart successfully.");
-            } else {
-                const currentCount = parseInt(cartItem[0].item.quantity.count);
-                const maxCount = parseInt(cartItem[0].item.product.quantity.maximum.count);
-                if (currentCount < maxCount) {
-                    const res = await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
+    
+                if (cartItem.length === 0) {
+                    const res = await postCall(url, payload);
                     if (navigate) {
                         handleModalClose();
-                        handleCheckoutFlow([res], location)
+                        dispatch(setCartList([res]));
+                        router.push('/checkout');
+                        // handleCheckoutFlow([res], location)
                         return;
                     }
-                    CustomToaster('success', "Item quantity updated in your cart.");
                     updateCartInLocalStorage(res);
+                    CustomToaster('success', "Item added to cart successfully.");
                 } else {
-                    CustomToaster('error', "Maximum available quantity already in cart.");
+                    const currentCount = parseInt(cartItem[0].item.quantity.count);
+                    const maxCount = parseInt(cartItem[0].item.product.quantity.maximum.count);
+                    if (currentCount < maxCount) {
+                        const res = await updateCartItem(cartItems, isIncrement, cartItem[0]._id);
+                        if (navigate) {
+                            handleModalClose();
+                            dispatch(setCartList([res]));
+                            router.push('/checkout');
+                            // handleCheckoutFlow([res], location)
+                            return;
+                        }
+                        CustomToaster('success', "Item quantity updated in your cart.");
+                        updateCartInLocalStorage(res);
+                    } else {
+                        CustomToaster('error', "Maximum available quantity already in cart.");
+                    }
                 }
+    
+                getCartItems();
+                //   if (navigate){
+                //     handleModalClose();
+                //     handleCheckoutFlow(cartItems, location)
+                //     // dispatch(setSideDrawerOpen(true))
+                //   } 
+    
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                CustomToaster('error', "Failed to add item to cart");
+            } finally {
+                setAddToCartLoading(false);
             }
+        } else{
+             // Get selected customizations
+             try {
+                const selectedCustomizations = selectedOptions.map(option => {
+                    const customizationItem = modalData[0].customisation_items.find(
+                        item => item.local_id === option.id
+                    );
+                    return {
+                        ...customizationItem,
+                        quantity: { count: 1 }
+                    };
+                });
+    
+                // Calculate total price including customizations
+                const basePrice = modalData[0]?.item_details?.price?.value || 0;
+                const customizationTotal = selectedCustomizations.reduce((total, item) => {
+                    return total + (item.price?.value || 0);
+                }, 0);
+                const totalPrice = basePrice + customizationTotal;
+    
+                const payload = {
+                    id: modalData[0].id,
+                    local_id: modalData[0].local_id,
+                    bpp_id: modalData[0].bpp_details.bpp_id,
+                    bpp_uri: modalData[0].context.bpp_uri,
+                    domain: modalData[0].context.domain,
+                    tags: modalData[0].item_details.tags,
+                    customisationState: selectedOptions.length ? {
+                        firstGroup: {
+                            id: modalData[0].customisation_groups[0]?.id,
+                            selected: selectedOptions
+                        }
+                    } : null,
+                    contextCity: modalData[0].context.city,
+                    quantity: { count: 1 },
+                    provider: {
+                        id: modalData[0].bpp_details.bpp_id,
+                        locations: modalData[0].locations,
+                        ...modalData[0].provider_details,
+                    },
+                    product: {
+                        id: modalData[0].id,
+                        subtotal: basePrice,
+                        ...modalData[0].item_details,
+                    },
+                    customisations: selectedCustomizations,
+                    hasCustomisations: selectedCustomizations.length > 0,
+                    totalPrice
+                };
+                const updatedPreAuthCart = isIncrement 
+                ? preAuthCartHelpers.addToPreAuthCart(payload)
+                : preAuthCartHelpers.updatePreAuthCartItem(payload.id, isIncrement, selectedCustomizations);
 
-            getCartItems();
-            //   if (navigate){
-            //     handleModalClose();
-            //     handleCheckoutFlow(cartItems, location)
-            //     // dispatch(setSideDrawerOpen(true))
-            //   } 
+                const transformedList = createTransformedArray(updatedPreAuthCart);
+                dispatch(setCartList(transformedList));
+                localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
+            CustomToaster('success', isIncrement ? "Item added to cart" : "Cart updated successfully");
+                getCartItemsPre();
+             } catch (error) {
+                console.error('Add to cart error:', error);
+        CustomToaster('error', "Failed to add item to cart");
+             } finally{
+                setAddToCartLoading(false);
 
-        } catch (error) {
-            console.error('Add to cart error:', error);
-            CustomToaster('error', "Failed to add item to cart");
-        } finally {
-            setAddToCartLoading(false);
+             }
+            
         }
+        
     };
     const getProductDetails = async (productId) => {
         try {
@@ -530,8 +638,10 @@ const FoodDetailModal = ({
                 getCall(`/clientApis/v2/item-details?id=${productId}`)
             );
             setProductPayload(data);
-            setModalData([data])
-            //   getCartItems();
+            setModalData([data]);
+            let user  = localStorage.getItem('user');
+            if(user)getCartItems();
+            else getCartItemsPre();
         } catch (error) {
             CustomToaster('error', error)
         } finally {
@@ -544,8 +654,9 @@ const FoodDetailModal = ({
         try {
             //   setLoading(true);
             // const user = JSON.parse(getValueFromCookie("user"));
-            const user = localStorage.getItem("userId")
-            const url = `/clientApis/v2/cart/${user}`;
+            let user = localStorage.getItem("user")
+            if(user) user = JSON.parse(user);
+            const url = `/clientApis/v2/cart/${user._id}`;
             const res = await getCall(url);
             console.log("cart...", res);
             dispatch(setCartList(res));
@@ -571,7 +682,20 @@ const FoodDetailModal = ({
         }
     };
 
+    const getCartItemsPre= async()=>{
+        const res = JSON.parse(localStorage.getItem('cartItemsPreAuth'))
+        const matchingItems = res?.filter(cartItem =>
+            cartItem.id === product.id
+        );
 
+
+        if (matchingItems?.length === 0) return 0;
+        const totalQuantity = matchingItems?.reduce((sum, item) => {
+            return sum + (item.quantity?.count || 0);
+        }, 0);
+
+        setQuantity(totalQuantity)
+    }
 
 
     useEffect(() => {
@@ -926,9 +1050,9 @@ const FoodDetailModal = ({
     }
 
     const isInCart = (id) => {
-        const isInCart = cartList.filter((item) => item?.item?.id === id)
+        const isInCart = cartList?.filter((item) => item?.item?.id === id)
         console.log("same hai kya...", id === cartList?.[0]?.item?.id);
-        if (isInCart.length > 0) {
+        if (isInCart?.length > 0) {
             return true
         } else {
             return false
@@ -983,7 +1107,6 @@ const FoodDetailModal = ({
     // if(!modalData){
     //     return
     // }
-
     ///////////////////////////////////////custom////////////////////////////////
 
     const calculateItemPrice = (item, selectedOptions) => {
@@ -1015,7 +1138,7 @@ const FoodDetailModal = ({
     ) => {
         if (choiceType === 'single') {
             if (checked) {
-                setQuantity(1);
+                // setQuantity(1);
                 if (selectedOptions.length > 0) {
                     // Handle replacing existing option in same group
                     const newSelectedOptions = selectedOptions.filter(
@@ -1423,7 +1546,7 @@ const FoodDetailModal = ({
 
                                                         }
                                                         incrementItem={() => addToCart(false, true)}
-                                                        decrementItem={quantity > 1 ? () => addToCart(false, false) : () => deleteCartItem(itemAvailableInCart._id)}
+                                                        decrementItem={quantity > 1 ? () => addToCart(false, false) : () => deleteCartItem(modalData[0].id)}
                                                         quantity={quantity}
                                                     />
 

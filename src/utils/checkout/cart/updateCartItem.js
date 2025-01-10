@@ -14,7 +14,7 @@ if (userCookie) {
 
 export const updateCartItem = async (cartItems, increment, uniqueId) => {
   console.log(cartItems, increment, uniqueId);
-  const url = `/clientApis/v2/cart/${user.id}/${uniqueId}`;
+  const url = `/clientApis/v2/cart/${user._id}/${uniqueId}`;
   const items = [...cartItems];
   const itemIndex = items.findIndex((item) => item._id === uniqueId);
   

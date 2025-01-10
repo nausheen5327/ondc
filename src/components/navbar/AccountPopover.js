@@ -102,6 +102,7 @@ export const AccountPopover = (props) => {
             dispatch(setIsLoading(true));
             setTimeout(() => {
                 localStorage.removeItem('token')
+                localStorage.removeItem('user')
                 removeCookie('token')
                 dispatch(removeToken())
                 dispatch(setlocation(null))

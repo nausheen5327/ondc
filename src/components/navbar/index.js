@@ -140,7 +140,7 @@ const Navigation = () => {
         // height: '64px',
         backgroundColor: '#fff',
         position: 'relative',
-        zIndex: 1202,
+        zIndex: 1101,
       });
       
       // Second navigation bar wrapper

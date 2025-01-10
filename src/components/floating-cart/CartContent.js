@@ -124,7 +124,7 @@ const CartContent = ({
                 sx={{ cursor: 'pointer' }}
                 onClick={() => handleProductUpdateModal(item)}
               >
-                {item.item.product.descriptor.name}
+                {item?.item?.product?.descriptor?.name}
               </OrderFoodName>
               {item?.halal_tag_status === 1 && item?.is_halal === 1 && (
                 <Tooltip arrow title={t("This is a halal food")}>
@@ -178,7 +178,7 @@ const CartContent = ({
               <OrderFoodAmount>
                 {getAmount(
                   handleTotalAmountWithAddonsFF(
-                    item.item.product.price.value + getCustomizationTotal(),
+                    item?.item?.product?.price?.value + getCustomizationTotal(),
                     item?.selectedAddons
                   ),
                   currencySymbolDirection,
@@ -188,7 +188,7 @@ const CartContent = ({
               </OrderFoodAmount>
 
               <Stack direction="row" alignItems="center" spacing={2}>
-                {item?.item?.quantity.count === 1 ? (
+                {item?.item?.quantity?.count === 1 ? (
                   <IconButton
                     aria-label="delete"
                     size="small"

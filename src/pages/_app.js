@@ -28,7 +28,7 @@ import createEmotionCache from '../utils/create-emotion-cache'
 import BottomNav from '@/components/navbar/BottomNav'
 import LoadingOverlay from '@/components/common/layoutProgress'
 import AuthModal from '@/components/auth'
-import { AuthDataListener } from '@/components/auth/authSuccessHandler'
+// import { AuthDataListener } from '@/components/auth/authSuccessHandler'
 import { styled } from '@mui/styles'
 // import { PersistGate } from 'redux-persist/integration/react'
 
@@ -150,7 +150,6 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     const queryClient = new QueryClient()
     const router = useRouter()
     const [showSplashScreen, setShowSplashScreen] = useState(true)
-
     const { userId } = router.query;
 
     useEffect(() => {
@@ -162,9 +161,6 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     //         localStorage.setItem('language', i18n.language)
     //     }
     // }, [])
-
-
-
 
 
     // let persistor;
@@ -193,7 +189,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
         <CacheProvider value={emotionCache}>
             <QueryClientProvider client={queryClient}>
                 <Provider store={store}>
-                    <AuthDataListener />
+                    {/* <AuthDataListener /> */}
                     <SettingsProvider>
                         <SettingsConsumer>
                             {(value) => (

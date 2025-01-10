@@ -241,6 +241,8 @@ const CustomerInfoPage = () => {
         return newErrors
     }
 
+    console.log("customer info",customerInfo)
+
     const handleSubmit = () => {
         const formErrors = validateForm()
         if (Object.keys(formErrors).length === 0) {

@@ -1,6 +1,6 @@
 import LockIcon from '@mui/icons-material/Lock'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Button, IconButton, Stack, Typography, alpha } from '@mui/material'
+import { Button, Drawer, IconButton, Stack, Typography, alpha } from '@mui/material'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -68,6 +68,24 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     justifyContent: 'center',
 }))
 
+export const CustomDrawerLocal = styled(Drawer)(({ theme }) => ({
+    '& .MuiDrawer-root': {
+        position: 'fixed',
+      },
+      '& .MuiDrawer-paper': {
+        width: '305px',
+        position: 'fixed',
+        // Force a new stacking context
+        transform: 'none',
+        visibility: 'visible',
+        // Use a very high z-index
+        zIndex: 9999,
+      },
+      '& .MuiBackdrop-root': {
+        zIndex: 9998,
+      }
+  }));
+
 const DrawerMenu = ({  cartListRefetch }) => {
     const [forSignup, setForSignup] = useState('')
     const [modalFor, setModalFor] = useState('sign-in')
@@ -98,6 +116,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
         try {
             dispatch(setIsLoading(true));
             await localStorage.removeItem('token')
+            localStorage.removeItem('user');
             removeCookie('token')
             dispatch(setlocation(null))
             dispatch(removeToken())
@@ -410,78 +429,12 @@ const DrawerMenu = ({  cartListRefetch }) => {
                                         toggleDrawers={toggleDrawer}
                                         pathName="/categories"
                                     />
-                                    <CollapsableMenu
-                                        value={collapsableMenu.res}
-                                        setOpenDrawer={setOpenDrawer}
-                                        toggleDrawers={toggleDrawer}
-                                        pathName="/restaurant"
-                                    />
-                                    <CollapsableMenu
-                                        value={collapsableMenu.cuisine}
-                                        setOpenDrawer={setOpenDrawer}
-                                        toggleDrawers={toggleDrawer}
-                                        pathName="/cuisines"
-                                    />
+                                    
+                                    
                                 </>
                             )}
 
-                            <ListItemButton
-                                sx={{
-                                    borderBottom: '1px solid',
-                                    borderBottomColor: (theme) =>
-                                        alpha(theme.palette.neutral[300], 0.3),
-                                    '&:hover': {
-                                        backgroundColor: 'primary.main',
-                                    },
-                                }}
-                            >
-                                <ListItemText
-                                    primary={
-                                        <Typography sx={{ fontSize: '12px' }}>
-                                            {t('Terms & Conditions')}
-                                        </Typography>
-                                    }
-                                    onClick={() =>
-                                        handleRoute('terms-and-conditions')
-                                    }
-                                />
-                            </ListItemButton>
-                            <ListItemButton
-                                sx={{
-                                    borderBottom: '1px solid',
-                                    borderBottomColor: (theme) =>
-                                        alpha(theme.palette.neutral[300], 0.3),
-                                    '&:hover': {
-                                        backgroundColor: 'primary.main',
-                                    },
-                                }}
-                            >
-                                <ListItemText
-                                    primary={
-                                        <Typography sx={{ fontSize: '12px' }}>
-                                            {t('Privacy Policy')}
-                                        </Typography>
-                                    }
-                                    onClick={() =>
-                                        handleRoute('privacy-policy')
-                                    }
-                                />
-                            </ListItemButton>
                             
-                            <ListItemButton>
-                                <ListItemText
-                                    primary={
-                                        <Typography sx={{ fontSize: '12px' }}>
-                                            {t('Language')}
-                                        </Typography>
-                                    }
-                                />
-                                {/* <CustomLanguage
-                                    countryCode={countryCode}
-                                    language={language}
-                                    isMobile={true}
-                                /> */}
-                            </ListItemButton>
                         </>
                     </List>
                     <ButtonContainer marginBottom="50px">
@@ -495,7 +448,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
                         >
                             {t('Sign In')}
                         </Button>
-                        <CustomStackFullWidth
+                        {/* <CustomStackFullWidth
                             direction="row"
                             alignItems="center"
                             justifyContent="center"
@@ -513,7 +466,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
                             >
                                 {t('Sign Up')}
                             </CustomLink>
-                        </CustomStackFullWidth>
+                        </CustomStackFullWidth> */}
                     </ButtonContainer>
                 </Stack>
             </Box>
@@ -546,13 +499,25 @@ const DrawerMenu = ({  cartListRefetch }) => {
                 <MenuIcon />
             </IconButton>
             <RTL direction={languageDirection}>
-                <CustomDrawer
+                <CustomDrawerLocal
                     anchor="right"
                     open={openDrawer}
                     onClose={toggleDrawer(false)}
+                    // Force the drawer to render at root DOM level
+                    container={document.body}
+                    // Disable the default portal behavior
+                    disablePortal={false}
+                    // Override Modal props
+                    ModalProps={{
+                        keepMounted: true,
+                        style: { position: 'fixed', zIndex: 9999 },
+                    }}
+                    SlideProps={{
+                        style: { position: 'fixed' }
+                    }}
                 >
                     {token ? menuList() : withOutLogin()}
-                </CustomDrawer>
+                </CustomDrawerLocal>
             </RTL>
             {/* <AuthModal/> */}
         </Box>

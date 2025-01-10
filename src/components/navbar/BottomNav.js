@@ -12,11 +12,13 @@ import {
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CustomDrawerWishlist from './CustomDrawerWishlist'
+import { setCartList } from '@/redux/slices/cart';
+import { useAuthData } from '../auth/authSuccessHandler';
 
 const BottomNav = (props) => {
     const { t } = useTranslation()
@@ -24,7 +26,8 @@ const BottomNav = (props) => {
     const { setSideDrawerOpen } = props
     const { cartList } = useSelector((state) => state.cart)
     const [openWishlistModal, setOpenWishlistModal] = useState(false)
-
+        const { fetchCartItems } = useAuthData();
+    
     let zoneid = undefined
     if (typeof window !== 'undefined') {
         zoneid = localStorage.getItem('zoneid')
@@ -34,7 +37,7 @@ const BottomNav = (props) => {
         token = localStorage.getItem('token')
     }
     const [value, setValue] = useState(0)
-
+    const dispatch = useDispatch();
     const orangeColor = '#65748B'
 
     const MuiBottomNavigationAction = styled(BottomNavigationAction)(
@@ -57,6 +60,17 @@ const BottomNav = (props) => {
     }
 
     if(router.pathname==='/login')return;
+
+    useEffect(()=>{
+        const user = localStorage.getItem('user');
+        if(!user)
+        {
+            const cartListPreAuth = JSON.parse(localStorage.getItem('cartListPreAuth'));
+            dispatch(setCartList(cartListPreAuth));
+        }else{
+            fetchCartItems()
+        }
+    },[])
 
     return (
         <>
