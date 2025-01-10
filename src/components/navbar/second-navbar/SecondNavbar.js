@@ -224,7 +224,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     const handleShowSearch = () => {
 
         return (
-            <Box sx={{ minWidth: '400px', marginInlineEnd: '20px' }}>
+            <Box sx={{ minWidth:'350px', marginInlineEnd: '20px' }}>
                 <SearchBox query={query} setOpenSearchBox={setOpenSearchBox} />
             </Box>
         )

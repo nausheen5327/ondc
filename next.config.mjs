@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: false, // Temporarily disabled for debugging
+    reactStrictMode: false,
     experimental: {
         optimizeFonts: true, // Enable optimizations
         optimizeImages: true,
