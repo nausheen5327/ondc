@@ -45,6 +45,7 @@ const TotalAmountVisibility = ({
         return calculateTotalPrice(modalData[0], quantity, selectedOptions);
     }, [modalData, quantity, selectedOptions]);
 
+
     const originalAmount = useMemo(() => {
         if (!modalData?.[0]) return 0;
         const basePrice = modalData[0]?.item_details?.price?.value || 0;

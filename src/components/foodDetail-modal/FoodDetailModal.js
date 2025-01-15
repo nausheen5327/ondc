@@ -672,8 +672,11 @@ const FoodDetailModal = ({
             const totalQuantity = matchingItems.reduce((sum, item) => {
                 return sum + (item.item.quantity?.count || 0);
             }, 0);
-
-            setQuantity(totalQuantity)
+            if(totalQuantity){
+                setQuantity(totalQuantity)
+            }else{
+                setQuantity(1);
+            }
         } catch (error) {
             console.log("Error fetching cart items:", error);
             //   setLoading(false);
@@ -693,8 +696,12 @@ const FoodDetailModal = ({
         const totalQuantity = matchingItems?.reduce((sum, item) => {
             return sum + (item.quantity?.count || 0);
         }, 0);
-
-        setQuantity(totalQuantity)
+        if(totalQuantity){
+            setQuantity(totalQuantity)
+        }else{
+            setQuantity(1);
+        }
+            
     }
 
 
