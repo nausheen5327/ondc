@@ -175,14 +175,15 @@ const FoodCampaign = ({ data, isLoading }) => {
         ],
     }
 
+    
     return (
         <>
             <Grid
                 container
-                paddingTop={campaignFoods?.length > 0 && { xs: "0.5rem", sm: "1.9rem" }}
+                paddingTop={data?.length > 0 && { xs: "0.5rem", sm: "1.9rem" }}
             >
                 <CustomGridWithBgColor
-                    foodsize={campaignFoods?.length}
+                    foodsize={data?.length}
                     padding="23px 0 0 23px"
                     item
                     container
@@ -193,7 +194,7 @@ const FoodCampaign = ({ data, isLoading }) => {
                     onMouseEnter={() => setHoverOn(true)}
                     onMouseLeave={() => setHoverOn(false)}
                 >
-                    {campaignFoods?.length > 0 &&
+                    {data?.length > 0 &&
                         <Stack direction="row" alignItems="center" paddingBottom="20px" paddingInlineStart="5px" spacing={1}>
                             <CustomImageContainer
                                 src={fire_image.src}
@@ -222,14 +223,7 @@ const FoodCampaign = ({ data, isLoading }) => {
                                         ref={foodCampaignSliderRef}
                                         {...settings}
                                     >
-                                        {campaignFoods?.map((product) => {
-                                            if (
-                                                product?.variations === null ||
-                                                product?.variations[0]
-                                                    ?.values ||
-                                                product?.variations?.length ===
-                                                0
-                                            ) {
+                                        { data?.map((product) => {
                                                 return (
                                                     <FoodCard
                                                         campaign
@@ -242,7 +236,6 @@ const FoodCampaign = ({ data, isLoading }) => {
                                                         hasBackGroundSection="true"
                                                     />
                                                 )
-                                            }
                                         })}
                                         {/*{foodCount(campaignFoods) > 5 && (*/}
                                         {/*    <FoodCardMoreButton route="/campaigns" />*/}

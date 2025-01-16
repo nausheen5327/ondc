@@ -15,6 +15,7 @@ import AddressReselect from './address-reselect/AddressReselect'
 import { setlocation, setLocation } from '@/redux/slices/addressData'
 import SearchBox from '@/components/home/hero-section-with-search/SearchBox'
 import { useRouter } from 'next/router'
+import { setAddressList } from '@/redux/slices/customer'
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
     const theme = useTheme()
@@ -32,6 +33,7 @@ useEffect(() => {
         let location =localStorage.getItem('location');
         if(location){
             dispatch(setlocation(JSON.parse(location)))
+            dispatch(setAddressList([JSON.parse(location)]));
             // router.push('/home')
         };
     }, [])

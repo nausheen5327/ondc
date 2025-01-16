@@ -52,7 +52,7 @@ const Navigation = () => {
         }
         setUserLocation(location)
     }, [userLocationUpdate])
-
+    console.log('User location', userLocation)
     useEffect(() => {
         if (router.pathname !== '/home') dispatch(setSticky(false))
         dispatch(setCategoryIsSticky(false))
@@ -114,7 +114,9 @@ const Navigation = () => {
             refetch()
         }
     }, [data])
-
+    useEffect(()=>{
+       if(userLocation) router.push('/home')
+    },[userLocation])
     // if (checkMaintenanceMode(global)) {
     //     return null;
     // }

@@ -385,10 +385,7 @@ const Homes = () => {
     const { query, page, restaurantType, tags } = router.query
     const [welcomeModal,setWelcomeModal] = useState(false);
     const dispatch = useDispatch()
-    const onSuccessHandler = (response) => {
-        setFetcheedData(response)
-        dispatch(setWishList(fetchedData))
-    }
+    
     let getToken = undefined
     if (typeof window !== 'undefined') {
         getToken = localStorage.getItem('token')
@@ -478,7 +475,6 @@ const Homes = () => {
                         </Box>
                         <CustomContainer>
                             <DifferentFoodCompontent
-                                campaignIsloading={false}
                                 isLoading={false}
                                 isLoadingNearByPopularRestaurantData={
                                     false

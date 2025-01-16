@@ -10,7 +10,7 @@ import {
     Typography,
 } from '@mui/material'
 import StarIcon from '@mui/icons-material/Star'
-import { Stack } from '@mui/system'
+import { maxHeight, Stack } from '@mui/system'
 import { CustomButtonPrimary } from '../../styled-components/CustomButtons.style'
 // import {
 //     CustomColouredTypography,
@@ -140,6 +140,9 @@ export const CustomFoodCardNew = styled(Card)(
         [theme.breakpoints.down('sm')]: {
             height: smheight ? smheight : '100%',
             padding: '5px',
+            minHeight: '130px',
+            maxHeight: '130px'
+
         },
     })
 )

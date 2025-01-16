@@ -77,8 +77,10 @@ const ProductSearchPage = ({
     }
 
     useEffect(() => {
-        if (query || page || restaurantType) {
+        if (query) {
             setSearchValue(removeSpecialCharacters(query))
+        }else if(page){
+            setSearchValue(removeSpecialCharacters(page))
         } else if (tags) {
             setSearchValue(null)
         } else {
@@ -92,6 +94,8 @@ const ProductSearchPage = ({
             getAllProducts(searchValue, offset)
         }
     }, [offset, searchValue])
+
+
 
     return (
         <>

@@ -247,7 +247,7 @@ const HorizontalFoodCard = (props) => {
                                         {/* <FavoriteBorderIcon color="primary" /> */}
                                     </IconButton>
                                
-                                {!isInCart && (
+                                {/* {!isInCart && (
                                 <IconButton
                                     onClick={(e) => addToCart(e)}
                                     sx={{ padding: '3px' }}
@@ -258,8 +258,8 @@ const HorizontalFoodCard = (props) => {
                                         <AddShoppingCartIcon color="primary" />
                                     )}
                                 </IconButton>
-                            )}
-                            {isInCart &&
+                            )} */}
+                            {/* {isInCart &&
                                 !incrOpen &&
                                 product?.variations?.length === 0 && (
                                     <AfterAddToCart
@@ -274,7 +274,7 @@ const HorizontalFoodCard = (props) => {
                                         addToCartLoading={addToCartLoading}
                                         horizontal={horizontal}
                                     />
-                                )}
+                                )} */}
                             </>
                         </Stack>
                     </Stack>

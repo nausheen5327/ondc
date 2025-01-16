@@ -66,6 +66,7 @@ export const useAuthData = () => {
             //     localStorage.setItem('location', JSON.stringify(data[0]));
             // }
             dispatch(setAddressList(data));
+            localStorage.setItem('addressList', JSON.stringify(data))
         } catch (err) {
             console.error('Error fetching delivery address:', err);
         } finally {

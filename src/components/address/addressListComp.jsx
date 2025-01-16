@@ -472,7 +472,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
           )}
         </DialogContent>
         <DialogActions>
-          {addresses.length>=1 &&<Button
+          {(addresses.length>=1 || location) &&<Button
             onClick={() => {
               setIsEditMode(false);
               setIsAddMode(false);

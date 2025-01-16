@@ -11,6 +11,9 @@ import { foodTabData } from "./foodTabData";
 import useScrollSticky from "./Search-filter-tag/useScrollSticky";
 import ScrollSpy from "react-ui-scrollspy";
 import { useSelector } from "react-redux";
+import { getAllProductRequest } from "@/api/productApi";
+import { useRouter } from "next/router";
+import { CustomToaster } from "../custom-toaster/CustomToaster";
 
 
 export const CustomHomeTab = styled(Tabs)(
@@ -40,8 +43,8 @@ export const CustomHomeTab = styled(Tabs)(
 
   })
 )
-const DifferentFoodCompontent = ({ campaignIsloading, isLoading, isLoadingNearByPopularRestaurantData }) => {
-  const [activeSection, setActiveSection] = useState(null);
+const DifferentFoodCompontent = ({ isLoading, isLoadingNearByPopularRestaurantData }) => {
+  const [activeSection, setActiveSection] = useState(foodTabData[0]?.value);
   const parentScrollContainerRef = useRef(null);
   const theme = useTheme()
   const { foodOffsetElementRef } = useScrollSticky();
@@ -49,27 +52,26 @@ const DifferentFoodCompontent = ({ campaignIsloading, isLoading, isLoadingNearBy
   const [filterType, setFilterType] = useState(null)
   const [shouldUpdateActiveSection, setShouldUpdateActiveSection] = useState(true);
   const updateActiveSection = () => {
+    if (!shouldUpdateActiveSection) return;
+    
     const section1 = document.getElementById(foodTabData[0]?.value);
     const section2 = document.getElementById(foodTabData[1]?.value);
     const section3 = document.getElementById(foodTabData[2]?.value);
 
-    if (shouldUpdateActiveSection) {
-      if (section3 && window.scrollY + 200 >= section3.offsetTop) {
-        setActiveSection(foodTabData[2]?.value);
-      } else if (section2 && window.scrollY + 300 >= section2.offsetTop) {
-        setActiveSection(foodTabData[1]?.value);
-      } else if (section1 && window.scrollY + 300 >= section1.offsetTop) {
-        setActiveSection(foodTabData[0]?.value);
-      } else {
-        setActiveSection(null);
-      }
+    if (section3 && window.scrollY + 200 >= section3.offsetTop) {
+      setActiveSection(foodTabData[2]?.value);
+    } else if (section2 && window.scrollY + 300 >= section2.offsetTop) {
+      setActiveSection(foodTabData[1]?.value);
+    } else if (section1 && window.scrollY + 300 >= section1.offsetTop) {
+      setActiveSection(foodTabData[0]?.value);
     }
   };
   const handleChange = (event, newValue) => {
-    setFilterType(newValue)
+    setActiveSection(newValue); // Directly update activeSection when tab is clicked
     setShouldUpdateActiveSection(false);
+    scrollToSection(newValue);
+  };
 
-  }
   const handleScroll = () => {
     updateActiveSection();
   };
@@ -85,19 +87,105 @@ const DifferentFoodCompontent = ({ campaignIsloading, isLoading, isLoadingNearBy
         top: offsetPosition,
         behavior: "smooth",
       });
-      setShouldUpdateActiveSection(true);
+      
+      // Re-enable scroll-based updates after the scroll animation completes
+      setTimeout(() => {
+        setShouldUpdateActiveSection(true);
+      }, 1000); // Adjust timeout based on scroll animation duration
     }
   };
   useEffect(() => {
-
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  }, [shouldUpdateActiveSection]);
 
+
+  // API to get popular items //
+  const router = useRouter();
+  const [type, setType] = useState('all')
+  const [name, setName] = useState('pizza')
+  const [products, setProducts] = useState([])
+  const [totalProductCount, setTotalProductCount] = useState(0)
+ 
+  const { global } = useSelector((state) => state.globalSettings)
+  const [offset, setOffset] = useState(1)
+  const [page_limit, setPageLimit] = useState(10)
+  const [trendPageData, setTrendPageData] = useState({})
+
+  const [popularPageData, setPopularPageData] = useState({})
+
+  const [bestReviewpageData, setBestReviewPageData] = useState({})
+  
+  const [paginationModel, setPaginationModel] = useState({
+    page: 1,
+    pageSize: 10,
+    searchData: [],
+  })
+  const [campaignIsloading, setCampaignIsloading] = useState(false)
+
+  const storeDataBySection=(section,data)=>{
+      switch(section) {
+        case 'todays-trends':
+          setTrendPageData(data)
+          return;
+        case 'popular-foods':
+          setPopularPageData(data);
+          return;
+        case 'best-reviewed':
+          setBestReviewPageData(data);
+          return;
+        default:
+          return ;
+      }
+  }
+
+  const getAllProducts = async (searchName, currentOffset,activeSection) => {
+    // Check if data is already cached
+    setCampaignIsloading(true);
+    try {
+      const paginationData = {
+        ...paginationModel,
+        page: currentOffset,
+        searchData: {
+          ...paginationModel.searchData.reduce((r, e) => ({
+            ...r,
+            [e.code]: e.selectedValues.join()
+          }), {}),
+          pageNumber: currentOffset,
+          limit: paginationModel.pageSize,
+          name: searchName
+        }
+      }
+
+      const data = await
+        getAllProductRequest(paginationData.searchData)
+      // Cache the results
+      
+      // setProducts(prevProducts => [...prevProducts, ...data.data])
+      // setTotalProductCount(data.count)
+     storeDataBySection(activeSection,data.data);
+      setCampaignIsloading(false);
+    } catch (err) {
+      setCampaignIsloading(false);
+      CustomToaster('error', err)
+    }
+  }
+
+
+
+  useEffect(() => {
+    type && setOffset(1)
+  }, [type])
+  useEffect(() => {
+    getAllProducts('pizza', offset,'todays-trends');
+    getAllProducts('burger', offset,'popular-foods');
+    getAllProducts('pasta', offset,'best-reviewed');
   }, []);
 
-  const activeTab = activeSection || filterType
+  //
+
   return (
     <Stack marginTop="30px">
       <Stack sx={{
@@ -112,25 +200,24 @@ const DifferentFoodCompontent = ({ campaignIsloading, isLoading, isLoadingNearBy
           variant="scrollable"
           allowScrollButtonsMobile
         >
-          {foodTabData?.map((item) => {
+           {foodTabData?.map((item) => {
             return (
               <Tab
                 key={item?.id}
                 value={item.value}
                 sx={{
-                  fontWeight: activeTab === item?.value ? "700" : "400",
+                  fontWeight: activeSection === item?.value ? "700" : "400",
                   transition: "all 0.2s",
-                  borderBottom: activeTab === item?.value ? "2px solid" : "none",
-                  borderColor: activeTab === item?.value ? theme => theme.palette.primary.main : "none",
-                  color: activeTab === item?.value ? theme => theme.palette.primary.main : (theme) =>
+                  borderBottom: activeSection === item?.value ? "2px solid" : "none",
+                  borderColor: activeSection === item?.value ? theme => theme.palette.primary.main : "none",
+                  color: activeSection === item?.value ? theme => theme.palette.primary.main : (theme) =>
                     theme.palette.customColor?.six,
                   '&.Mui-selected': {
-                    color: activeTab === item?.value ? theme => theme.palette.primary.main : (theme) =>
+                    color: activeSection === item?.value ? theme => theme.palette.primary.main : (theme) =>
                       theme.palette.customColor?.six,
                   },
                 }}
                 label={t(item?.category_name)}
-                onClick={() => scrollToSection(item?.value)}
               />
             )
           })}
@@ -139,13 +226,13 @@ const DifferentFoodCompontent = ({ campaignIsloading, isLoading, isLoadingNearBy
       <div ref={parentScrollContainerRef}>
         <ScrollSpy>
           <div id={foodTabData[0]?.value}>
-            <FoodCampaign isLoading={campaignIsloading} />
+            {Object.keys(trendPageData).length > 0 && <FoodCampaign data={trendPageData} isLoading={campaignIsloading} />}
           </div>
           <div id={foodTabData[1]?.value}>
-            <NearbyPopularFood isLoading={isLoadingNearByPopularRestaurantData} />
-          </div>
+            {Object.keys(popularPageData).length > 0 &&<NearbyPopularFood popularFood={popularPageData} isLoading={campaignIsloading} />
+            }          </div>
           <div id={foodTabData[2]?.value}>
-            <BestReviewedFood isLoading={isLoading} />
+           {Object.keys(bestReviewpageData).length > 0 && <BestReviewedFood bestReviewedFoods={bestReviewpageData} isLoading={campaignIsloading} />}
           </div>
         </ScrollSpy>
       </div>

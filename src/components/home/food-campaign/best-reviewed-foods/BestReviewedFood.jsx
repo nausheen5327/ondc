@@ -54,10 +54,10 @@ export const ReferButton = styled(Button)(({ theme }) => ({
     },
 
 }))
-const BestReviewedFood = ({ data, isLoading }) => {
+const BestReviewedFood = ({ bestReviewedFoods, isLoading }) => {
     const dispatch = useDispatch()
     const { t } = useTranslation()
-    const { bestReviewedFoods } = useSelector((state) => state.storedData)
+    // const { bestReviewedFoods } = useSelector((state) => state.storedData)
     const [hoverOn, setHoverOn] = useState(false)
     const bestfoodslideRef = useRef(null)
     const foodCampaignSliderRef = useRef(null)
@@ -307,14 +307,8 @@ const BestReviewedFood = ({ data, isLoading }) => {
                                         {...settings}
                                     >
                                         {bestReviewedFoods
-                                            .map((product) => {
-                                                if (
-                                                    product?.variations === null ||
-                                                    product?.variations[0]
-                                                        ?.values ||
-                                                    product?.variations?.length ===
-                                                    0
-                                                ) {
+                                            ?.map((product) => {
+                                                
                                                     return (
                                                         <FoodCard
                                                             key={product?.id}
@@ -327,7 +321,7 @@ const BestReviewedFood = ({ data, isLoading }) => {
                                                             }
                                                         />
                                                     )
-                                                }
+                                                
                                             })}
                                     </Slider>
                                 </SliderCustom>

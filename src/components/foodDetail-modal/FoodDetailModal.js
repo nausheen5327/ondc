@@ -618,8 +618,12 @@ const FoodDetailModal = ({
                 const transformedList = createTransformedArray(updatedPreAuthCart);
                 dispatch(setCartList(transformedList));
                 localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
-            CustomToaster('success', isIncrement ? "Item added to cart" : "Cart updated successfully");
-                getCartItemsPre();
+                CustomToaster('success', quantity > 1 
+                    ? "Item quantity updated successfully" 
+                    : isIncrement 
+                        ? "Item added to cart" 
+                        : "Cart updated successfully"
+                );                getCartItemsPre();
              } catch (error) {
                 console.error('Add to cart error:', error);
         CustomToaster('error', "Failed to add item to cart");

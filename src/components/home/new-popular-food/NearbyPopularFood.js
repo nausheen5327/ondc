@@ -40,12 +40,12 @@ const SliderCustom1 = styled(Box)(
     })
 );
 
-const NearbyPopularFood = ({ data, isLoading, isFetching }) => {
+const NearbyPopularFood = ({ popularFood, isLoading, isFetching }) => {
     const { t } = useTranslation()
     const router = useRouter()
     const [hoverOn, setHoverOn] = useState(false)
     const { global } = useSelector((state) => state.globalSettings)
-    const { popularFood } = useSelector((state) => state.storedData)
+    // const { popularFood } = useSelector((state) => state.storedData)
     const theme = useTheme()
     const isXSmall = useMediaQuery(theme.breakpoints.up('sm'))
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
@@ -187,17 +187,19 @@ const NearbyPopularFood = ({ data, isLoading, isFetching }) => {
             },
         ],
     };
+
+    console.log("popular food",popularFood)
     return (
         <>
 
             <Grid
                 container
-                paddingTop={popularFood.length > 0 && { xs: "0.5rem", sm: "1.4rem" }}
+                paddingTop={popularFood?.length > 0 && { xs: "0.5rem", sm: "1.4rem" }}
                 gap={{ xs: ".3rem", sm: "1.4rem" }}
                 onMouseEnter={() => setHoverOn(true)}
                 onMouseLeave={() => setHoverOn(false)}
             >
-                {(popularFood.length > 0 && !isLoading) && (
+                {(popularFood?.length > 0 && !isLoading) && (
                     <Grid
                         item
                         xs={12}
@@ -245,11 +247,7 @@ const NearbyPopularFood = ({ data, isLoading, isFetching }) => {
                     <CustomStackFullWidth >
                             <Slider {...settings}>
                                 {popularFood?.map((product) => {
-                                    if (
-                                        product?.variations === null ||
-                                        product?.variations[0]?.values ||
-                                        product?.variations?.length === 0
-                                    ) {
+                                    
                                         return (
                                             <Stack pb="1rem" key={product?.id}>
                                                 <FoodCard
@@ -257,13 +255,13 @@ const NearbyPopularFood = ({ data, isLoading, isFetching }) => {
                                                     productImageUrl={
                                                         global?.base_urls?.product_image_url
                                                     }
-                                                    horizontal="true"
+                                                    horizontal={false}
                                                     hasBackGroundSection="true"
                                                 />
                                             </Stack>
                                         );
 
-                                    }
+                                    
                                 })}
                             </Slider>
                     </CustomStackFullWidth>
