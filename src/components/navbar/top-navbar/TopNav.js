@@ -16,6 +16,7 @@ import { setlocation, setLocation } from '@/redux/slices/addressData'
 import SearchBox from '@/components/home/hero-section-with-search/SearchBox'
 import { useRouter } from 'next/router'
 import { setAddressList } from '@/redux/slices/customer'
+import { getValueFromCookie } from '@/utils/cookies'
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
     const theme = useTheme()
@@ -28,12 +29,12 @@ const TopNav = ({ cartListRefetch }) => {
     const location = useSelector((state)=>state.addressData.location)
     console.log("location...",location);
     const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
-    
+    const token= getValueFromCookie('token')
 useEffect(() => {
         let location =localStorage.getItem('location');
         if(location){
             dispatch(setlocation(JSON.parse(location)))
-            dispatch(setAddressList([JSON.parse(location)]));
+           if(!token) dispatch(setAddressList([JSON.parse(location)]));
             // router.push('/home')
         };
     }, [])

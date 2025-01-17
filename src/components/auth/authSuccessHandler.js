@@ -37,6 +37,8 @@ export const useAuthData = () => {
                 },
               });
               dispatch(setIsLoading(false));
+            //   dispatch(setlocation(null));
+            //   dispatch(setAddressList([]));
               await fetchDeliveryAddress();
             } catch (err) {
               CustomToaster("error", err);
@@ -60,10 +62,16 @@ export const useAuthData = () => {
                 if (findIndex !== -1) {
                     dispatch(setlocation(locationData));
                     localStorage.setItem('location', JSON.stringify(data[findIndex]));
-                }}
-            // }else{
-            //     dispatch(setlocation(data[0]));
-            //     localStorage.setItem('location', JSON.stringify(data[0]));
+                }
+                // else{
+                //         let len_data = data.length;
+                //         if(len_data){
+                //             dispatch(setlocation(data[len_data-1]));
+                //             localStorage.setItem('location', JSON.stringify(data[len_data-1]));
+                //         }
+                        
+                //     }
+            }
             // }
             dispatch(setAddressList(data));
             localStorage.setItem('addressList', JSON.stringify(data))
