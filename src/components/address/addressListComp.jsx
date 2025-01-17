@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -493,9 +493,8 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
   );
 };
 
-const MapPicker = (props) => {
-  const { address, setAddress } = props;
-  console.log("MapPicker props=====>", props);
+const MapPicker = React.memo(({ address, setAddress }) => {
+  // const { address, setAddress } = props;
   let locationString = "28.679076630288467,77.06970870494843";
   locationString = locationString.split(",");
   const gps = {
@@ -519,28 +518,45 @@ const MapPicker = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (location) {
-      setAddress((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          street: location.street,
-          city: location.city,
-          state: location.state,
-          areaCode: location.pincode,
-          lat: parseFloat(location.lat).toFixed(6).toString(),
-          lng: parseFloat(location.lng).toFixed(6).toString(),
-        },
-      }));
-    }
-  }, [location]);
+  // useEffect(() => {
+  //   if (location) {
+  //     setAddress((prev) => ({
+  //       ...prev,
+  //       address: {
+  //         ...prev.address,
+  //         street: location.street,
+  //         city: location.city,
+  //         state: location.state,
+  //         areaCode: location.pincode,
+  //         lat: parseFloat(location.lat).toFixed(6).toString(),
+  //         lng: parseFloat(location.lng).toFixed(6).toString(),
+  //       },
+  //     }));
+  //   }
+  // }, [location]);
   console.log("location...", location);
+  const handleLocationChange = useCallback((newLocation) => {
+    setLocation(newLocation);
+    setAddress(prev => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        street: newLocation.street,
+        city: newLocation.city,
+        state: newLocation.state,
+        areaCode: newLocation.pincode,
+        lat: parseFloat(newLocation.lat).toFixed(6).toString(),
+        lng: parseFloat(newLocation.lng).toFixed(6).toString(),
+      },
+    }));
+  }, [setAddress]);
   return (
     <div style={{ width: "100%", height: "400px" }}>
-      <PlacePickerMap location={location || gps} setLocation={setLocation} />
+      <PlacePickerMap location={location || gps} setLocation={handleLocationChange} />
     </div>
   );
-};
+});
+
+MapPicker.displayName = 'MapPicker';
 
 export default UserAddressList;
