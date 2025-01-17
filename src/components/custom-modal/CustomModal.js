@@ -14,9 +14,13 @@ const CustomModal = ({
     const theme = useTheme()
     const matches = useMediaQuery(theme.breakpoints.up('sm'))
     const handleClose = (event, reason) => {
-        if (reason !== 'backdropClick') {
-            setModalOpen(false)
+        // if (reason !== 'backdropClick') {
+        //     setModalOpen(false)
+        // }
+        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+            return; // Prevent closure on these events
         }
+        setModalOpen(false);
     }
 
     return (
@@ -26,7 +30,9 @@ const CustomModal = ({
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
-                disableAutoFocus={disableAutoFocus}
+                disableAutoFocus={true}
+                disableBackdropClick
+                disableEscapeKeyDown
                 backDrop
             >
                 <CustomModalWrapper bgColor={bgColor} maxWidth={maxWidth}>

@@ -443,7 +443,12 @@ const DrawerMenu = ({  cartListRefetch }) => {
                             fullWidth
                             sx={{ mt: 0, mb: 1, borderRadius: '5px' }}
                             startIcon={<LockIcon />}
-                            onClick={() => handleOpenAuthModal('sign-in')}
+                            onClick={() => {
+                                handleOpenAuthModal('sign-in')
+                                setOpenDrawer(false)
+                            }
+                                
+                            }
                             //  onClick={() => setLogin(true)}
                         >
                             {t('Sign In')}

@@ -11,6 +11,7 @@ import { setlocation } from "@/redux/slices/addressData";
 import toast from "react-hot-toast";
 import useCancellablePromise from "@/api/cancelRequest";
 import { setIsLoading } from "@/redux/slices/global";
+import { useRouter } from "next/router";
 
 const AddressList = (props) => {
   const { openAddressModal, setOpenAddressModal } = props;
@@ -21,6 +22,7 @@ const AddressList = (props) => {
   const [updatedAddedAddr, setUpdatedAddedAddr] = useState();
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
+  const router = useRouter();
 
   const fetchDeliveryAddress = async () => {
     // setFetchDeliveryAddressLoading(true);
@@ -40,6 +42,7 @@ const AddressList = (props) => {
       }
       dispatch(setAddressList(data));
       dispatch(setIsLoading(false));
+      router.push('/home')
     } catch (err) {
       CustomToaster("error", err);
       dispatch(setIsLoading(false));
@@ -51,42 +54,79 @@ const AddressList = (props) => {
   };
   const onUpdateAddresses = async (address) => {
     console.log("addr to be updated", address);
-    try {
-      dispatch(setIsLoading(true));
-      const data = await postCall(
-        `/clientApis/v1/update_delivery_address/${address.id}`,
-        {
-          descriptor: {
-            name: address.descriptor.name.trim(),
-            email: address.descriptor.email.trim(),
-            phone: address.descriptor.phone.trim(),
-          },
-          address: {
-            areaCode: address.address.areaCode.trim(),
-            building: address.address.building.trim(),
-            city: address.address.city.trim(),
-            country: "IND",
-            door: address.address.building.trim(),
-            building: address.address.building.trim(),
-            state: address.address.state.trim(),
-            street: address.address.street.trim(),
-            tag: address.address.tag.trim(),
-            lat: address.address.lat,
-            lng: address.address.lng,
-          },
-        }
-      );
-      console.log("updated addr", data);
+    if (!token) {
+      let data = {
+        descriptor: {
+          name: address.descriptor.name.trim(),
+          email: address.descriptor.email.trim(),
+          phone: address.descriptor.phone.trim(),
+        },
+        address: {
+          areaCode: address.address.areaCode.trim(),
+          building: address.address.building.trim(),
+          city: address.address.city.trim(),
+          country: "IND",
+          door: address.address.building.trim(),
+          building: address.address.building.trim(),
+          state: address.address.state.trim(),
+          street: address.address.street.trim(),
+          tag: address.address.tag.trim(),
+          lat: address.address.lat,
+          lng: address.address.lng,
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
       setUpdatedAddedAddr(data);
+      dispatch(setlocation(data));
+      dispatch(setAddressList([data]));
+      localStorage.setItem("location", JSON.stringify(data));
+      const values = { lat: address.address.lat, lng: address.address.lng };
+      localStorage.setItem("currentLatLng", JSON.stringify(values));
+      setOpenAddressModal(false);
+      CustomToaster("success", "New delivery address selected.");
+      router.push('/home');
       dispatch(setIsLoading(false));
-      fetchDeliveryAddress();
-    } catch (err) {
-      CustomToaster("error", err);
-      dispatch(setIsLoading(false));
-    } finally {
-      // setAddAddressLoading(false);
-      dispatch(setIsLoading(false));
+      return;
+    }else{
+      try {
+        dispatch(setIsLoading(true));
+        const data = await postCall(
+          `/clientApis/v1/update_delivery_address/${address.id}`,
+          {
+            descriptor: {
+              name: address.descriptor.name.trim(),
+              email: address.descriptor.email.trim(),
+              phone: address.descriptor.phone.trim(),
+            },
+            address: {
+              areaCode: address.address.areaCode.trim(),
+              building: address.address.building.trim(),
+              city: address.address.city.trim(),
+              country: "IND",
+              door: address.address.building.trim(),
+              building: address.address.building.trim(),
+              state: address.address.state.trim(),
+              street: address.address.street.trim(),
+              tag: address.address.tag.trim(),
+              lat: address.address.lat,
+              lng: address.address.lng,
+            },
+          }
+        );
+        console.log("updated addr", data);
+        setUpdatedAddedAddr(data);
+        dispatch(setIsLoading(false));
+        fetchDeliveryAddress();
+      } catch (err) {
+        CustomToaster("error", err);
+        dispatch(setIsLoading(false));
+      } finally {
+        // setAddAddressLoading(false);
+        dispatch(setIsLoading(false));
+      }
     }
+    
   };
 
   const onAddAddress = async (address) => {
@@ -121,6 +161,7 @@ const AddressList = (props) => {
       localStorage.setItem("currentLatLng", JSON.stringify(values));
       setOpenAddressModal(false);
       CustomToaster("success", "New delivery address selected.");
+      router.push('/home');
       dispatch(setIsLoading(false));
       return;
     }
@@ -167,6 +208,7 @@ const AddressList = (props) => {
     localStorage.setItem("currentLatLng", JSON.stringify(values));
     setOpenAddressModal(false);
     CustomToaster("success", "New delivery address selected.");
+    router.push('/home');
   };
   return (
     <CustomModal
