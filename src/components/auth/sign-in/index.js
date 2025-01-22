@@ -401,7 +401,7 @@ const SignInPage = ({
             })
             //   handleLoginWithOtpInfo(res, values)
         } catch (error) {
-            CustomToaster('error','Failed to Validate OTP')
+            CustomToaster('error','Invalid OTP, please try again')
         }
     }
 
