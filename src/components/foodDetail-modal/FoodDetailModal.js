@@ -449,6 +449,17 @@ const FoodDetailModal = ({
           return transformedItem;
         });
       };
+
+    const handleOrderNow=()=>{
+        console.log("length of cartitem is",cartItems?.length)
+        if(!cartItems?.length ){
+            addToCart(true);
+        }else{
+            handleModalClose();
+            router.push('/checkout');
+            return;
+        }
+    }
     const addToCart = async (navigate = false, isIncrement = true) => {
         setAddToCartLoading(true);
         let user = localStorage.getItem("user")
@@ -528,7 +539,7 @@ const FoodDetailModal = ({
                         // handleCheckoutFlow([res], location)
                         return;
                     }
-                    updateCartInLocalStorage(res);
+                    // updateCartInLocalStorage(res);
                     CustomToaster('success', "Item added to cart successfully.");
                 } else {
                     const currentCount = parseInt(cartItem[0].item.quantity.count);
@@ -617,13 +628,20 @@ const FoodDetailModal = ({
 
                 const transformedList = createTransformedArray(updatedPreAuthCart);
                 dispatch(setCartList(transformedList));
+                if (navigate) {
+                    handleModalClose();
+                    router.push('/checkout');
+                    // handleCheckoutFlow([res], location)
+                    return;
+                }
                 localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
                 CustomToaster('success', quantity > 1 
                     ? "Item quantity updated successfully" 
                     : isIncrement 
                         ? "Item added to cart" 
                         : "Cart updated successfully"
-                );                getCartItemsPre();
+                ); getCartItemsPre();
+
              } catch (error) {
                 console.error('Add to cart error:', error);
         CustomToaster('error', "Failed to add item to cart");
@@ -1553,7 +1571,7 @@ const FoodDetailModal = ({
                                                             () => addToCart(false, true)
                                                         }
                                                         orderNow={
-                                                            () => addToCart(true)
+                                                            handleOrderNow
 
                                                         }
                                                         incrementItem={() => addToCart(false, true)}
