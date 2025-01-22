@@ -113,7 +113,7 @@ const ComplaintDetail = ({ ticketId }) => {
     } catch (error) {
       setIsError(true);
       //   dispatch(setIsLoading(false));
-      CustomToaster("error", "No issue exists");
+      CustomToaster("error", "Failed to fetch issues, Please try again");
     }
   };
 
@@ -289,7 +289,9 @@ async function getIssueStatusDetails(message_id) {
       }
   } catch (err) {
       setStatusLoading(false);
-      CustomToaster('error',err);
+      CustomToaster('error',
+        "Something went wrong!, issue status cannot be fetched"
+    );
       eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
           eventSource.close();
           clearTimeout(timer);
@@ -359,7 +361,7 @@ const checkIssueStatus = async () => {
       }
   } catch (err) {
       setStatusLoading(false);
-      CustomToaster("error",err);
+      CustomToaster("error","Cannot fetch issue status, please try again");
   }
 };
   return (

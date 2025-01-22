@@ -41,7 +41,7 @@ export const useAuthData = () => {
             //   dispatch(setAddressList([]));
               await fetchDeliveryAddress();
             } catch (err) {
-              CustomToaster("error", err);
+              console.log("error", err);
               dispatch(setIsLoading(false));
             } finally {
             console.log('verified 3')
@@ -77,6 +77,7 @@ export const useAuthData = () => {
             localStorage.setItem('addressList', JSON.stringify(data))
         } catch (err) {
             console.error('Error fetching delivery address:', err);
+            CustomToaster('error', 'Error fetching delivery address')
         } finally {
             console.log('verified 5')
             dispatch(setIsLoading(false));
@@ -97,6 +98,7 @@ export const useAuthData = () => {
             dispatch(setCartList(res));
         } catch (error) {
             console.error("Error fetching cart items:", error);
+            CustomToaster('error', "Error fetching cart items")
         } finally {
             console.log('verified 7')
             // dispatch(setIsLoading(false));

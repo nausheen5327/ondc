@@ -1124,7 +1124,8 @@ const onConfirmOrder = async (message_id) => {
     localStorage.setItem('orderDetails',JSON.stringify(data[0]));
     getCartItems();
   } catch (err) {
-    dispatchError(err?.response?.data?.error?.message);
+    CustomToaster('error', 'Failed to process order, Please try again')
+    // dispatchError(err?.response?.data?.error?.message);
     setConfirmOrderLoading(false);
   }
   // eslint-disable-next-line
@@ -1256,7 +1257,8 @@ const verifyPayment = async (items, method) => {
     }
   } catch (err) {
     console.log(err);
-    dispatchError(err?.response?.data?.error?.message);
+    CustomToaster('error', 'Failed to process your order, Please try again')
+    // dispatchError(err?.response?.data?.error?.message);
     setConfirmOrderLoading(false);
   }
   // eslint-disable-next-line
@@ -1332,7 +1334,7 @@ const verifyPayment = async (items, method) => {
           setPaymentKey(res.keyId);
           return res.keyId;
         } catch (error) {
-            CustomToaster('error',error);
+            // CustomToaster('error',error);
           console.log("keys error: ", error);
         }
       };
@@ -1431,7 +1433,7 @@ const verifyPayment = async (items, method) => {
           setPaymentParams(res.data);
           return res.data;
         } catch (error) {
-            CustomToaster('error', error)
+            // CustomToaster('error', error)
           console.log("create payment error: ", error);
         }
       };
@@ -1513,7 +1515,8 @@ const verifyPayment = async (items, method) => {
             );
           }
         } catch (err) {
-          dispatchError(err?.response?.data?.error?.message);
+          CustomToaster('error', 'Failed to process order, Please try again')
+          // dispatchError(err?.response?.data?.error?.message);
           setConfirmOrderLoading(false);
         }
         // eslint-disable-next-line
@@ -1584,7 +1587,7 @@ const verifyPayment = async (items, method) => {
           setUpdateCartItemsDataOnInitialize(oldData);
           handleSuccess();
         } catch (err) {
-          CustomToaster("error", err);
+          CustomToaster('error', 'Failed to process order, Please try again')
         //   setInitializeOrderLoading(false);
         //   updateInitLoading(false);
         }
@@ -1752,7 +1755,9 @@ const verifyPayment = async (items, method) => {
           }
         } catch (err) {
           console.log(err);
-          CustomToaster('error',err)
+          CustomToaster('error', 'Failed to process order, Please try again')
+
+          // CustomToaster('error',err)
         //   setInitializeOrderLoading(false);
         //   updateInitLoading(false);
         }

@@ -162,7 +162,7 @@ export default function CustomerActionCard({
       }
     } catch (err) {
       setLoading(false);
-      CustomToaster('error',err);
+      CustomToaster('error','Something went wrong');
     }
   }
 
@@ -226,7 +226,7 @@ export default function CustomerActionCard({
 
     } catch (err) {
       setLoading(false);
-      CustomToaster("error",err?.message);
+      CustomToaster("error","Cannot fetch details , Please try again");
       eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
         eventSource.close();
         clearTimeout(timer);

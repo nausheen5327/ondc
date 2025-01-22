@@ -149,6 +149,7 @@ const FloatingCart = (props) => {
 
     } catch (error) {
       console.log("Error fetching cart items:", error);
+      CustomToaster('error', 'Failed to fetch cart items')
       dispatch(setIsLoading(false));
       //   setLoading(false);
     } finally {
@@ -514,7 +515,7 @@ const createTransformedArray = (dataList) => {
         //     message: err?.response?.data?.error?.message,
         //   },
         // });
-        CustomToaster('error', err?.response?.data?.error?.message);
+        // CustomToaster('error', err?.response?.data?.error?.message);
         // setGetQuoteLoading(false);
         router.replace('/');
         // setCheckoutLoading(false);
@@ -635,7 +636,7 @@ const createTransformedArray = (dataList) => {
       router.push(`/checkout`);
     } catch (err) {
       //   setCheckoutLoading(false);
-      CustomToaster('error', err.message);
+      // CustomToaster('error', err.message);
       // dispatch(setIsLoading(false));
 
       //   setGetQuoteLoading(false);

@@ -72,7 +72,7 @@ const ProductSearchPage = ({
             setTotalProductCount(data.count)
             setPageData(data.data)
         } catch (err) {
-            CustomToaster('error', err)
+            CustomToaster('error', 'Unable to fetch products, Please check your connection!')
         }
     }
 

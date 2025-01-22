@@ -665,7 +665,7 @@ const FoodDetailModal = ({
             if(user)getCartItems();
             else getCartItemsPre();
         } catch (error) {
-            CustomToaster('error', error)
+            CustomToaster('error', 'Cannot fetch item details, Please check your internet connection!')
         } finally {
             //   setProductLoading(false);
         }

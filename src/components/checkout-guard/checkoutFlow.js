@@ -99,7 +99,7 @@ export const useCheckoutFlow = () => {
       // router.push(`/checkout`);
     } catch (err) {
       //   setCheckoutLoading(false);
-      CustomToaster('error', err.message);
+      CustomToaster('error', 'Failed to process your checkout items, Please try again');
       // dispatch(setIsLoading(false));
 
       //   setGetQuoteLoading(false);
@@ -292,7 +292,7 @@ export const useCheckoutFlow = () => {
         onFetchQuote(data.map(txn => txn.context?.message_id))
       }
     } catch (err) {
-      CustomToaster('error', err)
+      CustomToaster('error', 'Failed to process few items in your cart, Please try again')
       router.replace('/')
     }
   }

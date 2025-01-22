@@ -66,6 +66,7 @@ import { useCheckoutFlow } from '../checkout-guard/checkoutFlow';
 import CheckoutPage from './CheckoutPage';
 import { getValueFromCookie } from '../../utils/cookies';
 import { setAuthModalOpen } from '../../redux/slices/global';
+import { CustomToaster } from '../custom-toaster/CustomToaster';
 const LoadingScreen = ({ message = "Preparing your order..." }) => {
     const styles = {
       wrapper: {
@@ -244,6 +245,7 @@ const CheckOut = () => {
             await handleCheckoutFlow(cartItems, location)
         } catch (error) {
             console.error('Error in checkout flow:', error)
+            CustomToaster('error', 'Failed to process few items in your cart, please try again')
         } finally {
             setIsProcessing(false)
             setIsLoading(false)

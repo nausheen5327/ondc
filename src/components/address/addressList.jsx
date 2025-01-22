@@ -44,7 +44,7 @@ const AddressList = (props) => {
       dispatch(setIsLoading(false));
       router.push('/home')
     } catch (err) {
-      CustomToaster("error", err);
+      CustomToaster("error", 'Unable to fetch delivery information');
       dispatch(setIsLoading(false));
       //toast for error in fetching addresses
     } finally {
@@ -114,12 +114,11 @@ const AddressList = (props) => {
             },
           }
         );
-        console.log("updated addr", data);
         setUpdatedAddedAddr(data);
         dispatch(setIsLoading(false));
         fetchDeliveryAddress();
       } catch (err) {
-        CustomToaster("error", err);
+        CustomToaster("error", 'Unable to update address');
         dispatch(setIsLoading(false));
       } finally {
         // setAddAddressLoading(false);
@@ -187,12 +186,11 @@ const AddressList = (props) => {
           lng: address.address.lng,
         },
       });
-      console.log("updated addr", data);
       dispatch(setIsLoading(false));
       setUpdatedAddedAddr(data);
       fetchDeliveryAddress();
     } catch (err) {
-      CustomToaster("error", err);
+      CustomToaster("error", 'Unable to add delivery address ');
       dispatch(setIsLoading(false));
     } finally {
       dispatch(setIsLoading(false));

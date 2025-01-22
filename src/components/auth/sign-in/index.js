@@ -306,7 +306,7 @@ const SignInPage = ({
             setOpenOtpModal(true)
             console.log("response from api call is...", data);
         } catch (error) {
-            CustomToaster('error', error);
+            CustomToaster('error', 'Failed to generate OTP, Please try again');
         }
         
 
@@ -401,7 +401,7 @@ const SignInPage = ({
             })
             //   handleLoginWithOtpInfo(res, values)
         } catch (error) {
-            CustomToaster('error','Invalid OTP')
+            CustomToaster('error','Failed to Validate OTP')
         }
     }
 

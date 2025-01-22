@@ -1044,7 +1044,7 @@ const PlacePickerMap = (props) => {
         });
       }
     } catch (error) {
-      CustomToaster("error", "Failed to initialize map");
+      CustomToaster("error", "Failed to initialize map, Please check your settings");
       console.error("Map initialization error:", error);
     }
   }, [

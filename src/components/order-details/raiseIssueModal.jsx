@@ -345,7 +345,7 @@ const IssueForm = ({
       }
     } catch (err) {
       setLoading(false);
-      CustomToaster("error", err);
+      CustomToaster("error", "Unable to raise issue, Please try again");
     }
   };
 

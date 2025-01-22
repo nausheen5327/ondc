@@ -426,7 +426,6 @@ const OrderDetails = () => {
           setDeliveryQuotes(delivery);
           setOfferQuotes(offers);
         }
-        console.log("are bhai bhai", order.items);
         if (order.items && order.items.length > 0) {
           const filterCancelledItems = order.items.filter(
             (item) =>
@@ -638,7 +637,7 @@ const handleTrackIssue=()=>{
       setStatusLoading(false);
     } catch (err) {
       setStatusLoading(false);
-      CustomToaster("error", err);
+      CustomToaster("error", "Cannot get status for this product");
       eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
         eventSource.close();
         clearTimeout(timer);
@@ -710,7 +709,7 @@ const handleTrackIssue=()=>{
       }
     } catch (err) {
       setStatusLoading(false);
-      CustomToaster("error", err?.message);
+      CustomToaster("error", "Something went wrong");
     }
   }
 
