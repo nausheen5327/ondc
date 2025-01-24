@@ -6,20 +6,9 @@ import {
     CustomPaperBigCard,
     CustomStackFullWidth,
 } from "@/styled-components/CustomStyles.style"
-import Router, { useRouter } from 'next/router'
-import { useSelector } from 'react-redux'
 import CustomContainer from '../../components/container'
-import HomeGuard from "../../components/home-guard/HomeGuard";
-import { getServerSideProps } from '../index'
 import GiftCard from '@/components/giftcard/GiftCard'
-const CheckoutLayout = ({ configdata }) => {
-    const { cartList } = useSelector((state) => state.cart)
-    const { token } = useSelector((state) => state.userToken)
-    const router = useRouter()
-    const { page } = router.query
-    const { global } = useSelector((state) => state.globalSettings)
-
-
+const GiftCardPage = () => {
     return (
         <>
             <CssBaseline />
@@ -36,5 +25,5 @@ const CheckoutLayout = ({ configdata }) => {
         </>
     )
 }
-export default CheckoutLayout
+export default  GiftCardPage
  // export { getServerSideProps }

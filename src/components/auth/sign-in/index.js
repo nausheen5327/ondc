@@ -375,7 +375,6 @@ const SignInPage = ({
             // handleClose();
         
     }
-    console.log('location in sign in',customerInfo);
     const otpFormSubmitHandler = async(values) => {
         let phone  = loginValue?.phone;
         phone = phone?.substring(3);
@@ -438,300 +437,27 @@ const SignInPage = ({
     }
     console.log(state.status,"test");
     const loginView = () => {
-        switch (state.status) {
-            case 'otp':
-                return (
+        return (
+            <LoginWrapper direction={{ xs: 'column', md: 'row' }}>
+                <Stack
+                    sx={{
+                        flexGrow: { xs: 'none', sm: 'none', md: '1' },
+                        width: { xs: '100%', sm: '100%', md: 0 },
+                    }}
+                >
                     <OtpLogin
-                        otpHandleChange={otpHandleChange}
-                        otpLoginFormik={otpLoginFormik}
-                        global={global}
-                        handleClick={handleClick}
-                        rememberMeHandleChange={rememberMeHandleChange}
-                        fireBaseId={fireBaseId}
-                    />
-                )
-            case 'manual':
-                return (
-                    <LoginWrapper direction={{ xs: 'column', md: 'row' }}>
-                        <Stack
-                            sx={{
-                                flexGrow: { xs: 'none', sm: 'none', md: '1' },
-                                width: { xs: '100%', sm: '100%', md: 0 },
-                            }}
-                        >
-                            <ManualLogin
-                                loginFormik={loginFormik}
-                                showPassword={showPassword}
-                                setShowPassword={setShowPassword}
-                                global={global}
-                                handleOnChange={handleOnChange}
-                                        rememberMeHandleChange={rememberMeHandleChange}
-                                handleClick={handleClick}
-                                gotoForgotPassword={gotoForgotPassword}
-                                setModalFor={setModalFor}
-                                setForWidth={setForWidth}
-                                fireBaseId={fireBaseId}
-                            />
-                        </Stack>
-                    </LoginWrapper>
-                )
-            case 'social':
-                return (
-                    <SocialLogin
-                        global={global}
-                        socialLogins={global?.social_login}
-                        handleParentModalClose={handleClose}
-                        setJwtToken={setJwtToken}
-                        setUserInfo={setUserInfo}
-                        handleTokenAfterSignIn = {handleTokenAfterSignIn}
-                        setModalFor={setModalFor}
-                        setMedium={setMedium}
-                        setLoginInfo={setLoginInfo}
-                        setForWidth={setForWidth}
-                        signInWithGoogle={signInWithGoogle}
-                    />
-                )
-            case 'otp_manual':
-                return (
-                    <Stack width="100%">
-                        <ManualLogin
-                            loginFormik={loginFormik}
-                            showPassword={showPassword}
-                            setShowPassword={setShowPassword}
-                            global={global}
-                            handleOnChange={handleOnChange}
-                                rememberMeHandleChange={rememberMeHandleChange}
-                            handleClick={handleClick}
-                            gotoForgotPassword={gotoForgotPassword}
-                            setModalFor={setModalFor}
-                            setForWidth={setForWidth}
-                            fireBaseId={fireBaseId}
-                        />
-                        <CustomGoogleButton
-                            direction="row"
-                            spacing={1}
-                            onClick={selectedOtp}
-                            sx={{ marginY: '10px', cursor: 'pointer' }}
-                        >
-                            <CustomImageContainer
-                                src={googleLatest.src}
-                                alt="facebook"
-                                height="24px"
-                                width="24px"
-                                objectFit="cover"
-                                borderRadius="50%"
-                            />
-                            <Typography fontSize="14px" fontWeight="600">
-                                {t('OTP Sign in')}
-                            </Typography>
-                        </CustomGoogleButton>
-                        <CustomStackFullWidth
-                            alignItems="center"
-                            spacing={0.5}
-                            sx={{ paddingTop: '10px !important' }}
-                        >
-                            <CustomStackFullWidth
-                                direction="row"
-                                alignItems="center"
-                                justifyContent="center"
-                                spacing={0.5}
-                            >
-                                <CustomTypography fontSize="14px">
-                                    {t("Don't have an account?")}
-                                </CustomTypography>
-                                <CustomLink
-                                    onClick={handleSignup}
-                                    variant="body2"
-                                >
-                                    {t('Sign Up')}
-                                </CustomLink>
-                            </CustomStackFullWidth>
-                        </CustomStackFullWidth>
-                    </Stack>
-                )
-            case 'otp_social':
-                return (
-                    <>
-                        <OtpLogin
-                            otpHandleChange={otpHandleChange}
-                            otpLoginFormik={otpLoginFormik}
-                            global={global}
-                                handleClick={handleClick}
-                            rememberMeHandleChange={rememberMeHandleChange}
-                            fireBaseId={fireBaseId}
-                        />
-
-                        <Typography fontSize="14px">
-                            {' '}
-                            {'or login with'}
-                        </Typography>
-                        <SocialLogin
-                            global={global}
-                            socialLogins={global?.social_login}
-                            handleParentModalClose={handleClose}
-                            setJwtToken={setJwtToken}
-                            handleTokenAfterSignIn = {handleTokenAfterSignIn}
-                            setUserInfo={setUserInfo}
-                                setModalFor={setModalFor}
-                            setMedium={setMedium}
-                                setLoginInfo={setLoginInfo}
-                            setForWidth={setForWidth}
-                            signInWithGoogle={signInWithGoogle}
-                        />
-                    </>
-                )
-            case 'manual_social':
-                return (
-                    <LoginWrapper direction={{ xs: 'column', md: 'row' }}>
-                        <Stack
-                            sx={{
-                                flexGrow: { xs: 'none', sm: 'none', md: '1' },
-                                width: { xs: '100%', sm: '100%', md: 0 },
-                            }}
-                        >
-                            <ManualLogin
-                                loginFormik={loginFormik}
-                                showPassword={showPassword}
-                                setShowPassword={setShowPassword}
-                                global={global}
-                                handleOnChange={handleOnChange}
-                                        rememberMeHandleChange={rememberMeHandleChange}
-                                handleClick={handleClick}
-                                gotoForgotPassword={gotoForgotPassword}
-                                setModalFor={setModalFor}
-                                setForWidth={setForWidth}
-                                fireBaseId={fireBaseId}
-                            />
-                        </Stack>
-                        <Line type={'signIn'}/>
-                        <Stack
-                            flexGrow={{ xs: 'none', sm: 'none', md: '1' }}
-                            width={{ xs: '100%', sm: '100%', md: '0' }}
-                            gap="20px"
-                        >
-                            <SocialLogin
-                                global={global}
-                                socialLogins={global?.social_login}
-                                handleParentModalClose={handleClose}
-                                setJwtToken={setJwtToken}
-                                setUserInfo={setUserInfo}
-                                        setModalFor={setModalFor}
-                                setMedium={setMedium}
-                                handleTokenAfterSignIn = {handleTokenAfterSignIn}
-                                        setLoginInfo={setLoginInfo}
-                                setForWidth={setForWidth}
-                                signInWithGoogle={signInWithGoogle}
-                                all
-                            />
-                            <CustomStackFullWidth
-                                alignItems="center"
-                                spacing={0.5}
-                                sx={{ paddingTop: '10px !important' }}
-                            >
-                                <CustomStackFullWidth
-                                    direction="row"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    spacing={0.5}
-                                >
-                                    <CustomTypography fontSize="14px">
-                                        {t("Don't have an account?")}
-                                    </CustomTypography>
-                                    <CustomLink
-                                        onClick={handleSignup}
-                                        variant="body2"
-                                    >
-                                        {t('Sign Up')}
-                                    </CustomLink>
-                                </CustomStackFullWidth>
-                            </CustomStackFullWidth>
-                        </Stack>
-                    </LoginWrapper>
-                )
-            case 'all':
-                return (
-                    <LoginWrapper direction={{ xs: 'column', md: 'row' }}>
-                        <Stack
-                            sx={{
-                                flexGrow: { xs: 'none', sm: 'none', md: '1' },
-                                width: { xs: '100%', sm: '100%', md: 0 },
-                            }}
-                        >
-                            <OtpLogin
-                        otpHandleChange={otpHandleChange}
-                        otpLoginFormik={otpLoginFormik}
-                        global={global}
-                        handleClick={handleClick}
-                        rememberMeHandleChange={rememberMeHandleChange}
-                        fireBaseId={fireBaseId}
-                    />
+                otpHandleChange={otpHandleChange}
+                otpLoginFormik={otpLoginFormik}
+                global={global}
+                handleClick={handleClick}
+                rememberMeHandleChange={rememberMeHandleChange}
+                fireBaseId={fireBaseId}
+            />
+        
+                </Stack>
                 
-                        </Stack>
-                        <Line type={'signIn'}/>
-                        <Stack
-                            flexGrow={{ xs: 'none', sm: 'none', md: '1' }}
-                            width={{ xs: '100%', sm: '100%', md: '0' }}
-                            gap="20px"
-                        >
-                            <SocialLogin
-                                global={global}
-                                socialLogins={global?.social_login}
-                                handleParentModalClose={handleClose}
-                                setJwtToken={setJwtToken}
-                                setUserInfo={setUserInfo}
-                                        setModalFor={setModalFor}
-                                handleTokenAfterSignIn = {handleTokenAfterSignIn}
-                                setMedium={setMedium}
-                                        setLoginInfo={setLoginInfo}
-                                setForWidth={setForWidth}
-                                signInWithGoogle={signInWithGoogle}
-                                all
-                            />
-                            {/* <CustomGoogleButton
-                                direction="row"
-                                spacing={1}
-                                onClick={selectedOtp}
-                            >
-                                <CustomImageContainer
-                                    src={googleLatest.src}
-                                    alt="facebook"
-                                    height="24px"
-                                    width="24px"
-                                    objectFit="cover"
-                                    borderRadius="50%"
-                                />
-                                <Typography fontSize="14px" fontWeight="600">
-                                    {t('OTP Sign in')}
-                                </Typography>
-                            </CustomGoogleButton> */}
-                            <CustomStackFullWidth
-                                alignItems="center"
-                                spacing={0.5}
-                                sx={{ paddingTop: '10px !important' }}
-                            >
-                                <CustomStackFullWidth
-                                    direction="row"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    spacing={0.5}
-                                >
-                                    <CustomTypography fontSize="14px">
-                                        {t("Don't have an account?")}
-                                    </CustomTypography>
-                                    <CustomLink
-                                        onClick={handleSignup}
-                                        variant="body2"
-                                    >
-                                        {t('Sign Up')}
-                                    </CustomLink>
-                                </CustomStackFullWidth>
-                            </CustomStackFullWidth>
-                        </Stack>
-                    </LoginWrapper>
-                )
-            default:
-                return null // Fallback if no conditions are met
-        }
+            </LoginWrapper>
+        )
     }
 
     const languageDirection = 'ltr'

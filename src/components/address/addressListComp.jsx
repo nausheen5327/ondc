@@ -93,7 +93,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
       },
     });
     setIsAddMode(true);
-    setCustomTag("");
+    setCustomTag("Home");
   };
   useEffect(() => {
     const savedAddress = localStorage.getItem("currentAddress");

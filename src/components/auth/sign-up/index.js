@@ -241,7 +241,7 @@ const SignUpPage = ({
             dispatch(setToken(response?.token));
             CustomToaster('success', loginSuccessFull)
             dispatch(setToken(response.token))
-                router.push('/home')
+                // router.push('/home')
             //dispatch(cart(setItemIntoCart()));
         }
     }
