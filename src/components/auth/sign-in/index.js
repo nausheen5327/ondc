@@ -186,7 +186,7 @@ const SignInPage = ({
         },
     })
     const otpHandleChange = (value) => {
-        otpLoginFormik.setFieldValue('phone', `+${value}`)
+        otpLoginFormik.setFieldValue('phone', `${value}`)
     }
 
     const handleCallBackResponse = (res) => {

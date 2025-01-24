@@ -50,7 +50,7 @@ const AddUserInfo = ({
         },
     })
     const otpHandleChange = (value) => {
-        userInfoFormik.setFieldValue('phone', `+${value}`)
+        userInfoFormik.setFieldValue('phone', `${value}`)
     }
     return (
         <>
