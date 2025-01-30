@@ -126,15 +126,16 @@ const SignInPage = ({
     const guestId = getGuestId()
     const [isRemember, setIsRemember] = useState(false)
     const [openOtpModal, setOpenOtpModal] = useState(false)
-    const [otpData, setOtpData] = useState({ type: '' })
+    const [otpData, setOtpData] = useState({ type: 'phone' })
     const [mainToken, setMainToken] = useState(null)
     const [loginValue, setLoginValue] = useState(null)
     const [state, loginDispatch] = useReducer(loginReducer, loginInitialState)
+    const location = useSelector(state=>state.addressData.location)
     let userDatafor = undefined
     if (typeof window !== 'undefined') {
         userDatafor = JSON.parse(localStorage.getItem('userDatafor'))
     }
-        const customerInfo = useSelector((state) => state.addressData.customerInfo)
+    const customerInfo = useSelector((state) => state.addressData.customerInfo)
     
     const loginFormik = useFormik({
         initialValues: {
@@ -172,15 +173,18 @@ const SignInPage = ({
     })
     const otpLoginFormik = useFormik({
         initialValues: {
-            phone: '',
+            phone: userDatafor? userDatafor.phone : `+91${location?.descriptor?.phone}`,
         },
         validationSchema: Yup.object({
             phone: Yup.string()
                 .required(t('Please give a phone number'))
-                .min(10, 'number must be 10 digits'),
+                .min(13, 'number must be 10 digits'),
         }),
         onSubmit: async (values, helpers) => {
             try {
+                if (isRemember) {
+                    localStorage.setItem('userDatafor', JSON.stringify(values))
+                }
                 formSubmitHandler({ ...values, login_type: 'otp' })
             } catch (err) {}
         },
@@ -240,11 +244,11 @@ const SignInPage = ({
     
     
 
-    useEffect(() => {
-        if (otpData?.type !== '') {
-            setOpenOtpModal(true)
-        }
-    }, [otpData])
+    // useEffect(() => {
+    //     if (otpData?.type !== '') {
+    //         setOpenOtpModal(true)
+    //     }
+    // }, [otpData])
 
     const handleTokenAfterSignIn = async (response) => {
         if (response) {
@@ -352,16 +356,6 @@ const SignInPage = ({
             localStorage.setItem('user',JSON.stringify(response.user))
             localStorage.setItem("transaction_id", uuidv4());
             const { displayName, email, uid } = response.user;
-            const updatedCustomerInfo = {
-                            ...customerInfo,
-                            customer: {
-                                ...customerInfo?.customer,
-                                phone: values.phone
-                            }
-                        }
-                        
-                        // Dispatch action to update Redux store
-                        dispatch(setCustomerInfo(updatedCustomerInfo))
             AddCookie("token", token);
             AddCookie(
                 "user",
@@ -529,7 +523,7 @@ const SignInPage = ({
                 setModalOpen={setOpenOtpModal}
             >
                 <OtpForm
-                    data={otpData?.type}
+                    data={loginValue?.phone}
                     formSubmitHandler={otpFormSubmitHandler}
                     handleClose={() => setOpenOtpModal(false)}
                     reSendOtp={formSubmitHandler}

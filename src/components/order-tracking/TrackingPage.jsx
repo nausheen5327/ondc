@@ -33,7 +33,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { RTL } from "../RTL/RTL";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import { useGeolocated } from "react-geolocated";
-import { postCall } from "@/api/MainApi";
+import { getCall, postCall } from "@/api/MainApi";
 import { CustomToaster } from "../custom-toaster/CustomToaster";
 import { getValueFromCookie } from "@/utils/cookies";
 import { useRouter } from "next/router";
@@ -191,7 +191,7 @@ const TrackingPage = ({OrderData}) => {
       },
     };
     let es = new EventSourcePolyfill(
-      `${process.env.NEXT_PUBLIC_BASE_URL}clientApis/events?messageId=${message_id}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events?messageId=${message_id}`,
       header
     );
     es.addEventListener("on_track", (e) => {

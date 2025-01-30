@@ -23,7 +23,7 @@ body {
       margin: 0;
       max-height: 100% !important;
       height: auto !important;
-      position: fixed !important;
+      /* position: fixed !important; */
       bottom: 0 !important;
       top: auto !important;
     }

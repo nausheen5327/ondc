@@ -27,16 +27,22 @@ const TopNav = ({ cartListRefetch }) => {
         (state) => state.globalSettings
     )
     const location = useSelector((state)=>state.addressData.location)
+    const addresses = useSelector((state) => state.user.addressList);
     console.log("location...",location);
     const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
     const token= getValueFromCookie('token')
 useEffect(() => {
         let location =localStorage.getItem('location');
+        let addressList = localStorage.getItem('addressList');
         if(location){
             dispatch(setlocation(JSON.parse(location)))
            if(!token) dispatch(setAddressList([JSON.parse(location)]));
             // router.push('/home')
         };
+        if(addressList)
+        {
+            dispatch(setAddressList(JSON.parse(addressList)));
+        }
     }, [])
 
     return (

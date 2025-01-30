@@ -1,29 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Stack,
     Typography,
-    TextField,
     useTheme,
     IconButton,
-} from '@mui/material'
+} from '@mui/material';
 import {
-    CustomPaperBigCard,
     CustomStackFullWidth,
-    StyledInputBase,
-} from '../../../styled-components/CustomStyles.style'
-import { useTranslation } from 'react-i18next'
-import { useFormik } from 'formik'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import LoadingButton from '@mui/lab/LoadingButton'
-import { useOtp } from '../../../hooks/react-query/config/forgot-password/useOtp'
-import * as Yup from 'yup'
-import OtpInput from 'react-otp-input'
-import otpImage from '@/assets/images/otp.svg'
-import CustomImageContainer from '@/components/CustomImageContainer'
-import { CustomToaster } from '@/components/custom-toaster/CustomToaster'
-import { maskPhoneNumber, maskSensitiveInfo } from '@/utils/customFunctions'
-import CloseIcon from '@mui/icons-material/Close'
+} from '../../../styled-components/CustomStyles.style';
+import { useTranslation } from 'react-i18next';
+import { useFormik } from 'formik';
+import LoadingButton from '@mui/lab/LoadingButton';
+import * as Yup from 'yup';
+import OtpInput from 'react-otp-input';
+import otpImage from '@/assets/images/otp.svg';
+import CustomImageContainer from '@/components/CustomImageContainer';
+import { maskSensitiveInfo } from '@/utils/customFunctions';
+import CloseIcon from '@mui/icons-material/Close';
 
 const OtpForm = ({
     data,
@@ -35,9 +29,9 @@ const OtpForm = ({
     reSendOtp,
     loginValue,
 }) => {
-    const { t } = useTranslation()
-    const theme = useTheme()
-    const [otp, setOtp] = useState('')
+    const { t } = useTranslation();
+    const theme = useTheme();
+    const [otp, setOtp] = useState('');
     const otpFormik = useFormik({
         initialValues: {
             reset_token: '',
@@ -48,32 +42,50 @@ const OtpForm = ({
         }),
         onSubmit: async (values) => {
             try {
-                formSubmitHandler(values)
+                formSubmitHandler(values);
             } catch (err) {}
         },
-    })
+    });
 
-    const [counter, setCounter] = useState(60) // Start at 30 seconds
-    const [isResendDisabled, setIsResendDisabled] = useState(true)
+    const [counter, setCounter] = useState(60); // Start at 60 seconds
+    const [isResendDisabled, setIsResendDisabled] = useState(true);
 
     useEffect(() => {
         // Timer function to decrease counter every second
         if (counter > 0) {
-            const timer = setTimeout(() => setCounter(counter - 1), 1000)
-            return () => clearTimeout(timer) // Cleanup the timer on unmount
+            const timer = setTimeout(() => setCounter(counter - 1), 1000);
+            return () => clearTimeout(timer); // Cleanup the timer on unmount
         } else {
-            setIsResendDisabled(false) // Enable resend after countdown
+            setIsResendDisabled(false); // Enable resend after countdown
         }
-    }, [counter])
+    }, [counter]);
 
     const handleResendClick = () => {
         if (!isResendDisabled) {
-            reSendOtp(loginValue)
-            setCounter(60) // Reset counter to 30 seconds
-            setIsResendDisabled(true)
-            // Add logic to trigger resend code action here (API call, etc.)
+            reSendOtp(loginValue);
+            setCounter(60); // Reset counter to 60 seconds
+            setIsResendDisabled(true);
         }
-    }
+    };
+
+    // Function to focus on the first empty input box
+    const focusFirstEmptyInput = (otp) => {
+        const inputs = document.querySelectorAll('.otp-input');
+        if (inputs.length > 0) {
+            const firstEmptyInput = Array.from(inputs).find(
+                (input) => input.value === ''
+            );
+            if (firstEmptyInput) {
+                firstEmptyInput.focus();
+            }
+        }
+    };
+
+    // Focus on the first empty input when the component mounts or OTP changes
+    useEffect(() => {
+        focusFirstEmptyInput(otpFormik.values.reset_token);
+    }, [otpFormik.values.reset_token]);
+
     return (
         <CustomStackFullWidth
             justifyContent="center"
@@ -142,15 +154,7 @@ const OtpForm = ({
                           `
                     )}
                 </Typography>
-                {/*<Typography*/}
-                {/*    mt="5px"*/}
-                {/*    textAlign="center"*/}
-                {/*    fontSize="12px"*/}
-                {/*    color="textSecondary"*/}
-                {/*>*/}
-                {/*    {t('for demo propose use otp 123456')}*/}
-                {/*</Typography>*/}
-                {/* <Typography>{data?.phone}</Typography> */}
+
                 <Stack width="100%">
                     <form onSubmit={otpFormik.handleSubmit}>
                         <Stack
@@ -193,28 +197,27 @@ const OtpForm = ({
                             >
                                 <OtpInput
                                     value={otpFormik.values.reset_token}
-                                    onChange={(otp) =>
+                                    onChange={(otp) => {
                                         otpFormik.setFieldValue(
                                             'reset_token',
                                             otp
-                                        )
-                                    }
+                                        );
+                                        focusFirstEmptyInput(otp); // Focus on the first empty input
+                                    }}
                                     numInputs={4}
                                     onBlur={otpFormik.handleBlur('reset_token')}
                                     renderInput={(props) => (
-                                        <input {...props} />
+                                        <input
+                                            {...props}
+                                            className="otp-input" // Add a class for targeting inputs
+                                        />
                                     )}
                                     error={
                                         otpFormik.touched.reset_token &&
                                         Boolean(otpFormik.errors.reset_token)
                                     }
+                                    shouldAutoFocus={false} // Disable default auto-focus behavior
                                 />
-                                {/* <OtpInput
-                                value={otp}
-                                onChange={setOtp}
-                                numInputs={4}
-                                renderInput={(props) => <input {...props} />}
-                            /> */}
                             </Box>
 
                             <LoadingButton
@@ -287,6 +290,6 @@ const OtpForm = ({
                 </Stack>
             </CustomStackFullWidth>
         </CustomStackFullWidth>
-    )
-}
-export default OtpForm
+    );
+};
+export default OtpForm;

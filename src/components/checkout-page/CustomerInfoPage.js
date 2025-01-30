@@ -191,7 +191,10 @@ import { setCustomerInfo } from '@/redux/slices/addressData'
 
 const CustomerInfoPage = () => {
     const { t } = useTranslation()
+    const [customerInfoLocal, setCustomerInfoLocal] = useState(null)
     const customerInfo = useSelector((state) => state.addressData.customerInfo)
+    const location = useSelector((state) => state.addressData.location)
+    
     const dispatch = useDispatch()
     const [formData, setFormData] = useState({
         name: '',
@@ -199,17 +202,34 @@ const CustomerInfoPage = () => {
         phone: ''
     })
     const [errors, setErrors] = useState({})
-    const [isEditing, setIsEditing] = useState(false)
+        const [isEditing, setIsEditing] = useState(false)
 
     useEffect(() => {
-        if (customerInfo?.customer) {
+        // First check localStorage
+        const storedCustomerInfo = localStorage.getItem('customerInfo')
+        if (storedCustomerInfo) {
+            const parsedInfo = JSON.parse(storedCustomerInfo)
+            // dispatch(setCustomerInfo(parsedInfo))
+            setCustomerInfo(parsedInfo)
             setFormData({
-                name: customerInfo?.customer?.name || '',
-                email: customerInfo?.customer?.email || '',
-                phone: customerInfo?.customer?.phone || ''
+                name: parsedInfo?.customer?.name || '',
+                email: parsedInfo?.customer?.email || '',
+                phone: parsedInfo?.customer?.phone || ''
+            })
+        } else {
+            // If no localStorage data, use location descriptor and userDatafor
+            let userDatafor  =localStorage.getItem('userDatafor');
+            if(userDatafor)
+            {
+                userDatafor = JSON.parse(userDatafor)
+            }
+            setFormData({
+                name: location?.descriptor?.name || '',
+                email: location?.descriptor?.email || '',
+                phone: userDatafor?.phone || ''
             })
         }
-    }, [customerInfo])
+    }, [location])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -235,7 +255,7 @@ const CustomerInfoPage = () => {
         }
         if (!formData.phone) {
             newErrors.phone = t('Phone is required')
-        } else if (!/^\d{10}$/.test(formData.phone)) {
+        } else if (!/^(\+91)?\d{10}$/.test(formData.phone)) {
             newErrors.phone = t('Invalid phone number')
         }
         return newErrors
@@ -255,6 +275,7 @@ const CustomerInfoPage = () => {
                     phone: formData.phone
                 }
             }
+            localStorage.setItem('customerInfo', JSON.stringify(updatedCustomerInfo))
             dispatch(setCustomerInfo(updatedCustomerInfo))
             setIsEditing(false)
         } else {

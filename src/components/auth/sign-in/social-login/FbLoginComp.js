@@ -53,11 +53,11 @@ const FbLoginComp = (props) => {
             setOpenModal(true)
         }
     }
-    useEffect(() => {
-        if (otpData?.phone !== '') {
-            setOpenOtpModal(true)
-        }
-    }, [otpData])
+    // useEffect(() => {
+    //     if (otpData?.phone !== '') {
+    //         setOpenOtpModal(true)
+    //     }
+    // }, [otpData])
     const handlePostRequestOnSuccess = (response) => {
         const res = response?.data
         if (

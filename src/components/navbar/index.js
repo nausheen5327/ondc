@@ -114,9 +114,9 @@ const Navigation = () => {
             refetch()
         }
     }, [data])
-    useEffect(()=>{
-       if(userLocation) router.push('/home')
-    },[userLocation])
+    // useEffect(()=>{
+    //    if(userLocation) router.push('/home')
+    // },[userLocation])
     // if (checkMaintenanceMode(global)) {
     //     return null;
     // }

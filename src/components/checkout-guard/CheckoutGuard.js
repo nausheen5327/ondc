@@ -17,9 +17,10 @@ const CheckoutGuard = (props) => {
         } else {
             if (cartList.length > 0) {
                 return <>{children}</>
-            } else {
-                router.push('/home')
-            }
+            } 
+            // else {
+            //     router.push('/home')
+            // }
         }
     } else {
         router.push('/home')

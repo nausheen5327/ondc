@@ -1857,7 +1857,7 @@ const verifyPayment = async (items, method) => {
       const checkCustomerDetails=()=>{
         console.log("customerDetails",customerInfo, location);
         
-        if(!(customerInfo.customer.name && customerInfo.customer.email && customerInfo.customer.phone)){
+        if(!(customerInfo?.customer?.name && customerInfo?.customer?.email && customerInfo?.customer?.phone)){
           CustomToaster('error', 'Please provide customer details')
           return false;
         }
