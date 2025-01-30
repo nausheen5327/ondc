@@ -1212,7 +1212,7 @@ const verifyPayment = async (items, method) => {
             ...updatedCartItems[0].message.quote.payment,
             paid_amount: Number(productQuotesForCheckout[0]?.price?.value),
             type:
-              method === paymenMethod === 'prepaid' ? "ON-ORDER" :"ON-FULFILLMENT",
+              method === paymenMethod === 'prepaid' ? "ON-ORDER" :"ON-ORDER",
             transaction_id: parentOrderIDMap.get(item?.provider?.id)
               .transaction_id,
             paymentGatewayEnabled: false, //TODO: we send false for, if we enabled jusPay the we will handle.
@@ -1450,36 +1450,111 @@ const verifyPayment = async (items, method) => {
         }
         return provider;
       };
+      // const confirmOrder = async (items, method) => {
+      //   responseRef.current = [];
+      //   const parentOrderIDMap = new Map(
+      //     JSON.parse(getValueFromCookie("parent_and_transaction_id_map"))
+      //   );
+      //   const { productQuotes: productQuotesForCheckout } = JSON.parse(
+      //     // getValueFromCookie("checkout_details") || "{}"cod
+      //     localStorage.getItem("checkout_details") || "{}"
+      //   );
+      //   try {
+      //   //   const search_context = JSON.parse(getValueFromCookie("search_context"));
+      //     const item = items[0];
+      //     const queryParams = [
+      //       {
+      //         context: {
+      //           domain: item.domain,
+      //           city: item.contextCity,
+      //           state: location?.address?.state,
+      //           parent_order_id: parentOrderIDMap.get(item?.provider?.id)
+      //             .parent_order_id,
+      //           transaction_id: parentOrderIDMap.get(item?.provider?.id)
+      //             .transaction_id,
+      //           pincode: location?.address?.areaCode,
+      //         },
+      //         message: {
+      //           payment: {
+      //             ...updatedCartItems[0].message.quote.payment,
+      //             paid_amount: Number(productQuotesForCheckout[0]?.price?.value),
+      //             type:
+      //               method === 'cash_on_delivery' ? "ON-FULFILLMENT" : "ON-ORDER",
+      //             transaction_id: parentOrderIDMap.get(item?.provider?.id)
+      //               .transaction_id,
+      //             paymentGatewayEnabled: false, //TODO: we send false for, if we enabled jusPay the we will handle.
+      //           },
+      //           quote: {
+      //             ...productQuotesForCheckout[0],
+      //             price: {
+      //               currency: productQuotesForCheckout[0].price.currency,
+      //               value: String(productQuotesForCheckout[0].price.value),
+      //             },
+      //           },
+      //           providers: getItemProviderId(item),
+      //         },
+      //       },
+      //     ];
+      //     const data = await cancellablePromise(
+      //       postCall("clientApis/v2/confirm_order", queryParams)
+      //     );
+      //     //Error handling workflow eg, NACK
+      //     // const isNACK = data.find(
+      //     //   (item) => item.error && item.message.ack.status === "NACK"
+      //     // );
+      //     const isNACK = data.find((item) => item.error && item.code !== "");
+      //     if (isNACK) {
+      //       dispatchError(isNACK.error.message);
+      //       setConfirmOrderLoading(false);
+      //     } else {
+      //       onConfirm(
+      //         data?.map((txn) => {
+      //           const { context } = txn;
+      //           return context?.message_id;
+      //         })
+      //       );
+      //     }
+      //   } catch (err) {
+      //     CustomToaster('error', 'Failed to process order, Please try again')
+      //     // dispatchError(err?.response?.data?.error?.message);
+      //     setConfirmOrderLoading(false);
+      //   }
+      //   // eslint-disable-next-line
+      // };
+
+
+
+
       const confirmOrder = async (items, method) => {
         responseRef.current = [];
         const parentOrderIDMap = new Map(
           JSON.parse(getValueFromCookie("parent_and_transaction_id_map"))
         );
         const { productQuotes: productQuotesForCheckout } = JSON.parse(
-          // getValueFromCookie("checkout_details") || "{}"cod
+          // getValueFromCookie("checkout_details") || "{}"
           localStorage.getItem("checkout_details") || "{}"
         );
         try {
-        //   const search_context = JSON.parse(getValueFromCookie("search_context"));
+          const search_context = JSON.parse(getValueFromCookie("search_context"));
           const item = items[0];
           const queryParams = [
             {
               context: {
                 domain: item.domain,
                 city: item.contextCity,
-                state: location?.address?.state,
+                state: search_context.location.state,
                 parent_order_id: parentOrderIDMap.get(item?.provider?.id)
                   .parent_order_id,
                 transaction_id: parentOrderIDMap.get(item?.provider?.id)
                   .transaction_id,
-                pincode: location?.address?.areaCode,
+                pincode: JSON.parse(getValueFromCookie("delivery_address"))
+                  ?.location.address.areaCode,
               },
               message: {
                 payment: {
                   ...updatedCartItems[0].message.quote.payment,
                   paid_amount: Number(productQuotesForCheckout[0]?.price?.value),
-                  type:
-                    method === 'cash_on_delivery' ? "ON-FULFILLMENT" : "ON-ORDER",
+                  type: "ON-ORDER",
                   transaction_id: parentOrderIDMap.get(item?.provider?.id)
                     .transaction_id,
                   paymentGatewayEnabled: false, //TODO: we send false for, if we enabled jusPay the we will handle.
@@ -1495,9 +1570,8 @@ const verifyPayment = async (items, method) => {
               },
             },
           ];
-          const data = await cancellablePromise(
-            postCall("clientApis/v2/confirm_order", queryParams)
-          );
+          const data = await 
+            postCall("clientApis/v2/confirm_order", queryParams);
           //Error handling workflow eg, NACK
           // const isNACK = data.find(
           //   (item) => item.error && item.message.ack.status === "NACK"
@@ -1515,12 +1589,13 @@ const verifyPayment = async (items, method) => {
             );
           }
         } catch (err) {
-          CustomToaster('error', 'Failed to process order, Please try again')
-          // dispatchError(err?.response?.data?.error?.message);
+          dispatchError(err?.response?.data?.error?.message);
           setConfirmOrderLoading(false);
         }
         // eslint-disable-next-line
       };
+
+
 
       const handleProceedToPay=()=>{
         const { productQuotes, successOrderIds } = JSON.parse(

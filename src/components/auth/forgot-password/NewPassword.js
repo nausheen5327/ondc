@@ -19,7 +19,7 @@ import toast from 'react-hot-toast'
 import newPasswordImage from "@/assets/images/new_password.svg"
 import CustomImageContainer from '@/components/CustomImageContainer'
 import { CustomSigninOutLine } from '../sign-in'
-import { alpha } from '@material-ui/core'
+// import { alpha } from '@material-ui/core'
 import LockIcon from '@mui/icons-material/Lock';
 import { CustomTypography } from '@/components/custom-tables/Tables.style'
 
@@ -139,7 +139,7 @@ const NewPassword = ({ data, goBack, setModalFor }) => {
                                         aria-label="toggle password visibility"
                                         edge="start"
                                     >
-                                        <LockIcon sx={{ fontSize: "1.2rem", color: theme => alpha(theme.palette.neutral[400], .5) }} />
+                                        {/* <LockIcon sx={{ fontSize: "1.2rem", color: theme => alpha(theme.palette.neutral[400], .5) }} /> */}
                                     </IconButton>
                                 </InputAdornment>}
                                 label="Password"
@@ -270,7 +270,7 @@ const NewPassword = ({ data, goBack, setModalFor }) => {
                                         aria-label="toggle password visibility"
                                         edge="start"
                                     >
-                                        <LockIcon sx={{ fontSize: "1.2rem", color: theme => alpha(theme.palette.neutral[400], .5) }} />
+                                        {/* <LockIcon sx={{ fontSize: "1.2rem", color: theme => alpha(theme.palette.neutral[400], .5) }} /> */}
                                     </IconButton>
                                 </InputAdornment>}
                             />
