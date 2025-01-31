@@ -226,7 +226,7 @@ const CustomerInfoPage = () => {
             setFormData({
                 name: location?.descriptor?.name || '',
                 email: location?.descriptor?.email || '',
-                phone: userDatafor?.phone || ''
+                phone: userDatafor?.phone || location?.descriptor?.phone
             })
         }
     }, [location])

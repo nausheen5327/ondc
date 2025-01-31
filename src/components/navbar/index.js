@@ -29,6 +29,7 @@ import { onSingleErrorResponse } from '@/components/ErrorResponse'
 import { setGlobalSettings } from '@/redux/slices/global'
 import CategoryMenu from './category-navbar.js'
 import { Box, styled } from '@mui/system'
+import { usePathname } from 'next/navigation'
 
 const Navigation = () => {
     // const SecondNavbar = dynamic(() => import('./second-navbar/SecondNavbar'), {
@@ -91,7 +92,8 @@ const Navigation = () => {
         }
     }
 
-  
+    const pathname = usePathname();
+
 
     const handleConfigData = (res) => {
         if (res?.data) {
@@ -114,9 +116,9 @@ const Navigation = () => {
             refetch()
         }
     }, [data])
-    // useEffect(()=>{
-    //    if(userLocation) router.push('/home')
-    // },[userLocation])
+    useEffect(()=>{
+       if(userLocation && pathname === '/') router.push('/home')
+    },[userLocation])
     // if (checkMaintenanceMode(global)) {
     //     return null;
     // }
