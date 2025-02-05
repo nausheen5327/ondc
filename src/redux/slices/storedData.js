@@ -5,7 +5,7 @@ const initialState = {
         {
             "id": 7,
             "name": "Asian",
-            "image": "2021-08-20-611fbebbc8db2.png",
+            "image": "sushi.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -16,7 +16,7 @@ const initialState = {
             "products_count": 6,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbebbc8db2.png",
+            "image_full_url": "sushi.jpg",
             "childes": [],
             "translations": [
                 {
@@ -34,8 +34,8 @@ const initialState = {
         },
         {
             "id": 6,
-            "name": "Biriyani",
-            "image": "2021-08-20-611fbeadbf729.png",
+            "name": "Biryani",
+            "image": "biryani.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -46,7 +46,7 @@ const initialState = {
             "products_count": 7,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbeadbf729.png",
+            "image_full_url": "biryani.jpg",
             "childes": [],
             "translations": [
                 {
@@ -65,7 +65,7 @@ const initialState = {
         {
             "id": 5,
             "name": "Burger",
-            "image": "2021-08-20-611fbe0e334c5.png",
+            "image": "burger.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -76,7 +76,7 @@ const initialState = {
             "products_count": 11,
             "childes_count": 5,
             "order_count": "3",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbe0e334c5.png",
+            "image_full_url": "burger.jpg",
             "childes": [
                 {
                     "id": 24,
@@ -225,7 +225,7 @@ const initialState = {
         {
             "id": 8,
             "name": "Cake",
-            "image": "2021-08-20-611fbecb2b870.png",
+            "image": "cake.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -236,7 +236,7 @@ const initialState = {
             "products_count": 12,
             "childes_count": 3,
             "order_count": "3",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbecb2b870.png",
+            "image_full_url": "cake.jpg",
             "childes": [
                 {
                     "id": 29,
@@ -340,7 +340,7 @@ const initialState = {
         {
             "id": 10,
             "name": "Chinese",
-            "image": "2021-08-20-611fbf1b426e1.png",
+            "image": "chinese.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -351,7 +351,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "3",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbf1b426e1.png",
+            "image_full_url": "chinese.jpg",
             "childes": [],
             "translations": [
                 {
@@ -370,7 +370,7 @@ const initialState = {
         {
             "id": 9,
             "name": "Coffee & Drinks",
-            "image": "2021-08-20-611fbede98fba.png",
+            "image": "coffee.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -381,7 +381,7 @@ const initialState = {
             "products_count": 6,
             "childes_count": 5,
             "order_count": 0,
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbede98fba.png",
+            "image_full_url": "coffee.jpg",
             "childes": [
                 {
                     "id": 32,
@@ -530,7 +530,7 @@ const initialState = {
         {
             "id": 11,
             "name": "Fast Food",
-            "image": "2021-08-20-611fbf30f1a68.png",
+            "image": "fastFood.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -541,7 +541,7 @@ const initialState = {
             "products_count": 12,
             "childes_count": 0,
             "order_count": "4",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbf30f1a68.png",
+            "image_full_url": "fastFood.jpg",
             "childes": [],
             "translations": [
                 {
@@ -560,7 +560,7 @@ const initialState = {
         {
             "id": 13,
             "name": "Indian",
-            "image": "2021-08-20-611fbf6a9a159.png",
+            "image": "indian.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -571,7 +571,7 @@ const initialState = {
             "products_count": 5,
             "childes_count": 0,
             "order_count": 0,
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbf6a9a159.png",
+            "image_full_url": "indian.jpg",
             "childes": [],
             "translations": [
                 {
@@ -590,7 +590,7 @@ const initialState = {
         {
             "id": 12,
             "name": "Kabab & More",
-            "image": "2021-08-20-611fbf491f625.png",
+            "image": "kebab.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -601,7 +601,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "1",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbf491f625.png",
+            "image_full_url": "kebab.jpg",
             "childes": [],
             "translations": [
                 {
@@ -620,7 +620,7 @@ const initialState = {
         {
             "id": 15,
             "name": "Mexican Food",
-            "image": "2021-08-20-611fbf96910eb.png",
+            "image": "mexican.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -631,7 +631,7 @@ const initialState = {
             "products_count": 9,
             "childes_count": 0,
             "order_count": "1",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbf96910eb.png",
+            "image_full_url": "mexican.jpg",
             "childes": [],
             "translations": [
                 {
@@ -650,7 +650,7 @@ const initialState = {
         {
             "id": 14,
             "name": "Noodles",
-            "image": "2021-08-20-611fbf779aef1.png",
+            "image": "noodles.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -661,7 +661,7 @@ const initialState = {
             "products_count": 3,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbf779aef1.png",
+            "image_full_url": "noodles.jpg",
             "childes": [],
             "translations": [
                 {
@@ -680,7 +680,7 @@ const initialState = {
         {
             "id": 16,
             "name": "Pasta",
-            "image": "2021-08-20-611fbfa397c7c.png",
+            "image": "pasta.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -691,7 +691,7 @@ const initialState = {
             "products_count": 10,
             "childes_count": 0,
             "order_count": 0,
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbfa397c7c.png",
+            "image_full_url": "pasta.jpg",
             "childes": [],
             "translations": [
                 {
@@ -710,7 +710,7 @@ const initialState = {
         {
             "id": 17,
             "name": "Pizza",
-            "image": "2021-08-20-611fbfb0af526.png",
+            "image": "pizza.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -721,7 +721,7 @@ const initialState = {
             "products_count": 17,
             "childes_count": 0,
             "order_count": "8",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbfb0af526.png",
+            "image_full_url": "pizza.jpg",
             "childes": [],
             "translations": [
                 {
@@ -740,7 +740,7 @@ const initialState = {
         {
             "id": 18,
             "name": "Snacks",
-            "image": "2021-08-20-611fbfbc0e2ed.png",
+            "image": "snacks.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -751,7 +751,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbfbc0e2ed.png",
+            "image_full_url": "snacks.jpg",
             "childes": [],
             "translations": [
                 {
@@ -770,7 +770,7 @@ const initialState = {
         {
             "id": 19,
             "name": "Thai",
-            "image": "2021-08-20-611fbfc6ac515.png",
+            "image": "thai.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -781,7 +781,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "3",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbfc6ac515.png",
+            "image_full_url": "thai.jpg",
             "childes": [],
             "translations": [
                 {
@@ -800,7 +800,7 @@ const initialState = {
         {
             "id": 20,
             "name": "Varieties",
-            "image": "2021-08-20-611fbfd13f7db.png",
+            "image": "variety.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -811,7 +811,7 @@ const initialState = {
             "products_count": 11,
             "childes_count": 0,
             "order_count": "14",
-            "image_full_url": "https://stackfood-admin.6amtech.com/storage/app/public/category/2021-08-20-611fbfd13f7db.png",
+            "image_full_url": "variety.jpg",
             "childes": [],
             "translations": [
                 {

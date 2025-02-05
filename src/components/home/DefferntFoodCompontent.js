@@ -181,7 +181,7 @@ const DifferentFoodCompontent = ({ isLoading, isLoadingNearByPopularRestaurantDa
   useEffect(() => {
     getAllProducts('pizza', offset,'todays-trends');
     getAllProducts('burger', offset,'popular-foods');
-    getAllProducts('pasta', offset,'best-reviewed');
+    getAllProducts('chicken', offset,'best-reviewed');
   }, []);
 
   //
