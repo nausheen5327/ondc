@@ -289,7 +289,7 @@ async function handleFetchCancelOrderDetails() {
             cancellation_reason_id: selectedCancelReasonId?.key,
           },
         });
-      fetchCancelOrderDataThroughEvents(context.message_id);
+      fetchCancelOrderDataThroughEvents(context?.message_id);
     } catch (err) {
       setLoading(false);
       CustomToaster('error',err?.message);

@@ -25,9 +25,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ProfileApi } from "@/hooks/react-query/config/profileApi";
 import CloseIcon from '@mui/icons-material/Close';
 import toast from 'react-hot-toast'
-import { setLocation } from "@/redux/slices/addressData"
+import { setlocation, setLocation } from "@/redux/slices/addressData"
 import { onErrorResponse } from "@/components/ErrorResponse";
 import { setGuestUserInfo } from "@/redux/slices/guestUserInfo";
+import EnhancedAddressCard from "./EnhancedAddressCard";
+import { getCall, postCall } from "@/api/MainApi";
+import { setIsLoading } from "@/redux/slices/global";
+import { CustomToaster } from "@/components/custom-toaster/CustomToaster";
+import { setAddressList } from "@/redux/slices/customer";
 
 const style = {
     position: 'absolute',
@@ -60,7 +65,64 @@ const AddressCard = ({ address }) => {
         }
     }, [])
 
-  
+
+    const fetchDeliveryAddress = async () => {
+        // setFetchDeliveryAddressLoading(true);
+        try {
+          dispatch(setIsLoading(true));
+          let data = await getCall("/clientApis/v1/delivery_address");
+          
+          dispatch(setAddressList(data));
+          dispatch(setIsLoading(false));
+        } catch (err) {
+          CustomToaster("error", 'Unable to fetch delivery information');
+          dispatch(setIsLoading(false));
+          //toast for error in fetching addresses
+        } finally {
+          dispatch(setIsLoading(false));
+          // setFetchDeliveryAddressLoading(false);
+        }
+      };
+
+    const handleUpdateAddress = async (address) => {
+        
+          try {
+            dispatch(setIsLoading(true));
+            const data = await postCall(
+              `/clientApis/v1/update_delivery_address/${address.id}`,
+              {
+                descriptor: {
+                  name: address.descriptor.name.trim(),
+                  email: address.descriptor.email.trim(),
+                  phone: address.descriptor.phone.trim(),
+                },
+                address: {
+                  areaCode: address.address.areaCode.trim(),
+                  building: address.address.building.trim(),
+                  city: address.address.city.trim(),
+                  country: "IND",
+                  door: address.address.building.trim(),
+                  building: address.address.building.trim(),
+                  state: address.address.state.trim(),
+                  street: address.address.street.trim(),
+                  tag: address.address.tag.trim(),
+                  lat: address.address.lat,
+                  lng: address.address.lng,
+                },
+              }
+            );
+            dispatch(setIsLoading(false));
+            fetchDeliveryAddress();
+          } catch (err) {
+            CustomToaster("error", 'Unable to update address');
+            dispatch(setIsLoading(false));
+          } finally {
+            // setAddAddressLoading(false);
+            dispatch(setIsLoading(false));
+          }
+        
+        
+      };
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -209,7 +271,8 @@ const AddressCard = ({ address }) => {
 
                             <RTL direction={languageDirection}>
                                 <CustomStackFullWidth flexDirection={{ xs: "column", sm: "row" }} gap="15px">
-                                    <MapWithSearchBox
+                                    <EnhancedAddressCard address={address} onUpdateAddress={handleUpdateAddress} open={open} setOpen={setOpen}/>
+                                    {/* <MapWithSearchBox
                                     // rerenderMap={rerenderMap}
                                     // orderType={orderType} 
                                     />
@@ -225,7 +288,7 @@ const AddressCard = ({ address }) => {
                                         isLoading={false}
                                         editAddress={true}
                                         address={address}
-                                    />
+                                    /> */}
                                 </CustomStackFullWidth>
                             </RTL>
                         </Stack>

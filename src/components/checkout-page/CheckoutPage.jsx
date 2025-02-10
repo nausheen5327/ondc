@@ -1,4 +1,4 @@
-import { baseUrl, getCall, postCall } from '@/api/MainApi'
+import { baseUrl, deleteCall, getCall, postCall } from '@/api/MainApi'
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { v4 as uuidv4 } from "uuid";
 import { setPayment_Response,setPayment_Status } from '@/redux/slices/payment'
@@ -57,6 +57,15 @@ import { AddCookie, getValueFromCookie, removeCookie } from '@/utils/cookies'
 import Razorpay from './razorpay'
 import AddressList from '../address/addressList'
 import { paymentSlice } from '@/redux/slices/payment'
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Stack,
+  Typography,
+  alpha,
+} from '@mui/material'
 
 let currentDate = moment().format('YYYY/MM/DD HH:mm')
 let nextday = moment(currentDate).add(1, 'days').format('YYYY/MM/DD')
@@ -883,22 +892,66 @@ const getCartItems = async () => {
 const dispatchError = (message)=>{
   return CustomToaster('error',message)
 }
+// const onConfirmOrder = async (message_id) => {
+//   try {
+//     const data = await cancellablePromise(
+//       getCall(`clientApis/v2/on_confirm_order?messageIds=${message_id}`)
+//     );
+//     responseRef.current = [...responseRef.current, data[0]];
+//     setPaymentEventData((paymentEventData) => [...paymentEventData, data[0]]);
+//     dispatch(setPayment_Response(data[0]));
+//     localStorage.setItem('orderDetails',JSON.stringify(data[0]));
+//     getCartItems();
+//   } catch (err) {
+//     CustomToaster('error', 'Failed to process order, Please try again')
+//     // dispatchError(err?.response?.data?.error?.message);
+//     setConfirmOrderLoading(false);
+//   }
+//   // eslint-disable-next-line
+// };
+
+const deleteCartItem = async (itemId) => {
+  // dispatch(setIsLoading(true));
+  // const user = JSON.parse(getValueFromCookie("user"));
+  let user  = localStorage.getItem("user");
+  if(user)
+  {
+    user = JSON.parse(user)
+    const url = `/clientApis/v2/cart/${user}/${itemId}`;
+    const res = await deleteCall(url);
+    // dispatch(setIsLoading(false));
+    // getCartItems();
+  }
+};
 const onConfirmOrder = async (message_id) => {
   try {
-    const data = await cancellablePromise(
-      getCall(`clientApis/v2/on_confirm_order?messageIds=${message_id}`)
-    );
+    const data = await  getCall(`clientApis/v2/on_confirm_order?messageIds=${message_id}`);
     responseRef.current = [...responseRef.current, data[0]];
     setPaymentEventData((paymentEventData) => [...paymentEventData, data[0]]);
     dispatch(setPayment_Response(data[0]));
-    localStorage.setItem('orderDetails',JSON.stringify(data[0]));
+    localStorage.setItem('orderDetails', JSON.stringify(data[0]));
+    
+    // Get current cart items before deletion
+    const currentCartItems = cartItems; // Assuming cartItems is available in scope
+    
+    // Delete each cart item
+    for (const item of currentCartItems) {
+      try {
+        await deleteCartItem(item._id);
+      } catch (error) {
+        console.error(`Failed to delete item ${item._id}:`, error);
+        // Continue with next item even if one fails
+      }
+    }
+    
+    // Finally get updated cart items
     getCartItems();
   } catch (err) {
-    CustomToaster('error', 'Failed to process order, Please try again')
-    // dispatchError(err?.response?.data?.error?.message);
+    CustomToaster('error', 'Failed to process order, Please try again');
+    setConfirmOrderLoading(false);
+  } finally {
     setConfirmOrderLoading(false);
   }
-  // eslint-disable-next-line
 };
 function onConfirm(message_id) {
   eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
