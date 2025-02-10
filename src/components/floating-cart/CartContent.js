@@ -56,6 +56,7 @@ const CartContent = ({
     );
   };
 
+
   return (
     <Card sx={{ 
       width: '100%',  
@@ -143,9 +144,9 @@ const CartContent = ({
             {/* Customizations */}
             {item?.item?.customisations && (
               <Stack spacing={0.5}>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+               {item?.item?.customisations?.length>0 && <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   Customizations:
-                </Typography>
+                </Typography>}
                 {item.item.customisations.map((customization) => (
                   <Stack 
                     key={customization.id} 

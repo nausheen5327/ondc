@@ -41,6 +41,7 @@ import ThemeSwitches from './top-navbar/ThemeSwitches'
 import { removeCookie } from '@/utils/cookies'
 import { setlocation } from '@/redux/slices/addressData'
 import { setIsLoading } from '@/redux/slices/global'
+import FloatingCart from '../floating-cart/FloatingCart'
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -89,6 +90,8 @@ export const CustomDrawerLocal = styled(Drawer)(({ theme }) => ({
 const DrawerMenu = ({  cartListRefetch }) => {
     const [forSignup, setForSignup] = useState('')
     const [modalFor, setModalFor] = useState('sign-in')
+    const [sideDrawerOpen, setSideDrawerOpen] = useState(false)
+
     const { featuredCategories, cuisines } = useSelector(
         (state) => state.storedData
     )
@@ -218,6 +221,18 @@ const DrawerMenu = ({  cartListRefetch }) => {
             {
                 pathname: '/info',
                 query: { page: 'profile' },
+            },
+            undefined,
+            { shallow: true }
+        )
+        setOpenDrawer(false)
+    }
+
+    const handleRouteToOrder = () => {
+        Router.push(
+            {
+                pathname: '/info',
+                query: { page: 'order' },
             },
             undefined,
             { shallow: true }
@@ -363,7 +378,30 @@ const DrawerMenu = ({  cartListRefetch }) => {
                                         {t('My Cart')}
                                     </Typography>
                                 }
-                                onClick={() => handleRoute('privacy-policy')}
+                                onClick={() => {
+                                    setSideDrawerOpen(true);
+                                    setOpenDrawer(false);
+                                }}
+                            />
+                        </ListItemButton>
+                        <ListItemButton
+                            sx={{
+                                borderBottom: '1px solid',
+                                borderBottomColor: (theme) =>
+                                    alpha(theme.palette.neutral[300], 0.3),
+
+                                '&:hover': {
+                                    backgroundColor: 'primary.main',
+                                },
+                            }}
+                        >
+                            <ListItemText
+                                primary={
+                                    <Typography sx={{ fontSize: '12px' }}>
+                                        {t('My Orders')}
+                                    </Typography>
+                                }
+                                onClick={() => handleRouteToOrder()}
                             />
                         </ListItemButton>
 
@@ -489,6 +527,10 @@ const DrawerMenu = ({  cartListRefetch }) => {
                     setModalFor={setModalFor}
                 />
             )}
+            {sideDrawerOpen && <FloatingCart
+                sideDrawerOpen={sideDrawerOpen}
+                setSideDrawerOpen={setSideDrawerOpen}
+            />}
             <IconButton
                 size="large"
                 aria-label="account of current user"

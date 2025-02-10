@@ -41,7 +41,7 @@ const style = {
     borderRadius: "10px",
 }
 
-const AddressCard = ({ address, refetch }) => {
+const AddressCard = ({ address }) => {
     const theme = useTheme()
     const dispatch = useDispatch()
     const [open, setOpen] = useState(false)
@@ -49,35 +49,18 @@ const AddressCard = ({ address, refetch }) => {
     const [addressSymbol, setAddressSymbol] = useState("")
     const [rerenderMap, setRerenderMap] = useState(false)
     const languageDirection = 'ltr'
-    const { token } = useSelector((state) => state.userToken)
     const { location, formatted_address } = useSelector((state) => state.addressData);
-    const { data, isError } = useQuery(['profile-info'], ProfileApi.profileInfo);
     useEffect(() => {
-        if (address?.address_type === "Home") {
+        if (address?.address?.tag === "Home") {
             setAddressSymbol(<HomeRoundedIcon sx={{ width: "20px", height: "20px", color: theme.palette.customColor.twelve }} />)
-        } else if (address.address_type === "Office") {
+        } else if (address?.address?.tag === "Office") {
             setAddressSymbol(<ApartmentIcon sx={{ width: "20px", height: "20px", color: theme.palette.customColor.twelve }} />)
         } else {
             setAddressSymbol(<FmdGoodIcon sx={{ width: "20px", height: "20px", color: theme.palette.customColor.twelve }} />)
         }
     }, [])
 
-    const { mutate, isLoading, error } = useMutation(
-        'address-update',
-        AddressApi.editAddress,
-        {
-            onSuccess: (response) => {
-                toast.success(response?.data?.message)
-                if (response?.data) {
-                    refetch()
-                    setOpen(false)
-                }
-            },
-            onError: (error) => {
-                onErrorResponse(error)
-            },
-        }
-    )
+  
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -132,7 +115,7 @@ const AddressCard = ({ address, refetch }) => {
                                 {addressSymbol}
                             </CustomStackFullWidth>
                             <CustomTypography sx={{ textTransform: 'capitalize' }}>
-                                {t(address?.address_type)}
+                                {t(address?.address?.tag)}
                             </CustomTypography>
                         </Stack>
                         <Stack flexDirection="row">
@@ -158,7 +141,7 @@ const AddressCard = ({ address, refetch }) => {
                             fontWeight="400"
                             color={theme.palette.neutral[500]}
                         >
-                            {address?.contact_person_name}
+                            {address?.descriptor?.name}
                         </Typography>
                     </Stack>
                     <Stack direction="row" spacing={2}>
@@ -170,7 +153,7 @@ const AddressCard = ({ address, refetch }) => {
                             fontWeight="400"
                             color={theme.palette.neutral[500]}
                         >
-                            {convertPhoneNumber(address?.contact_person_number)}
+                            {convertPhoneNumber(address?.descriptor?.phone)}
                             {}
                         </Typography>
                     </Stack>
@@ -183,7 +166,8 @@ const AddressCard = ({ address, refetch }) => {
                             fontWeight="400"
                             color={theme.palette.neutral[500]}
                         >
-                            {address?.address}
+                            
+                            {address?.address?.building}&nbsp; {address?.address?.street} &nbsp;{address?.address?.city}&nbsp; {address?.address?.state} &nbsp;{address?.address?.country} &nbsp;{address?.address?.areaCode}
                         </Typography>
                     </Stack>
                 </CustomStackFullWidth>
@@ -197,7 +181,6 @@ const AddressCard = ({ address, refetch }) => {
             >
                 <DeleteAddress
                     addressId={address?.id}
-                    refetch={refetch}
                     handleClose={handleClose}
                 />
             </CustomPopover>
@@ -239,7 +222,7 @@ const AddressCard = ({ address, refetch }) => {
                                         lat={address?.latitude || location?.lat || ''}
                                         lng={address?.longitude || location?.lng || ''}
                                         formSubmit={formSubmitHandler}
-                                        isLoading={isLoading}
+                                        isLoading={false}
                                         editAddress={true}
                                         address={address}
                                     />

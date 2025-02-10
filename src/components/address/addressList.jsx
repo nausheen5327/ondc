@@ -37,8 +37,11 @@ const AddressList = (props) => {
         if (findIndex !== -1) {
           dispatch(setlocation(updatedAddedAddr));
           localStorage.setItem("location", JSON.stringify(data[findIndex]));
+        } else{
+          dispatch(setlocation(data[data?.length - 1]));
+          localStorage.setItem('location', JSON.stringify(data[data?.length-1]));
         }
-        dispatch(setlocation(updatedAddedAddr));
+        // dispatch(setlocation(updatedAddedAddr));
       }
       dispatch(setAddressList(data));
       dispatch(setIsLoading(false));

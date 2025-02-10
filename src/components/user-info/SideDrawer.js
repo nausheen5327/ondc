@@ -15,6 +15,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useDispatch, useSelector } from 'react-redux'
 import { setEditProfile } from '../../redux/slices/editProfile'
 import { RTL } from '../RTL/RTL'
+import CustomerInfo from './CustomerInfo'
+import CustomerInfoPage from '../checkout-page/CustomerInfoPage'
 
 
 const SideDrawer = ({ page, setAttributeId }) => {
@@ -92,7 +94,7 @@ const SideDrawer = ({ page, setAttributeId }) => {
                         >
                             <MobileMenu />
                         </IconButton>
-
+                   
                     </Stack>
                     <RTL direction={languageDirection}>
                         <CustomSideDrawer

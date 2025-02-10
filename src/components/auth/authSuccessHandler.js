@@ -39,7 +39,9 @@ export const useAuthData = () => {
               dispatch(setIsLoading(false));
             //   dispatch(setlocation(null));
             //   dispatch(setAddressList([]));
-              await fetchDeliveryAddress();
+            if (response && response.id) {
+              await fetchDeliveryAddress(response.id);
+          }
             } catch (err) {
               console.log("error", err);
               dispatch(setIsLoading(false));
@@ -49,41 +51,87 @@ export const useAuthData = () => {
               // setAddAddressLoading(false);
             }
     }
-    const fetchDeliveryAddress = async () => {
-        console.log('verified 4')
-        dispatch(setIsLoading(true));
-        try {
-            const data = await getCall("/clientApis/v1/delivery_address")
-            // Check if we have stored location and update it
-            const storedLocation = localStorage.getItem('location');
-            if (storedLocation) {
-                const locationData = JSON.parse(storedLocation);
-                const findIndex = data.findIndex((item) => item.id === locationData.id);
-                if (findIndex !== -1) {
-                    dispatch(setlocation(locationData));
-                    localStorage.setItem('location', JSON.stringify(data[findIndex]));
-                }
-                // else{
-                //         let len_data = data.length;
-                //         if(len_data){
-                //             dispatch(setlocation(data[len_data-1]));
-                //             localStorage.setItem('location', JSON.stringify(data[len_data-1]));
-                //         }
+    // const fetchDeliveryAddress = async () => {
+    //     console.log('verified 4')
+    //     dispatch(setIsLoading(true));
+    //     try {
+    //         const data = await getCall("/clientApis/v1/delivery_address")
+    //         // Check if we have stored location and update it
+    //         const storedLocation = localStorage.getItem('location');
+    //         if (storedLocation) {
+    //             const locationData = JSON.parse(storedLocation);
+    //             const findIndex = data.findIndex((item) => item.id === locationData.id);
+    //             if (findIndex !== -1) {
+    //                 dispatch(setlocation(locationData));
+    //                 localStorage.setItem('location', JSON.stringify(data[findIndex]));
+    //             } else{
+    //               dispatch(setlocation(data[data?.length-1]));
+    //               localStorage.setItem('location', JSON.stringify(data[data?.length-1]));
+    //             }
+    //             // else{
+    //             //         let len_data = data.length;
+    //             //         if(len_data){
+    //             //             dispatch(setlocation(data[len_data-1]));
+    //             //             localStorage.setItem('location', JSON.stringify(data[len_data-1]));
+    //             //         }
                         
-                //     }
-            }
-            // }
-            dispatch(setAddressList(data));
-            localStorage.setItem('addressList', JSON.stringify(data))
-        } catch (err) {
-            console.error('Error fetching delivery address:', err);
-            CustomToaster('error', 'Error fetching delivery address')
-        } finally {
-            console.log('verified 5')
-            dispatch(setIsLoading(false));
-        }
-    };
+    //             //     }
+    //         }
+    //         // }
+    //         dispatch(setAddressList(data));
+    //         localStorage.setItem('addressList', JSON.stringify(data))
+    //     } catch (err) {
+    //         console.error('Error fetching delivery address:', err);
+    //         CustomToaster('error', 'Error fetching delivery address')
+    //     } finally {
+    //         console.log('verified 5')
+    //         dispatch(setIsLoading(false));
+    //     }
+    // };
 
+    
+    const fetchDeliveryAddress = async (newAddressId = null) => {
+      dispatch(setIsLoading(true));
+      try {
+          const data = await getCall("/clientApis/v1/delivery_address");
+          
+          if (newAddressId) {
+              // If we just posted a new address, find and set it
+              const newAddress = data.find(addr => addr.id === newAddressId);
+              if (newAddress) {
+                  dispatch(setlocation(newAddress));
+                  localStorage.setItem('location', JSON.stringify(newAddress));
+              }
+          } else {
+              // Handle existing stored location
+              const storedLocation = localStorage.getItem('location');
+              if (storedLocation) {
+                  const locationData = JSON.parse(storedLocation);
+                  const existingAddress = data.find(addr => addr.id === locationData.id);
+                  
+                  if (existingAddress) {
+                      dispatch(setlocation(existingAddress));
+                      localStorage.setItem('location', JSON.stringify(existingAddress));
+                  } else {
+                      // If stored location not found, use latest address
+                      const latestAddress = data[data.length - 1];
+                      if (latestAddress) {
+                          dispatch(setlocation(latestAddress));
+                          localStorage.setItem('location', JSON.stringify(latestAddress));
+                      }
+                  }
+              }
+          }
+          
+          dispatch(setAddressList(data));
+          localStorage.setItem('addressList', JSON.stringify(data));
+      } catch (err) {
+          console.error('Error fetching delivery address:', err);
+          CustomToaster('error', 'Error fetching delivery address');
+      } finally {
+          dispatch(setIsLoading(false));
+      }
+  };
     const fetchCartItems = async () => {
         const userData = localStorage.getItem('user');
         if (!userData) return;
@@ -126,6 +174,8 @@ export const useAuthData = () => {
         if (token) {
             if(!location?.id) {
                postUserLocation();
+            }else{
+              fetchCartItems();
             }
             if(cartItemsPreAuth)
             {
@@ -135,8 +185,7 @@ export const useAuthData = () => {
                    postCartItems(cartItemsPreAuth);
                 }
             }
-            fetchDeliveryAddress();
-            fetchCartItems();
+            fetchDeliveryAddress(); 
         }
     };
 

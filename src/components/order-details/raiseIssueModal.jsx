@@ -285,7 +285,7 @@ const IssueForm = ({
 
     cancelPartialEventSourceResponseRef.current = [];
     setLoading(true);
-    const user = JSON.parse(getValueFromCookie("user"));
+    const user = JSON.parse(localStorage.getItem("user"));
     try {
       const createdDateTime = new Date().toISOString();
       const data = await postCall("/issueApis/v1/issue", {

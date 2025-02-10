@@ -22,17 +22,13 @@ import { Scrollbar } from '../../Scrollbar'
 import ScrollerProvider from '../../scroller-provider'
 import { noAddressFound } from '../../../utils/LocalImages'
 import AddLocationIcon from '@mui/icons-material/AddLocation';
+import { useSelector } from 'react-redux'
 
 const MyAddresses = () => {
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down("sm"))
-    const { data, refetch, isFetching } = useQuery(
-        ['address-list'],
-        AddressApi.addressList,
-        {
-            onError: onSingleErrorResponse,
-        }
-    )
+    const addresses = useSelector((state) => state.user.addressList);
+
     return (
         <CustomPaperBigCard padding={isXs ? "10px" : "15px 25px 25px"}>
             <CustomStackFullWidth>
@@ -45,9 +41,9 @@ const MyAddresses = () => {
                     <CustomTypography fontWeight="500">
                         {t('My Addresses')}
                     </CustomTypography>
-                    <AddNewAddress refetch={refetch} />
+                    {/* <AddNewAddress refetch={refetch} /> */}
                 </CustomStackFullWidth>
-                {!isFetching && data?.data?.addresses.length === 0 ? (
+                {addresses?.length === 0 ? (
                     <Stack
                         width="100%"
                         alignItems="center"
@@ -64,12 +60,11 @@ const MyAddresses = () => {
                     </Stack>
                 ) : (
                     <Grid container spacing={1.5}>
-                        {data?.data?.addresses.length > 0
-                            ? data?.data?.addresses.map((address) => (
+                        {addresses?.length > 0
+                            ? addresses.map((address) => (
                                 <Grid item xs={12} md={6} key={address?.id}>
                                     <AddressCard
                                         address={address}
-                                        refetch={refetch}
                                     />
                                 </Grid>
                             ))

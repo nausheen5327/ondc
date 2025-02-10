@@ -1,60 +1,24 @@
 import { baseUrl, getCall, postCall } from '@/api/MainApi'
-import { GoogleApi } from '@/hooks/react-query/config/googleApi'
-import { OrderApi } from '@/hooks/react-query/config/orderApi'
-import { ProfileApi } from '@/hooks/react-query/config/profileApi'
-import { RestaurantsApi } from '@/hooks/react-query/config/restaurantApi'
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import money from './assets/fi_2704332.png'
 import { v4 as uuidv4 } from "uuid";
-
-import {
-    getAmount,
-    getFinalTotalPrice,
-    getProductDiscount,
-    getTaxableTotalPrice,
-    getVariation,
-    handleDistance,
-    isFoodAvailableBySchedule,
-    maxCodAmount,
-    removeNullValues,
-} from '@/utils/customFunctions'
 import { setPayment_Response,setPayment_Status } from '@/redux/slices/payment'
-import {
-    Box,
-    Checkbox,
-    FormControlLabel,
-    Grid,
-    Stack,
-    Typography,
-    alpha,
-} from '@mui/material'
 import moment from 'moment'
 import Router, { useRouter } from 'next/router'
 import { useEffect, useReducer, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useMutation, useQuery } from 'react-query'
 import { useDispatch, useSelector } from 'react-redux'
-import { onErrorResponse, onSingleErrorResponse } from '../ErrorResponse'
 import { OrderSummary } from './CheckOut.style'
 import DeliveryDetails from './DeliveryDetails'
-import RestaurantScheduleTime from './RestaurantScheduleTime'
 import { getDayNumber } from './const'
 import OrderCalculation from './order-summary/OrderCalculation'
 import OrderSummaryDetails from './order-summary/OrderSummaryDetails'
 import PaymentOptions from './order-summary/PaymentOptions'
-
-import useGetCashBackAmount from '@/hooks/react-query/cashback/useGetCashBackAmount'
-import { useOfflinePayment } from '@/hooks/react-query/offline-payment/useOfflinePayment'
-import { useGetOrderPlaceNotification } from '@/hooks/react-query/order-place/useGetOrderPlaceNotification'
 import {
     setOfflineInfoStep,
-    setOfflineWithPartials,
     setOrderDetailsModal,
 } from '@/redux/slices/OfflinePayment'
 import { setCartList, setWalletAmount } from '@/redux/slices/cart'
-import { setUser } from '@/redux/slices/customer'
-import { setZoneData } from '@/redux/slices/global'
 import {
     CustomPaperBigCard,
     CustomStackFullWidth,
@@ -287,44 +251,7 @@ const CheckoutPage = () => {
         }
     }, [orderId])
 
-    const handleProductList = (productList, totalQty) => {
-        return productList?.map((cart) => {
-            return {
-                add_on_ids: cart?.selectedAddons?.map((add) => {
-                    return add.id
-                }),
-                add_on_qtys: cart?.selectedAddons?.map((add) => {
-                    totalQty = add.quantity
-                    return totalQty
-                }),
-                add_ons: cart?.selectedAddons?.map((add) => {
-                    return {
-                        id: add.id,
-                        name: add.name,
-                        price: add.price,
-                    }
-                }),
-                item_type: cart?.available_date_starts
-                    ? 'AppModelsItemCampaign'
-                    : 'AppModelsItem',
-                item_id: cart?.id,
-                item_campaign_id: cart?.available_date_starts ? cart?.id : null,
-
-                price: cart?.price,
-                quantity: cart?.quantity,
-                variant: getVariation(cart?.variation),
-                //new variation form needs to added here
-                variations: cart?.variations?.map((variation) => {
-                    return {
-                        name: variation.name,
-                        values: {
-                            label: handleValuesFromCartItems(variation.values),
-                        },
-                    }
-                }),
-            }
-        })
-    }
+  
 
     
 
@@ -345,147 +272,14 @@ const CheckoutPage = () => {
 
  
 
-    const handleCutlery = (status) => {
-        if (status) {
-            setCutlery(1)
-        } else {
-            setCutlery(0)
-        }
-    }
-    const handleItemUnavailableNote = (value) => {
-        setUnavailable_item_note(value)
-    }
-    const handleDeliveryInstructionNote = (value) => {
-        setDelivery_instruction(value)
-    }
+   
    
 
     
-    const handlePartialPaymentCheck = () => {
-        if (subscriptionStates?.order !== '1') {
-            if (global?.partial_payment_status === 1) {
-                if (couponDiscount && usePartialPayment && offLineWithPartial) {
-                    if (
-                        totalAmount > walletAmount &&
-                        !usePartialPayment &&
-                        !offLineWithPartial
-                    ) {
-                        setOpenPartialModel(true)
-                    } else {
-                        if (
-                            usePartialPayment &&
-                            walletAmount > totalAmount &&
-                            offLineWithPartial
-                        ) {
-                            setOpenModal(true)
-                        }
-                    }
-                } else if (
-                    (deliveryTip > 0 &&
-                        usePartialPayment &&
-                        offLineWithPartial) ||
-                    switchToWallet
-                ) {
-                    if (totalAmount > walletAmount && !usePartialPayment) {
-                        setOpenPartialModel(true)
-                    } else {
-                        if (
-                            offLineWithPartial &&
-                            usePartialPayment &&
-                            walletAmount > totalAmount
-                        ) {
-                            setOpenModal(true)
-                        }
-                    }
-                } else if (
-                    orderType &&
-                    usePartialPayment &&
-                    offLineWithPartial
-                ) {
-                    if (
-                        totalAmount > walletAmount &&
-                        !usePartialPayment &&
-                        !offLineWithPartial
-                    ) {
-                        setOpenPartialModel(true)
-                    } else {
-                        if (
-                            offLineWithPartial &&
-                            usePartialPayment &&
-                            walletAmount > totalAmount
-                        ) {
-                            setOpenModal(true)
-                        }
-                        //setOpenModal(true);
-                    }
-                }
-            }
-        }
-    }
-    useEffect(() => {
-        handlePartialPaymentCheck()
-    }, [totalAmount])
 
-    const agreeToPartial = () => {
-        setPaymentMethodDetails(null)
-        setSelected({ name: '', image: '' })
-        setUsePartialPayment(true)
-        dispatch(setOfflineWithPartials(true))
-        setOpenPartialModel(false)
-        setSwitchToWallet(false)
-    }
-    const notAgreeToPartial = () => {
-        setUsePartialPayment(false)
-        dispatch(setOfflineWithPartials(false))
-        setOpenPartialModel(false)
-        setSwitchToWallet(false)
-    }
-    const agreeToWallet = () => {
-        setSelected({ name: 'wallet', image: wallet })
-        setPaymentMethodDetails({ name: 'wallet', image: wallet })
-        setPaymenMethod('wallet')
-        setSwitchToWallet(true)
-        setUsePartialPayment(false)
-        dispatch(setOfflineWithPartials(false))
-        setOpenModal(false)
-    }
-    const notAgreeToWallet = () => {
-        setPaymentMethodDetails(null)
-        setSwitchToWallet(false)
-        setUsePartialPayment(false)
-        dispatch(setOfflineWithPartials(false))
-        setOpenModal(false)
-    }
 
-    const handleCashbackAmount = (data) => {
-        setCashbackAmount(data)
-    }
-    const { refetch: refetchCashbackAmount } = useGetCashBackAmount({
-        amount: totalAmount,
-        handleSuccess: handleCashbackAmount,
-    })
-    useEffect(() => {
-        refetchCashbackAmount()
-    }, [totalAmount])
 
-    useEffect(() => {
-        let extra_packaging_amount = 10;
-            setExtraPackagingCharge(
-                extra_packaging_amount
-            )
-        
-    }, [ global])
 
-    const handleExtraPackaging = (e) => {
-        setIsExtraPackaging(e.target.checked)
-        // if (e.target.checked) {
-        //     setExtraPackagingCharge(
-        //         restaurantData?.data?.extra_packaging_amount
-        //     )
-        // } else {
-        //     setExtraPackagingCharge(0)
-        // }
-    }
 
 
     // Add this near the top of your component
@@ -524,30 +318,6 @@ const handleOrderSuccess = () => {
     router.push(`/info?page=order&orderId=${paymentEventData[0]?.message?.order?.id}`)
   }
 };
-console.log("payment event data",paymentEventData);
-    const hasOnlyPaymentMethod = () => {
-        if (
-            !global?.cash_on_delivery &&
-            global?.customer_wallet_status !== 1 &&
-            global?.offline_payment_status !== 1 &&
-            global?.digital_payment &&
-            global?.active_payment_method_list?.length === 1
-        ) {
-            setPaymenMethod('digital_payment')
-            setSelected({
-                name: global?.active_payment_method_list[0]?.gateway,
-            })
-            setPaymentMethodDetails({
-                name: global?.active_payment_method_list[0]?.gateway,
-                image: global?.active_payment_method_list[0]
-                    ?.gateway_image_full_url,
-            })
-        }
-    }
-
-    useEffect(() => {
-        hasOnlyPaymentMethod()
-    }, [global])
 
     //Payment integration logic
 
@@ -579,7 +349,7 @@ console.log("payment event data",paymentEventData);
 
       useEffect(() => {
         try {
-          if (updatedCartItems.length > 0) {
+          if (updatedCartItems?.length > 0) {
             // fetch request object length and compare it with the response length
             let c = cartItems.map((item) => {
               return item.item;
@@ -1263,39 +1033,72 @@ const verifyPayment = async (items, method) => {
   }
   // eslint-disable-next-line
 };
-      useEffect(()=>{
-        if (paymentStatus&& !isUnmounted.current) {
-          console.log("inside payment success")
-          if (paymentStatus === "success") {
-            setConfirmOrderLoading(true);
-            let c = cartItems.map((item) => {
-              return item.item;
-            });
-            const { successOrderIds } = JSON.parse(
-              localStorage.getItem("checkout_details") || "{}"
-            );
-            const request_object = constructQouteObject(
-              c.filter(({ provider }) =>
-                successOrderIds.includes(provider.local_id.toString())
-              )
-            );
-            verifyPayment(request_object[0], 'razorpay');
-          } else if (paymentStatus === "fail") {
-            setConfirmOrderLoading(false);
+      // useEffect(()=>{
+      //   if (paymentStatus&& !isUnmounted.current) {
+      //     console.log("inside payment success")
+      //     if (paymentStatus === "success") {
+      //       setConfirmOrderLoading(true);
+      //       let c = cartItems.map((item) => {
+      //         return item.item;
+      //       });
+      //       const { successOrderIds } = JSON.parse(
+      //         localStorage.getItem("checkout_details") || "{}"
+      //       );
+      //       const request_object = constructQouteObject(
+      //         c.filter(({ provider }) =>
+      //           successOrderIds.includes(provider.local_id.toString())
+      //         )
+      //       );
+      //       verifyPayment(request_object[0], 'razorpay');
+      //     } else if (paymentStatus === "fail") {
+      //       setConfirmOrderLoading(false);
     
-            if (paymentResponse?.error?.description) {
-              dispatchError(paymentResponse.error.description);
-            } else {
-              dispatchError("Something went wrong, please try again!");
-            }
-          }
-        }
-      },[paymentStatus])
+      //       if (paymentResponse?.error?.description) {
+      //         dispatchError(paymentResponse.error.description);
+      //       } else {
+      //         dispatchError("Something went wrong, please try again!");
+      //       }
+      //     }
+      //   }
+      // },[paymentStatus])
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    useEffect(() => {
+    
+
+useEffect(() => {
+  if (paymentStatus && !isUnmounted.current) {
+    if (paymentStatus === "success") {
+      setConfirmOrderLoading(true);
+      let c = cartItems.map((item) => {
+        return item.item;
+      });
+      const { successOrderIds } = JSON.parse(
+        localStorage.getItem("checkout_details") || "{}"
+      );
+      const request_object = constructQouteObject(
+        c.filter(({ provider }) =>
+          successOrderIds.includes(provider.local_id.toString())
+        )
+      );
+      verifyPayment(request_object[0], 'razorpay');
+    } else if (paymentStatus === "fail") {
+      setConfirmOrderLoading(false);
+      setDisplayRazorPay(false); // Reset Razorpay display state
+      setPaymentStatus(null); // Reset payment status
+      setPaymentResponse(null); // Reset payment response
+
+      if (paymentResponse?.error?.description) {
+        dispatchError(paymentResponse.error.description);
+      } else {
+        dispatchError("Something went wrong, please try again!");
+      }
+    }
+  }
+}, [paymentStatus]);
+
+useEffect(() => {
         resetCartItems();
         // let timeout;
         // const duration = moment.duration(
@@ -1597,28 +1400,60 @@ const verifyPayment = async (items, method) => {
 
 
 
-      const handleProceedToPay=()=>{
+      // const handleProceedToPay=()=>{
+      //   const { productQuotes, successOrderIds } = JSON.parse(
+      //       localStorage.getItem("checkout_details") || "{}"
+      //     );
+      //   //   setConfirmOrderLoading(true);
+      //     let c = cartItems.map((item) => {
+      //       return item.item;
+      //     });
+      //     if (paymenMethod) {
+      //       if (paymenMethod === 'prepaid') {
+      //         setDisplayRazorPay(true);
+      //       } else {
+      //         const request_object = constructQouteObject(
+      //           c.filter(({ provider }) =>
+      //             successOrderIds.includes(provider.local_id.toString())
+      //           )
+      //         );
+      //         confirmOrder(request_object[0], 'cash_on_delivery');
+      //       }
+      //     } else {
+      //       CustomToaster('error',"Please select payment.");
+      //     }
+      // }
+
+      const handleProceedToPay = async () => {
         const { productQuotes, successOrderIds } = JSON.parse(
-            localStorage.getItem("checkout_details") || "{}"
-          );
-        //   setConfirmOrderLoading(true);
-          let c = cartItems.map((item) => {
-            return item.item;
-          });
-          if (paymenMethod) {
-            if (paymenMethod === 'prepaid') {
+          localStorage.getItem("checkout_details") || "{}"
+        );
+        let c = cartItems.map((item) => {
+          return item.item;
+        });
+        
+        if (paymenMethod) {
+          if (paymenMethod === 'prepaid') {
+            // Reset states before showing Razorpay
+            setPaymentStatus(null);
+            setPaymentResponse(null);
+            setDisplayRazorPay(false);
+            
+            // Small delay to ensure clean state
+            setTimeout(() => {
               setDisplayRazorPay(true);
-            } else {
-              const request_object = constructQouteObject(
-                c.filter(({ provider }) =>
-                  successOrderIds.includes(provider.local_id.toString())
-                )
-              );
-              confirmOrder(request_object[0], 'cash_on_delivery');
-            }
+            }, 100);
           } else {
-            CustomToaster('error',"Please select payment.");
+            const request_object = constructQouteObject(
+              c.filter(({ provider }) =>
+                successOrderIds.includes(provider.local_id.toString())
+              )
+            );
+            confirmOrder(request_object[0], 'cash_on_delivery');
           }
+        } else {
+          CustomToaster('error', "Please select payment.");
+        }
       }
 
       const handleSuccess = async () => {

@@ -632,7 +632,7 @@ const handleTrackIssue=()=>{
       }
       if (message?.order) {
         getItemDetails();
-        CustomToaster("error", "Order status updated successfully!");
+        CustomToaster("success", "Order status updated successfully!");
       }
       setStatusLoading(false);
     } catch (err) {

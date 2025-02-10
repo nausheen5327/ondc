@@ -51,61 +51,23 @@ const ProfilePage = () => {
     const dispatch = useDispatch()
     const { global } = useSelector((state) => state.globalSettings)
     const { userData } = useSelector((state) => state.user)
-    let currencySymbol
-    let currencySymbolDirection
-    let digitAfterDecimalPoint
+    let currencySymbol = '₹'
+    let currencySymbolDirection = 'left'
+    let digitAfterDecimalPoint = 2
 
-    if (global) {
-        currencySymbol = global.currency_symbol
-        currencySymbolDirection = global.currency_symbol_direction
-        digitAfterDecimalPoint = global.digit_after_decimal_point
-    }
-    const { isLoading, data, isError, error, refetch } = useQuery(
-        ['profile-info'],
-        ProfileApi.profileInfo,
+    const [data, setData] = useState()
+
+    useEffect(()=>{
+        let customerInfo = localStorage.getItem('customerInfo');
+        if(customerInfo)
         {
-            enabled: false,
-            onError: onSingleErrorResponse,
+            setData(JSON.parse(customerInfo)?.customer)
         }
-    )
-    if (data) {
-        localStorage.setItem('wallet_amount', data?.data?.wallet_balance)
-        dispatch(setWalletAmount(data?.data?.wallet_balance))
-        dispatch(setUser(data?.data))
-    }
-    const handleOpenAuthModal = () => setOpen(true)
-    const handleCloseAuthModal = () => {
-        setOpen(false)
-    }
-    const addCurrencySymbol = getAmount(
-        data?.data?.wallet_balance,
-        currencySymbolDirection,
-        currencySymbol,
-        digitAfterDecimalPoint
-    )
-    const onSuccessHandlerForUserDelete = async (res) => {
-        localStorage.removeItem('token')
-        dispatch(removeToken())
-        toast.success('Account has been deleted')
-        handleCloseAuthModal()
-        handleOpenAuthModal()
-        await router.push('/')
-    }
-    const { mutate, isLoading: deleteUserIsLoading } = useUserDelete(onSuccessHandlerForUserDelete)
-    const deleteUserHandler = () => {
-        mutate()
-    }
-    useEffect(() => {
-        refetch().then()
-        data && dispatch(setUser(data?.data))
-    }, [])
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setDeleteModal(false)
-        setAnchorEl(null)
-    };
+    },[])
+
+
+
+
     const settings = {
         speed: 500,
         slidesToShow: 4,
@@ -204,53 +166,10 @@ const ProfilePage = () => {
     }
     return (
         <>
-            <Meta title={data?.data?.f_name} description="" keywords="" />
-            <AuthModal
-                open={authModalOpen}
-                setOpen={setOpen}
-                handleClose={handleCloseAuthModal}
-                modalFor={modalFor}
-                setModalFor={setModalFor}
-            />
+            <Meta title={'profile'} description="" keywords="" />
             {data ? (
                 <CustomStackFullWidth gap="15px">
-                    {((!isSmall && isEditProfile === false) || (isSmall && isEditProfile === false)) &&
-                        <SliderCustom
-                            languageDirection={languageDirection}
-                            gap="0"
-                        >
-                            <Slider {...settings}>
-                                <ProfileStatistics
-                                    value={userData?.order_count}
-                                    title="Orders"
-                                    image={order.src}
-                                    pathname="order"
-                                />
-                                {global?.customer_wallet_status !== 0 && (
-                                    <ProfileStatistics
-                                        value={addCurrencySymbol}
-                                        title="Amount in Wallet"
-                                        image={wallet.src}
-                                        pathname="wallets"
-                                    />
-                                )}
-                                {global?.loyalty_point_status !== 0 && (
-                                    <ProfileStatistics
-                                        value={userData?.loyalty_point}
-                                        title="Loyalty Points"
-                                        image={lotaly.src}
-                                        pathname="loyalty"
-                                    />
-                                )}
-                                <ProfileStatistics
-                                    value={wishLists?.food?.length}
-                                    title="Products in wishlist"
-                                    image={wishlist.src}
-                                    pathname="wishlist"
-                                />
-                            </Slider>
-                        </SliderCustom>
-                    }
+
                     <Stack gap={isEditProfile ? 0 : "15px"} paddingInline={{ xs: "0", sm: "2px 10px" }} >
                         <CustomPaperBigCard
                             padding={isSmall ? "10px" : "20px 25px"}
@@ -315,17 +234,11 @@ const ProfilePage = () => {
                                     )}
                                 </CustomStackFullWidth>
                             </Grid>
-                            {isEditProfile === true ? (
-                                <EditProfile
-                                    deleteUserHandler={deleteUserHandler}
-                                    data={data?.data}
-                                    refetch={refetch}
-                                />
-                            ) : (
+                           
                                 <PersonalDetails
                                     data={data}
                                 />
-                            )}
+                            
 
                         </CustomPaperBigCard>
                         <CustomStackFullWidth>
@@ -337,35 +250,7 @@ const ProfilePage = () => {
             ) : (
                 <CustomShimmerForProfile />
             )}
-            <CustomPopover
-                anchorEl={anchorEl}
-                setAnchorEl={setAnchorEl}
-                handleClose={handleClose}
-                maxWidth="265px"
-            >
-                <CustomStackFullWidth
-                    justifyContent="center"
-                    onClick={() => setDeleteModal(true)}
-                    flexDirection="row"
-                    alignItems="center"
-                    gap="5px"
-                    sx={{
-                        cursor: "pointer"
-                    }}
-                >
-                    <UserIcon />
-                    <Typography fontSize="14px" fontWeight={500} color={theme.palette.text.secondary}>
-                        {t("Delete Account")}
-                    </Typography>
-                </CustomStackFullWidth>
-                {deleteModal &&
-                    <DeleteAccount
-                        handleClose={handleClose}
-                        isLoading={deleteUserIsLoading}
-                        deleteUserHandler={deleteUserHandler}
-                    />
-                }
-            </CustomPopover>
+           
 
         </>
     )

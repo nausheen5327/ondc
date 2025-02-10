@@ -197,6 +197,7 @@ const OtpForm = ({
                             >
                                 <OtpInput
                                     value={otpFormik.values.reset_token}
+                                    inputType='number'
                                     onChange={(otp) => {
                                         otpFormik.setFieldValue(
                                             'reset_token',

@@ -133,16 +133,16 @@ const FloatingCart = (props) => {
 
 
 
-      const matchingItems = res.filter(cartItem =>
-        cartItem.item.id === product.id
-      );
+      // const matchingItems = res.filter(cartItem =>
+      //   cartItem.item.id === product.id
+      // );
 
-      if (matchingItems.length === 0) return 0;
-      const totalQuantity = matchingItems.reduce((sum, item) => {
-        return sum + (item.item.quantity?.count || 0);
-      }, 0);
+      // if (matchingItems.length === 0) return 0;
+      // const totalQuantity = matchingItems.reduce((sum, item) => {
+      //   return sum + (item.item.quantity?.count || 0);
+      // }, 0);
 
-      setQuantity(totalQuantity)
+      // setQuantity(totalQuantity)
 
 
 
