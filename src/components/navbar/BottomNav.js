@@ -65,8 +65,13 @@ const BottomNav = (props) => {
         const user = localStorage.getItem('user');
         if(!user)
         {
-            const cartListPreAuth = JSON.parse(localStorage.getItem('cartListPreAuth'));
-            dispatch(setCartList(cartListPreAuth));
+            let cartListPreAuthStored = localStorage.getItem('cartListPreAuth');
+            if(cartListPreAuthStored)
+            {
+                const cartListPreAuth = JSON.parse(cartListPreAuthStored);
+                dispatch(setCartList(cartListPreAuth));
+
+            }
         }else{
             fetchCartItems()
         }

@@ -470,7 +470,7 @@ const IssueForm = ({
                 Choose Items that had a problem *
               </Typography>
               {partailsIssueProductList.map((product, index) => (
-                <Paper key={product.id} variant="outlined" sx={{ p: 2, mb: 1 }}>
+                <Paper key={product.id} variant="outlined" sx={{ p: 1, mb: 1 }}>
                   <Box
                     sx={{
                       display: "flex",
@@ -490,7 +490,7 @@ const IssueForm = ({
                         <Typography variant="subtitle2">
                           {product.name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="subtitle2" color="text.secondary">
                           QTY: {orderQty[index]?.count || 0}
                         </Typography>
                       </Box>

@@ -51,14 +51,14 @@ const OrderDetailsBottom = ({
 
     return (
         <>
-            <Stack width="100%" gap="15px" flexDirection="row" justifyContent={{ xs: "center", sm: "flex-end", md: "flex-end" }}>
+            <Stack width={"100%"}  gap="15px" flexDirection="row" justifyContent={{ xs: "flex-end", sm: "flex-end", md: "flex-end" }}>
                 
                     <>
                         <CustomButton
                             variant="contained"
                             onClick={handleTrackOrderClick}
                         >
-                            <Typography variant="h5">
+                            <Typography variant="h6">
                                 {t('Track Order')}
                             </Typography>
                         </CustomButton></>

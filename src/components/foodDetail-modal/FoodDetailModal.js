@@ -164,6 +164,7 @@ const FoodDetailModal = ({
             const updatedPreAuthCart = preAuthCartHelpers.deleteFromPreAuthCart(itemId);
             const transformedList = createTransformedArray(updatedPreAuthCart);
             dispatch(setCartList(transformedList));
+            console.log("setting cartlist", transformedList);
             localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
             getCartItemsPre();
             CustomToaster('success', "Item removed from cart");
@@ -634,6 +635,7 @@ const FoodDetailModal = ({
                     // handleCheckoutFlow([res], location)
                     return;
                 }
+                console.log("setting cartlist 1",transformedList)
                 localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
                 CustomToaster('success', quantity > 1 
                     ? "Item quantity updated successfully" 
