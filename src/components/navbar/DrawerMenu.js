@@ -125,7 +125,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
             dispatch(removeToken())
             setOpenDrawer(false)
             let a = []
-            dispatch(clearWishList(a))
+            dispatch(clearWishList([]))
             dispatch(setClearCart())
             dispatch(setWelcomeModal(false))
             dispatch(setIsLoading(false));

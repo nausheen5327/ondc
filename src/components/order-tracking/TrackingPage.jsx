@@ -207,7 +207,7 @@ const TrackingPage = ({ OrderData }) => {
       fetchTrackingDataThroughEvents(data[0]?.context?.message_id);
     } catch (err) {
       setTrackOrderLoading(false);
-      CustomToaster("error", "Unable to fetch tracking data");
+      // CustomToaster("error", "Unable to fetch tracking data");
     }
   }
 
@@ -233,10 +233,10 @@ const TrackingPage = ({ OrderData }) => {
     const timer = setTimeout(() => {
       es.close();
       if (trackEventSourceResponseRef.current.length <= 0) {
-        CustomToaster(
-          "error",
-          "Cannot proceed with you request now! Please try again"
-        );
+        // CustomToaster(
+        //   "error",
+        //   "Cannot proceed with you request now! Please try again"
+        // );
         setTrackOrderLoading(false);
       }
     }, 20000);
@@ -265,18 +265,18 @@ const TrackingPage = ({ OrderData }) => {
       if (message.tracking.status === "active" && message.tracking.url === "") {
         onUpdateTrakingDetails(null);
         setTrackOrderLoading(false);
-        CustomToaster(
-          "error",
-          "Tracking information is not provided by the provider."
-        );
+        // CustomToaster(
+        //   "error",
+        //   "Tracking information is not provided by the provider."
+        // );
         return;
       } else if (message?.tracking?.url === "") {
         onUpdateTrakingDetails(null);
         setTrackOrderLoading(false);
-        CustomToaster(
-          "error",
-          "Tracking information not available for this product"
-        );
+        // CustomToaster(
+        //   "error",
+        //   "Tracking information not available for this product"
+        // );
         return;
       } else if (
         message.tracking.status === "active" &&
@@ -296,15 +296,15 @@ const TrackingPage = ({ OrderData }) => {
       } else {
         onUpdateTrakingDetails(null);
         setTrackOrderLoading(false);
-        CustomToaster(
-          "error",
-          "Tracking information is not provided by the provider."
-        );
+        // CustomToaster(
+        //   "error",
+        //   "Tracking information is not provided by the provider."
+        // );
         return;
       }
     } catch (err) {
       setTrackOrderLoading(false);
-      CustomToaster("error", "Unable to fetch tracking details");
+      // CustomToaster("error", "Unable to fetch tracking details");
       eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
         eventSource.close();
         clearTimeout(timer);

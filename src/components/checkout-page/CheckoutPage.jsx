@@ -857,6 +857,7 @@ useEffect(() => {
         removeCookie("billing_address");
         // removeCookie("checkout_details");
         localStorage.removeItem("checkout_details");
+        localStorage.removeItem("cartItems");
         removeCookie("parent_and_transaction_id_map");
         localStorage.setItem("transaction_id", uuidv4());
         // removeCookie("LatLongInfo");
@@ -946,6 +947,8 @@ const onConfirmOrder = async (message_id) => {
     
     // Finally get updated cart items
     getCartItems();
+    localStorage.removeItem('cartContext');
+    localStorage.removeItem('userCartItems');
   } catch (err) {
     CustomToaster('error', 'Failed to process order, Please try again');
     setConfirmOrderLoading(false);

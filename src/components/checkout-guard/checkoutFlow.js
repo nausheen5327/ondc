@@ -54,7 +54,6 @@ export const useCheckoutFlow = () => {
   const onGetQuote = async (message_id) => {
     try {
       // dispatch(setIsLoading(true))
-      console.log("verified 16");
 
       const data = await getCall(`/clientApis/v2/on_select?messageIds=${message_id}`)
       
@@ -62,6 +61,7 @@ export const useCheckoutFlow = () => {
 
       // setEventData((eventData) => [...eventData, data[0]]);
       dispatch(setCartContext(data[0]))
+      localStorage.setItem('cartContext', JSON.stringify(data[0]));
 
       // onUpdateProduct(data[0].message.quote.items, data[0].message.quote.fulfillments);
       data[0].message.quote.items.forEach((item) => {
@@ -77,7 +77,6 @@ export const useCheckoutFlow = () => {
           ].item.product.fulfillments = data[0].message.quote.fulfillments;
         }
       });
-      console.log("verified 17");
 
       localStorage.setItem(
         "cartItems",
@@ -87,6 +86,7 @@ export const useCheckoutFlow = () => {
         "updatedCartItems",
         JSON.stringify(responseRef.current)
       );
+
       localStorage.setItem(
         "offers",
         JSON.stringify({
@@ -147,10 +147,8 @@ export const useCheckoutFlow = () => {
   //   })
   // }
   const onFetchQuote = (message_ids) => {
-    console.log('inside fetch quote 1...', message_ids);
     // dispatch(setIsLoading(true))
     eventTimeOutRef.current = []
-    console.log("verified 14");
 
     message_ids.forEach((id) => {
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/clientApis/events/v2?messageId=${id}`
@@ -173,7 +171,6 @@ export const useCheckoutFlow = () => {
         
         if (es.readyState === 2) {
           // Connection is closed, attempt to reconnect
-          console.log('Attempting to reconnect...')
           es.close() // Clean up existing connection
           
           // Create new connection after a short delay
@@ -187,14 +184,11 @@ export const useCheckoutFlow = () => {
       }
   
       es.addEventListener("on_select", (e) => {
-        console.log('on select triggered', e);
         if (e && e.data) {
           try {
-            console.log("verified 15");
             const { messageId } = JSON.parse(e.data)
             onGetQuote(messageId)
           } catch (error) {
-            console.error('Error parsing event data:', error)
           }
         }
       })
@@ -304,8 +298,7 @@ export const useCheckoutFlow = () => {
     //   dispatch(setAuthModalOpen(true))
     //   return
     // }
-    console.log("verified 9");
-    console.log("handle checkout executing",token);
+   
     if (cartItems.length > 0) {
       const items = cartItems.map(item => item.item)
       const request_object = constructQouteObject(items)

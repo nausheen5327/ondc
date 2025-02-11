@@ -67,6 +67,7 @@ import CheckoutPage from './CheckoutPage';
 import { getValueFromCookie } from '../../utils/cookies';
 import { setAuthModalOpen } from '../../redux/slices/global';
 import { CustomToaster } from '../custom-toaster/CustomToaster';
+import { setCartContext, setCartList } from '@/redux/slices/cart';
 const LoadingScreen = ({ message = "Preparing your order..." }) => {
     const styles = {
       wrapper: {
@@ -253,7 +254,18 @@ const CheckOut = () => {
     }
     
     useEffect(() => {
-        initializeCheckout()
+
+        const cartItems = localStorage.getItem('userCartItems');
+        const cartContext = localStorage.getItem('cartContext');
+        if(cartItems && cartContext)
+        {
+          dispatch(setCartContext(JSON.parse(cartContext)));
+          dispatch(setCartList(JSON.parse(cartItems)));
+          setIsLoading(false);
+        }else{
+          initializeCheckout()
+        }
+        
     }, [])
     
     if (!token) {

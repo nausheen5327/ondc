@@ -13,10 +13,9 @@ export const useAuthData = () => {
     const { cancellablePromise } = useCancellablePromise();
     const location = useSelector(state=>state.addressData.location);
     const postUserLocation = async()=>{
-        console.log('verified 2')
-        try {
+       
               dispatch(setIsLoading(true));
-              const data = await postCall(`/clientApis/v1/delivery_address`, {
+              postCall(`/clientApis/v1/delivery_address`, {
                 descriptor: {
                   name: location.descriptor.name.trim(),
                   email: location.descriptor.email.trim(),
@@ -35,21 +34,19 @@ export const useAuthData = () => {
                   lat: location.address.lat,
                   lng: location.address.lng,
                 },
-              });
-              dispatch(setIsLoading(false));
+              }).then((data)=>{
+                dispatch(setIsLoading(false));
+                 fetchDeliveryAddress(data.id)
+              }).catch((error)=>{ 
+                dispatch(setIsLoading(false));
+              }).finally(()=>{
+                dispatch(setIsLoading(false));
+              })
+            
+              
             //   dispatch(setlocation(null));
             //   dispatch(setAddressList([]));
-            if (response && response.id) {
-              await fetchDeliveryAddress(response.id);
-          }
-            } catch (err) {
-              console.log("error", err);
-              dispatch(setIsLoading(false));
-            } finally {
-            console.log('verified 3')
-              dispatch(setIsLoading(false));
-              // setAddAddressLoading(false);
-            }
+           
     }
     // const fetchDeliveryAddress = async () => {
     //     console.log('verified 4')
@@ -144,6 +141,7 @@ export const useAuthData = () => {
             const url = `/clientApis/v2/cart/${parsedUser._id}`;
             const res = await getCall(url);
             dispatch(setCartList(res));
+            localStorage.setItem('userCartItems', JSON.stringify(res));
         } catch (error) {
             console.error("Error fetching cart items:", error);
             CustomToaster('error', "Error fetching cart items")
@@ -175,17 +173,22 @@ export const useAuthData = () => {
             if(!location?.id) {
                postUserLocation();
             }else{
-              fetchCartItems();
+              fetchDeliveryAddress();
             }
             if(cartItemsPreAuth)
             {
                 cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
-                if(cartItemsPreAuth.length)
+                if(cartItemsPreAuth?.length)
                 {
-                   postCartItems(cartItemsPreAuth);
+                   postCartItems(cartItemsPreAuth).then(()=>{
+                    fetchCartItems();
+                   })
                 }
+            }else{
+              fetchCartItems();
             }
-            fetchDeliveryAddress(); 
+            
+            
         }
     };
 

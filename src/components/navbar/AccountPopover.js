@@ -108,7 +108,7 @@ export const AccountPopover = (props) => {
                 dispatch(setlocation(null))
                 dispatch(setWelcomeModal(false))
                 let a = []
-                dispatch(clearWishList(a))
+                dispatch(clearWishList(null))
                 // dispatch(setClearCart())
                 // toast.success(t(logoutSuccessFull))
                 //CustomToaster('success', logoutSuccessFull)
