@@ -120,6 +120,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
             dispatch(setIsLoading(true));
             await localStorage.removeItem('token')
             localStorage.removeItem('user');
+            localStorage.removeItem('cartContext')
             removeCookie('token')
             dispatch(setlocation(null))
             dispatch(removeToken())
