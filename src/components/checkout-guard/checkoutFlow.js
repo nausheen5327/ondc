@@ -247,7 +247,7 @@ export const useCheckoutFlow = () => {
         context: {
           transaction_id: transactionId,
           domain: items[0]?.domain,
-          city: location?.address?.city,
+          city: items[0]?.contextCity ,
           pincode: location?.address?.areaCode,
           state: location?.address?.state,
         },
@@ -264,7 +264,7 @@ export const useCheckoutFlow = () => {
           }]
         }
       }
-      console.log("verified 11");
+      console.log("verified 11", items[0]);
 
       // dispatch(setIsLoading(true))
       const data = await postCall("/clientApis/v2/select", [selectPayload])

@@ -256,15 +256,14 @@ const CheckOut = () => {
     useEffect(() => {
 
         const cartItems = localStorage.getItem('userCartItems');
-        const cartContext = localStorage.getItem('cartContext');
-        if(cartItems && cartContext)
+        // const cartContext = localStorage.getItem('cartContext');
+        if(cartItems )
         {
-          dispatch(setCartContext(JSON.parse(cartContext)));
           dispatch(setCartList(JSON.parse(cartItems)));
           setIsLoading(false);
-        }else{
-          initializeCheckout()
         }
+          initializeCheckout()
+        
         
     }, [])
     

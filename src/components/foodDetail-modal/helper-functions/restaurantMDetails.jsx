@@ -27,7 +27,7 @@ const theme = useTheme();
       <div className="card-content">
         <div className="info-section">
           <div className="info-item">
-            <MapPin className="icon1" height={'35px'} width={'60px'} color='#FF7918'/>
+            <MapPin className="icon1" height={'45px'} width={'30px'} color='#FF7918'/>
             <span className="text">
               {data?.location_details?.address?.street}, 
               {data?.location_details?.address?.locality}, 
