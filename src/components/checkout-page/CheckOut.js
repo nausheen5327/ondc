@@ -255,13 +255,13 @@ const CheckOut = () => {
     
     useEffect(() => {
 
-        const cartItems = localStorage.getItem('userCartItems');
-        // const cartContext = localStorage.getItem('cartContext');
-        if(cartItems )
-        {
-          dispatch(setCartList(JSON.parse(cartItems)));
-          setIsLoading(false);
-        }
+        // const cartItems = localStorage.getItem('userCartItems');
+        // // const cartContext = localStorage.getItem('cartContext');
+        // if(cartItems )
+        // {
+        //   dispatch(setCartList(JSON.parse(cartItems)));
+        //   setIsLoading(false);
+        // }
           initializeCheckout()
         
         
