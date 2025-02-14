@@ -67,6 +67,7 @@ import { setAuthModalOpen, setSideDrawerOpen } from '@/redux/slices/global'
 import { useCheckoutFlow } from '../checkout-guard/checkoutFlow'
 import { RTL } from '../RTL/RTL'
 import preAuthCartHelpers from './PreAuthCartHandler'
+import { formatCustomizationGroups, formatCustomizations, hasCustomizations, initializeCustomizationState } from '@/utils/productDetailsUtils'
 const FoodDetailModal = ({
     product,
     image,
@@ -201,31 +202,32 @@ const FoodDetailModal = ({
 
     const getCustomizations = () => {
         const { customisation_items } = productPayload;
-
+    
         if (!customisation_items.length) return null;
         const customizations = [];
-
+    
         const firstGroupId = customization_state["firstGroup"]?.id;
-
+    
         if (!firstGroupId) return;
         selectedCustomizationIds = [];
         getCustomization_(firstGroupId);
-
+    
         for (const cId of selectedCustomizationIds) {
-            let c = customisation_items.find((item) => item.local_id === cId);
-            if (c) {
-                c = {
-                    ...c,
-                    quantity: {
-                        count: 1,
-                    },
-                };
-                customizations.push(c);
-            }
+          let c = customisation_items.find((item) => item.local_id === cId);
+          if (c) {
+            c = {
+              ...c,
+              quantity: {
+                count: 1,
+              },
+            };
+            customizations.push(c);
+          }
         }
-
+    
         return customizations;
-    };
+      };
+    
 
     function findMinMaxSeq(customizationGroups) {
         if (!customizationGroups || customizationGroups.length === 0) {
@@ -269,6 +271,7 @@ const FoodDetailModal = ({
         customisations,
         cartItemData
     ) => {
+        console.log("check for customizations", customisations, cartItemData)
         const cartItem = Object.assign(
             {},
             JSON.parse(JSON.stringify(cartItemData))
@@ -427,6 +430,7 @@ const FoodDetailModal = ({
             }
 
             // Save updated array back to localStorage
+
             localStorage.setItem('cartItemsPreAuth', JSON.stringify(existingItems));
 
         } catch (error) {
@@ -461,6 +465,30 @@ const FoodDetailModal = ({
             return;
         }
     }
+
+    const getCustomizationsPromise = async (productPayload, customization_state) => {
+        const { customisation_items } = productPayload;
+        const customizations = [];
+    
+        const firstGroupId = customization_state["firstGroup"]?.id;
+        if (!firstGroupId) return;
+    
+        getCustomization_(firstGroupId, customization_state);
+    
+        for (const cId of selectedCustomizationIds) {
+          let c = customisation_items.find((item) => item.local_id === cId);
+          if (c) {
+            c = {
+              ...c,
+              quantity: {
+                count: 1,
+              },
+            };
+            customizations.push(c);
+          }
+        }
+        return customizations;
+      };
     const addToCart = async (navigate = false, isIncrement = true) => {
         setAddToCartLoading(true);
         let user = localStorage.getItem("user")
@@ -471,7 +499,8 @@ const FoodDetailModal = ({
                 
                 if(user)user = JSON.parse(user);
                 const url = `/clientApis/v2/cart/${user?._id}`;
-    
+
+                const hasCustomisations = hasCustomizations(modalData[0]) ? true : false;
                 // Get selected customizations
                 const selectedCustomizations = selectedOptions.map(option => {
                     const customizationItem = modalData[0].customisation_items.find(
@@ -482,7 +511,36 @@ const FoodDetailModal = ({
                         quantity: { count: 1 }
                     };
                 });
+                let groups = [];
+                let cus = [];
+                let newState = {};
+                let customizationState = {};
+                let customisations = null;
+                if (hasCustomisations) {
+                groups = await formatCustomizationGroups(
+                    modalData[0].customisation_groups
+                );
+
+                cus = await formatCustomizations(modalData[0].customisation_items);
+                newState = await initializeCustomizationState(
+                    groups,
+                    cus,
+                    customization_state,
+                    selectedOptions  // Pass your selected options
+                );
+                customizationState = newState;
+                customisations = await getCustomizationsPromise(
+                    modalData[0],
+                    customizationState
+                );
+                console.log("customizations are...", customizationState)
+                }
+                
+
+
     
+                
+
                 // Calculate total price including customizations
                 const basePrice = modalData[0]?.item_details?.price?.value || 0;
                 const customizationTotal = selectedCustomizations.reduce((total, item) => {
@@ -497,12 +555,7 @@ const FoodDetailModal = ({
                     bpp_uri: modalData[0].context.bpp_uri,
                     domain: modalData[0].context.domain,
                     tags: modalData[0].item_details.tags,
-                    customisationState: selectedOptions.length ? {
-                        firstGroup: {
-                            id: modalData[0].customisation_groups[0]?.id,
-                            selected: selectedOptions
-                        }
-                    } : null,
+                    customisationState: customizationState,
                     contextCity: modalData[0].context.city,
                     quantity: { count: 1 },
                     provider: {
@@ -517,7 +570,6 @@ const FoodDetailModal = ({
                     },
                     customisations: selectedCustomizations,
                     hasCustomisations: selectedCustomizations.length > 0,
-                    totalPrice
                 };
     
                 let cartItem = cartItems.filter(ci => ci.item.id === payload.id);
@@ -555,7 +607,7 @@ const FoodDetailModal = ({
                             return;
                         }
                         CustomToaster('success', "Item quantity updated in your cart.");
-                        updateCartInLocalStorage(res);
+                        // updateCartInLocalStorage(res);
                     } else {
                         CustomToaster('error', "Maximum available quantity already in cart.");
                     }
@@ -577,6 +629,9 @@ const FoodDetailModal = ({
         } else{
              // Get selected customizations
              try {
+
+
+                const hasCustomisations = hasCustomizations(modalData[0]) ? true : false;
                 const selectedCustomizations = selectedOptions.map(option => {
                     const customizationItem = modalData[0].customisation_items.find(
                         item => item.local_id === option.id
@@ -586,6 +641,34 @@ const FoodDetailModal = ({
                         quantity: { count: 1 }
                     };
                 });
+
+                let groups = [];
+                let cus = [];
+                let newState = {};
+                let customizationState = {};
+                let customisations = null;
+                if (hasCustomisations) {
+                groups = await formatCustomizationGroups(
+                    modalData[0].customisation_groups
+                );
+
+                cus = await formatCustomizations(modalData[0].customisation_items);
+                newState = await initializeCustomizationState(
+                    groups,
+                    cus,
+                    customization_state,
+                    selectedOptions  // Pass your selected options
+                );
+                customizationState = newState;
+                customisations = await getCustomizationsPromise(
+                    modalData[0],
+                    customizationState
+                );
+
+                }
+
+                
+                console.log("selected customization mine", selectedCustomizations)
     
                 // Calculate total price including customizations
                 const basePrice = modalData[0]?.item_details?.price?.value || 0;
@@ -601,12 +684,7 @@ const FoodDetailModal = ({
                     bpp_uri: modalData[0].context.bpp_uri,
                     domain: modalData[0].context.domain,
                     tags: modalData[0].item_details.tags,
-                    customisationState: selectedOptions.length ? {
-                        firstGroup: {
-                            id: modalData[0].customisation_groups[0]?.id,
-                            selected: selectedOptions
-                        }
-                    } : null,
+                    customisationState: customizationState,
                     contextCity: modalData[0].context.city,
                     quantity: { count: 1 },
                     provider: {
@@ -621,7 +699,7 @@ const FoodDetailModal = ({
                     },
                     customisations: selectedCustomizations,
                     hasCustomisations: selectedCustomizations.length > 0,
-                    totalPrice
+                    
                 };
                 const updatedPreAuthCart = isIncrement 
                 ? preAuthCartHelpers.addToPreAuthCart(payload)
@@ -1224,6 +1302,10 @@ const FoodDetailModal = ({
     const vegStatus = isVegItem(modalData[0]);
     const text1 = t('only')
     const text2 = t('items available')
+
+
+    console.log("check data for customization",modalData[0])
+
     return (
         <>
             <Modal
@@ -1338,69 +1420,7 @@ const FoodDetailModal = ({
                                                 modalData[0]
                                                     ?.item_details?.descriptor?.short_desc}
                                         </ReadMore>
-                                        {modalData[0]?.nutritions_name
-                                            ?.length > 0 && (
-                                                <>
-                                                    <Typography
-                                                        fontSize="14px"
-                                                        fontWeight="500"
-                                                        mt="5px"
-                                                    >
-                                                        {t(
-                                                            'Nutrition Details'
-                                                        )}
-                                                    </Typography>
-
-
-                                                </>
-                                            )}
-                                        {modalData[0]?.allergies_name
-                                            ?.length > 0 && (
-                                                <>
-                                                    <Typography
-                                                        fontSize="14px"
-                                                        fontWeight="500"
-                                                        mt="5px"
-                                                    >
-                                                        {t(
-                                                            'Allergic Ingredients'
-                                                        )}
-                                                    </Typography>
-
-                                                    <Stack
-                                                        direction="row"
-                                                        spacing={0.5}
-                                                    >
-                                                        {modalData[0]?.allergies_name?.map(
-                                                            (
-                                                                item,
-                                                                index
-                                                            ) => (
-                                                                <Typography
-                                                                    fontSize="12px"
-                                                                    key={
-                                                                        index
-                                                                    }
-                                                                    color={
-                                                                        theme
-                                                                            .palette
-                                                                            .neutral[400]
-                                                                    }
-                                                                >
-                                                                    {item}
-                                                                    {index !==
-                                                                        modalData[0]
-                                                                            ?.allergies_name
-                                                                            .length -
-                                                                        1
-                                                                        ? ','
-                                                                        : '.'}
-                                                                </Typography>
-                                                            )
-                                                        )}
-                                                    </Stack>
-                                                </>
-                                            )}
+                                        
                                         <Stack
                                             spacing={1}
                                             direction={{
@@ -1476,11 +1496,11 @@ const FoodDetailModal = ({
                                                 )} */}
                                     {modalData?.length > 0 && modalData[0]?.customisation_groups?.length > 0 && (
                                         <Stack spacing={3} sx={{ my: 2 }}>
-                                            {modalData[0]?.customisation_groups?.map(group => {
+                                            {    _.uniqBy(modalData[0]?.customisation_groups, 'local_id')?.map(group => {
                                                 const groupItems = modalData[0].customisation_items?.filter(
                                                     item => item.customisation_group_id === group.id
                                                 );
-
+                                                console.log("check data for customization 1",groupItems)
                                                 return (
                                                     <CustomizationSection
                                                         key={group.id}
@@ -1494,7 +1514,7 @@ const FoodDetailModal = ({
                                             })}
                                         </Stack>
                                     )}
-                                    {modalData?.length > 0 &&
+                                    {/* {modalData?.length > 0 &&
                                         modalData[0]?.add_ons?.length >
                                         0 && (
                                             <AddOnsManager
@@ -1521,7 +1541,7 @@ const FoodDetailModal = ({
                                                     isRefetching
                                                 }
                                             />
-                                        )}
+                                        )} */}
                                     <RestaurantMDetails data={modalData[0]} />
                                 </SimpleBar>
                                 <Grid container direction="column">

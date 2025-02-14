@@ -224,8 +224,9 @@ const CheckOut = () => {
     const dispatch = useDispatch()
     const cartItems = useSelector(state => state.cart.cartList, shallowEqual)
     const location = useSelector((state) => state.addressData.location, shallowEqual)
-    const { handleCheckoutFlow } = useCheckoutFlow()
-    
+    const { handleCheckoutFlow, isQuoteComplete } = useCheckoutFlow();
+    // const [isQuoteReady, setIsQuoteReady] = useState(false);
+    const cartContext = useSelector(state => state.cart.cartContext);
     const [isLoading, setIsLoading] = useState(true)
     const [isProcessing, setIsProcessing] = useState(false)
     
@@ -243,14 +244,17 @@ const CheckOut = () => {
 
         setIsProcessing(true)
         try {
-            await handleCheckoutFlow(cartItems, location)
+              handleCheckoutFlow(cartItems, location).then((res)=>{
+              setIsProcessing(false)
+              setIsLoading(false)
+             })
         } catch (error) {
             console.error('Error in checkout flow:', error)
-            CustomToaster('error', 'Failed to process few items in your cart, please try again')
-        } finally {
             setIsProcessing(false)
             setIsLoading(false)
-        }
+            CustomToaster('error', 'Failed to process few items in your cart, please try again')
+           
+        } 
     }
     
     useEffect(() => {
@@ -270,8 +274,7 @@ const CheckOut = () => {
     if (!token) {
         return null
     }
-    
-    if (isLoading || isProcessing) {
+    if (isLoading || isProcessing || !isQuoteComplete) {
         return <LoadingScreen message={isProcessing ? "Processing your checkout..." : "Loading your order details..."} />
     }
     

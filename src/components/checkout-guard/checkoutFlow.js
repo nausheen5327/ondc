@@ -18,6 +18,7 @@ export const useCheckoutFlow = () => {
   const responseRef = React.useRef([])
   const eventTimeOutRef = React.useRef([])
   const updatedCartItems = React.useRef([])
+  const [isQuoteComplete, setIsQuoteComplete] = useState(false);
 
   const getProviderIds = (request_object) => {
     let providers = []
@@ -97,10 +98,12 @@ export const useCheckoutFlow = () => {
       // dispatch(setIsLoading(false));
 
       // router.push(`/checkout`);
+      setIsQuoteComplete(true);
     } catch (err) {
       //   setCheckoutLoading(false);
       CustomToaster('error', 'Failed to process your checkout items, Please try again');
       // dispatch(setIsLoading(false));
+      setIsQuoteComplete(true);
 
       //   setGetQuoteLoading(false);
     }
@@ -308,6 +311,7 @@ export const useCheckoutFlow = () => {
   }
 
   return {
-    handleCheckoutFlow
+    handleCheckoutFlow,
+    isQuoteComplete
   }
 }

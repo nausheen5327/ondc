@@ -356,6 +356,392 @@ const handleOrderSuccess = () => {
         setUpdatedCartItems(updatedCartItemsData);
       };
 
+      // useEffect(() => {
+      //   try {
+      //     if (updatedCartItems?.length > 0) {
+      //       // fetch request object length and compare it with the response length
+      //       let c = cartItems.map((item) => {
+      //         return item.item;
+      //       });
+      //       const requestObject = constructQouteObject(c);
+      //       if (requestObject.length === updatedCartItems.length) {
+      //         // setToggleInit(true);
+      //       }
+    
+      //       const cartList = JSON.parse(JSON.stringify(updatedCartItems));
+      //       // check if any one order contains error
+      //       let total_payable = 0;
+      //       let isAnyError = false;
+      //       let quotes = updatedCartItems?.map((item, index) => {
+      //         let { message, error } = item;
+      //         let provider_payable = 0;
+      //         const provider = {
+      //           products: [],
+      //           total_payable: 0,
+      //           name: "",
+      //           error: null,
+      //         };
+      //         // else generate quote of it
+      //         if (message) {
+      //           //          message = m2;
+    
+      //           if (message?.quote?.quote?.price?.value) {
+      //             provider_payable += Number(message?.quote?.quote?.price?.value);
+      //           }
+      //           const breakup = message?.quote?.quote?.breakup;
+      //           const provided_by = message?.quote?.provider?.descriptor?.name;
+      //           provider.name = provided_by;
+      //           let uuid = 0;
+      //           const all_items = breakup?.map((break_up_item) => {
+      //             const cartIndex = cartList?.findIndex(
+      //               (one) => one.id === break_up_item["@ondc/org/item_id"]
+      //             );
+      //             const cartItem = cartIndex > -1 ? cartList[cartIndex] : null;
+      //             let findItemFromCartItems = null;
+      //             let isCustimization = false;
+      //             if (break_up_item?.item?.tags) {
+      //               const findTag = break_up_item?.item?.tags.find(
+      //                 (tag) => tag.code === "type"
+      //               );
+      //               if (findTag) {
+      //                 const findCust = findTag.list.find(
+      //                   (listItem) => listItem.value === "customization"
+      //                 );
+      //                 if (findCust) {
+      //                   isCustimization = true;
+      //                 } else {
+      //                 }
+      //               }
+      //             } else {
+      //             }
+      //             cartItems.forEach((ci) => {
+      //               if (isCustimization) {
+      //                 const cc = ci?.item?.customisations || [];
+      //                 cc.forEach((i) => {
+      //                   if (i.local_id === break_up_item["@ondc/org/item_id"]) {
+      //                     findItemFromCartItems = i;
+      //                   }
+      //                 });
+      //               } else {
+      //                 if (
+      //                   ci?.item?.local_id === break_up_item["@ondc/org/item_id"]
+      //                 ) {
+      //                   findItemFromCartItems = ci?.item;
+      //                 }
+      //               }
+      //             });
+      //             let cartQuantity = findItemFromCartItems
+      //               ? findItemFromCartItems?.quantity?.count
+      //               : cartItem
+      //               ? cartItem?.quantity?.count
+      //               : 0;
+      //             let quantity = break_up_item["@ondc/org/item_quantity"]
+      //               ? break_up_item["@ondc/org/item_quantity"]["count"]
+      //               : 0;
+    
+      //             let textClass = "";
+      //             let quantityMessage = "";
+      //             let isError = false;
+      //             if (quantity === 0) {
+      //               if (break_up_item["@ondc/org/title_type"] === "item") {
+      //                 textClass = "text-error";
+      //                 quantityMessage = "Out of stock";
+      //                 isError = true;
+    
+      //                 if (cartIndex > -1) {
+      //                   cartList.splice(cartIndex, 1);
+      //                 }
+      //               }
+      //             } else if (
+      //               !(break_up_item["@ondc/org/title_type"] === "offer") &&
+      //               quantity !== cartQuantity
+      //             ) {
+      //               textClass =
+      //                 break_up_item["@ondc/org/title_type"] === "item"
+      //                   ? "text-amber"
+      //                   : "";
+      //               quantityMessage = `Quantity: ${quantity}/${cartQuantity}`;
+      //               isError = true;
+    
+      //               if (cartItem) {
+      //                 cartItem.quantity.count = quantity;
+      //               }
+      //             } else {
+      //               quantityMessage = `Quantity: ${quantity}`;
+      //             }
+    
+      //             if (error && error.code === "30009") {
+      //               cartList.splice(cartIndex, 1);
+      //             } else {
+      //             }
+      //             if (error && error.code === "40002") {
+      //             } else {
+      //             }
+      //             uuid = uuid + 1;
+      //             return {
+      //               id: break_up_item["@ondc/org/item_id"],
+      //               title: break_up_item?.title,
+      //               title_type: break_up_item["@ondc/org/title_type"],
+      //               isCustomization: isItemCustomization(break_up_item?.item?.tags),
+      //               isFulfillment: isItemFulfillment(break_up_item),
+      //               isDelivery:
+      //                 break_up_item["@ondc/org/title_type"] === "delivery",
+      //               isOffer: break_up_item["@ondc/org/title_type"] === "offer",
+      //               offer: getOfferDetails(break_up_item?.item?.tags),
+      //               parent_item_id: break_up_item?.item?.parent_item_id,
+      //               price: Number(break_up_item.price?.value)?.toFixed(2),
+      //               cartQuantity,
+      //               quantity,
+      //               provided_by,
+      //               textClass,
+      //               quantityMessage,
+      //               uuid: uuid,
+      //               isError,
+      //               errorCode: error?.code || "",
+      //             };
+      //           });
+    
+      //           console.log("all_items", all_items);
+      //           let items = {};
+      //           let delivery = {};
+      //           let offers = [];
+      //           let outOfStock = [];
+      //           let errorCode = "";
+      //           let selected_fulfillments = selectedFulfillments;
+    
+      //           if (Object.keys(selectedFulfillments).length === 0) {
+      //             updatedCartItems[0]?.message?.quote.items.forEach((item) => {
+      //               selected_fulfillments[item.id] = item.fulfillment_id;
+      //             });
+      //             setSelectedFulfillments(selected_fulfillments);
+      //           } else {
+      //           }
+    
+      //           let selected_fulfillment_ids = Object.values(selected_fulfillments);
+    
+      //           all_items.forEach((item) => {
+      //             errorCode = item.errorCode;
+      //             setQuoteItemInProcessing(item.id);
+      //             if (item.isError) {
+      //               outOfStock.push(item);
+      //               isAnyError = true;
+      //             }
+      //             // for type item
+      //             if (item.title_type === "item" && !item.isCustomization) {
+      //               let key = item.parent_item_id || item.id;
+      //               let price = {
+      //                 title: item.quantity + " * Base Price",
+      //                 value: item.price,
+      //               };
+      //               let prev_item_data = items[key];
+      //               let addition_item_data = { title: item.title, price: price };
+      //               items[key] = { ...prev_item_data, ...addition_item_data };
+      //             }
+      //             if (
+      //               item.title_type === "tax" &&
+      //               !item.isCustomization &&
+      //               !item.isFulfillment &&
+      //               !selected_fulfillment_ids.includes(item.id)
+      //               // item.id !== selected_fulfillments
+      //             ) {
+      //               let key = item.parent_item_id || item.id;
+      //               items[key] = items[key] || {};
+      //               items[key]["tax"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             if (
+      //               item.title_type === "discount" &&
+      //               !item.isCustomization &&
+      //               !item.isFulfillment
+      //             ) {
+      //               let key = item.parent_item_id || item.id;
+      //               items[key] = items[key] || {};
+      //               items[key]["discount"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+    
+      //             //for customizations
+      //             if (item.title_type === "item" && item.isCustomization) {
+      //               let key = item.parent_item_id;
+      //               items[key]["customizations"] =
+      //                 items[key]["customizations"] || {};
+      //               let existing_data = items[key]["customizations"][item.id] || {};
+      //               let customisation_details = {
+      //                 title: item.title,
+      //                 price: {
+      //                   title: item.quantity + " * Base Price",
+      //                   value: item.price,
+      //                 },
+      //                 quantityMessage: item.quantityMessage,
+      //                 textClass: item.textClass,
+      //                 quantity: item.quantity,
+      //                 cartQuantity: item.cartQuantity,
+      //               };
+      //               items[key]["customizations"][item.id] = {
+      //                 ...existing_data,
+      //                 ...customisation_details,
+      //               };
+      //             }
+      //             if (item.title_type === "tax" && item.isCustomization) {
+      //               let key = item.parent_item_id;
+      //               items[key]["customizations"] =
+      //                 items[key]["customizations"] || {};
+      //               items[key]["customizations"][item.id] =
+      //                 items[key]["customizations"][item.id] || {};
+      //               items[key]["customizations"][item.id]["tax"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             if (item.title_type === "discount" && item.isCustomization) {
+      //               let key = item.parent_item_id;
+      //               items[key]["customizations"] =
+      //                 items[key]["customizations"] || {};
+      //               items[key]["customizations"][item.id] =
+      //                 items[key]["customizations"][item.id] || {};
+      //               items[key]["customizations"][item.id]["discount"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+    
+      //             // for item level offer
+      //             if (item.isOffer && item.offer?.type === "item") {
+      //               let key = item.id;
+      //               items[key] = items[key] || {};
+      //               let offer = {
+      //                 title: item.offer?.name,
+      //                 value: item.price,
+      //               };
+      //               const existing_offers = items[key]["offers"] || [];
+      //               items[key]["offers"] = [...existing_offers, offer];
+      //             }
+    
+      //             //for delivery
+      //             if (
+      //               item.title_type === "delivery" &&
+      //               selected_fulfillment_ids.includes(item.id)
+      //               // item.id === selected_fulfillments
+      //             ) {
+      //               const existing_delivery_charge =
+      //                 parseFloat(delivery["delivery"]?.value) || 0;
+      //               delivery["delivery"] = {
+      //                 title: "Delivery Charges",
+      //                 value: existing_delivery_charge + parseFloat(item.price),
+      //               };
+      //             }
+      //             if (
+      //               (item.title_type === "discount_f" ||
+      //                 item.title_type === "discount") &&
+      //               item.isFulfillment
+      //             ) {
+      //               delivery["discount"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             if (
+      //               (item.title_type === "tax_f" || item.title_type === "tax") &&
+      //               selected_fulfillment_ids.includes(item.id)
+      //               // item.id === selected_fulfillments
+      //             ) {
+      //               delivery["tax"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             if (
+      //               item.title_type === "packing" &&
+      //               selected_fulfillment_ids.includes(item.id)
+      //               // item.id === selected_fulfillments
+      //             ) {
+      //               delivery["packing"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             if (item.title_type === "discount" && !item.isCustomization) {
+      //               let id = item.parent_item_id || item.id;
+      //               items[id]["discount"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             if (
+      //               item.title_type === "misc" &&
+      //               selected_fulfillment_ids.includes(item.id)
+      //               // item.id === selected_fulfillments
+      //             ) {
+      //               delivery["misc"] = {
+      //                 title: item.title,
+      //                 value: item.price,
+      //               };
+      //             }
+      //             // for fulfillment level offer
+      //             if (
+      //               item.isOffer &&
+      //               item.offer?.type === "fulfillment" &&
+      //               selected_fulfillment_ids.includes(item.id)
+      //             ) {
+      //               let offer = {
+      //                 title: item.offer?.name,
+      //                 value: item.price,
+      //               };
+      //               const existing_offers = delivery["offers"] || [];
+      //               delivery["offers"] = [...existing_offers, offer];
+      //             }
+    
+      //             // for order level offer
+      //             if (item.isOffer && item.offer?.type === "order") {
+      //               let key = item.id;
+      //               let offer = {
+      //                 title: item.offer?.name,
+      //                 value: item.price,
+      //               };
+      //               offers.push(offer);
+      //             }
+      //           });
+    
+      //           console.log("offers", offers);
+      //           setQuoteItemInProcessing(null);
+      //           provider.items = items;
+      //           provider.delivery = delivery;
+      //           provider.offers = offers;
+      //           provider.outOfStock = outOfStock;
+      //           provider.errorCode = errorCode || "";
+      //           if (errorCode !== "") {
+      //             isAnyError = true;
+      //           }
+      //         }
+    
+      //         if (error) {
+      //           provider.error = error.message;
+      //         }
+    
+      //         total_payable += provider_payable;
+      //         provider.total_payable = provider_payable;
+      //         return provider;
+      //       });
+      //       // setGetQuoteLoading(false);
+      //       // setUpdateCartLoading(false);
+      //       setProductsQuote({
+      //         providers: quotes,
+      //         isError: isAnyError,
+      //         total_payable: total_payable.toFixed(2),
+      //       });
+      //     }
+      //   } catch (err) {
+      //     console.log("Calculating quote:", err);
+      //     showQuoteError();
+      //   }
+      // }, [updatedCartItems, selectedFulfillments]);
+      
+      
+      
       useEffect(() => {
         try {
           if (updatedCartItems?.length > 0) {
@@ -393,20 +779,14 @@ const handleOrderSuccess = () => {
                 provider.name = provided_by;
                 let uuid = 0;
                 const all_items = breakup?.map((break_up_item) => {
-                  const cartIndex = cartList?.findIndex(
-                    (one) => one.id === break_up_item["@ondc/org/item_id"]
-                  );
+                  const cartIndex = cartList?.findIndex((one) => one.id === break_up_item["@ondc/org/item_id"]);
                   const cartItem = cartIndex > -1 ? cartList[cartIndex] : null;
                   let findItemFromCartItems = null;
                   let isCustimization = false;
                   if (break_up_item?.item?.tags) {
-                    const findTag = break_up_item?.item?.tags.find(
-                      (tag) => tag.code === "type"
-                    );
+                    const findTag = break_up_item?.item?.tags.find((tag) => tag.code === "type");
                     if (findTag) {
-                      const findCust = findTag.list.find(
-                        (listItem) => listItem.value === "customization"
-                      );
+                      const findCust = findTag.list.find((listItem) => listItem.value === "customization");
                       if (findCust) {
                         isCustimization = true;
                       } else {
@@ -423,9 +803,7 @@ const handleOrderSuccess = () => {
                         }
                       });
                     } else {
-                      if (
-                        ci?.item?.local_id === break_up_item["@ondc/org/item_id"]
-                      ) {
+                      if (ci?.item?.local_id === break_up_item["@ondc/org/item_id"]) {
                         findItemFromCartItems = ci?.item;
                       }
                     }
@@ -452,14 +830,8 @@ const handleOrderSuccess = () => {
                         cartList.splice(cartIndex, 1);
                       }
                     }
-                  } else if (
-                    !(break_up_item["@ondc/org/title_type"] === "offer") &&
-                    quantity !== cartQuantity
-                  ) {
-                    textClass =
-                      break_up_item["@ondc/org/title_type"] === "item"
-                        ? "text-amber"
-                        : "";
+                  } else if (quantity !== cartQuantity) {
+                    textClass = break_up_item["@ondc/org/title_type"] === "item" ? "text-amber" : "";
                     quantityMessage = `Quantity: ${quantity}/${cartQuantity}`;
                     isError = true;
     
@@ -486,8 +858,6 @@ const handleOrderSuccess = () => {
                     isFulfillment: isItemFulfillment(break_up_item),
                     isDelivery:
                       break_up_item["@ondc/org/title_type"] === "delivery",
-                    isOffer: break_up_item["@ondc/org/title_type"] === "offer",
-                    offer: getOfferDetails(break_up_item?.item?.tags),
                     parent_item_id: break_up_item?.item?.parent_item_id,
                     price: Number(break_up_item.price?.value)?.toFixed(2),
                     cartQuantity,
@@ -501,10 +871,8 @@ const handleOrderSuccess = () => {
                   };
                 });
     
-                console.log("all_items", all_items);
                 let items = {};
                 let delivery = {};
-                let offers = [];
                 let outOfStock = [];
                 let errorCode = "";
                 let selected_fulfillments = selectedFulfillments;
@@ -608,30 +976,15 @@ const handleOrderSuccess = () => {
                       value: item.price,
                     };
                   }
-    
-                  // for item level offer
-                  if (item.isOffer && item.offer?.type === "item") {
-                    let key = item.id;
-                    items[key] = items[key] || {};
-                    let offer = {
-                      title: item.offer?.name,
-                      value: item.price,
-                    };
-                    const existing_offers = items[key]["offers"] || [];
-                    items[key]["offers"] = [...existing_offers, offer];
-                  }
-    
                   //for delivery
                   if (
                     item.title_type === "delivery" &&
                     selected_fulfillment_ids.includes(item.id)
                     // item.id === selected_fulfillments
                   ) {
-                    const existing_delivery_charge =
-                      parseFloat(delivery["delivery"]?.value) || 0;
                     delivery["delivery"] = {
-                      title: "Delivery Charges",
-                      value: existing_delivery_charge + parseFloat(item.price),
+                      title: item.title,
+                      value: item.price,
                     };
                   }
                   if (
@@ -664,12 +1017,16 @@ const handleOrderSuccess = () => {
                       value: item.price,
                     };
                   }
-                  if (item.title_type === "discount" && !item.isCustomization) {
-                    let id = item.parent_item_id || item.id;
-                    items[id]["discount"] = {
-                      title: item.title,
-                      value: item.price,
-                    };
+                  if (item.title_type === "discount") {
+                    if (item.isCustomization) {
+                      let id = item.parent_item_id;
+                    } else {
+                      let id = item.id;
+                      items[id]["discount"] = {
+                        title: item.title,
+                        value: item.price,
+                      };
+                    }
                   }
                   if (
                     item.title_type === "misc" &&
@@ -681,36 +1038,10 @@ const handleOrderSuccess = () => {
                       value: item.price,
                     };
                   }
-                  // for fulfillment level offer
-                  if (
-                    item.isOffer &&
-                    item.offer?.type === "fulfillment" &&
-                    selected_fulfillment_ids.includes(item.id)
-                  ) {
-                    let offer = {
-                      title: item.offer?.name,
-                      value: item.price,
-                    };
-                    const existing_offers = delivery["offers"] || [];
-                    delivery["offers"] = [...existing_offers, offer];
-                  }
-    
-                  // for order level offer
-                  if (item.isOffer && item.offer?.type === "order") {
-                    let key = item.id;
-                    let offer = {
-                      title: item.offer?.name,
-                      value: item.price,
-                    };
-                    offers.push(offer);
-                  }
                 });
-    
-                console.log("offers", offers);
                 setQuoteItemInProcessing(null);
                 provider.items = items;
                 provider.delivery = delivery;
-                provider.offers = offers;
                 provider.outOfStock = outOfStock;
                 provider.errorCode = errorCode || "";
                 if (errorCode !== "") {
@@ -739,6 +1070,10 @@ const handleOrderSuccess = () => {
           showQuoteError();
         }
       }, [updatedCartItems, selectedFulfillments]);
+
+
+
+
       const showQuoteError = () => {
         let msg = "";
         if (quoteItemInProcessing) {
@@ -1633,6 +1968,7 @@ useEffect(() => {
         let fulfillments = updatedCartItems[0]?.message?.quote?.fulfillments
         responseRef.current = [];
         // setInitializeOrderLoading(true);
+        console.log("updated Cart itemms", updatedCartItems)
         try {   
           const data = await cancellablePromise(
             postCall(
@@ -1640,7 +1976,7 @@ useEffect(() => {
               items.map((item) => {
                 let itemsData = Object.assign([], JSON.parse(JSON.stringify(item)));
                 itemsData = itemsData.map((itemData) => {
-                    console.log('selected fulfillments', selectedFulfillments);
+                    console.log('selected fulfillments', updatedCartItems);
                   itemData.fulfillment_id = selectedFulfillments[itemData.local_id];
                   delete itemData.product.fulfillment_id;
                   if (cartItems) {
@@ -1650,10 +1986,12 @@ useEffect(() => {
                     if (findItemFromQuote) {
                       itemData.parent_item_id = findItemFromQuote.parent_item_id;
                     }
+                    itemData.product.fulfillments = updatedCartItems[0].message.quote.fulfillments
                   } else {
                   }
                   return itemData;
                 });
+                console.log("items data selected fullfilments",itemsData)
                 return {
                   context: {
                     transaction_id: transaction_id,
@@ -1670,7 +2008,18 @@ useEffect(() => {
                     ),
                     offers: getSelectedOffers(),
                     billing_info: {
-                      address: billingAddress?.address,
+                      "address": {
+                          "areaCode": billingAddress?.address?.areaCode,
+                          "building": billingAddress?.address?.building,
+                          "city": billingAddress?.address?.city,
+                          "country": billingAddress?.address?.country,
+                          "door": billingAddress?.address?.door,
+                          "lat": billingAddress?.address?.lat,
+                          "lng": billingAddress?.address?.lng,
+                          "state": billingAddress?.address?.state,
+                          "street": billingAddress?.address?.street,
+                          "tag": billingAddress?.address?.tag
+                        },
                       phone: billingAddress?.descriptor?.phone,
                       name: billingAddress?.descriptor?.name,
                       email: billingAddress?.descriptor?.email,
@@ -1682,7 +2031,18 @@ useEffect(() => {
                       phone: deliveryAddress?.descriptor?.phone,
                       location: {
                         gps: `${deliveryAddress?.address?.lat},${deliveryAddress?.address?.lng}`,
-                        address: deliveryAddress?.address,
+                        "address": {
+                          "areaCode": deliveryAddress?.address?.areaCode,
+                          "building": deliveryAddress?.address?.building,
+                          "city": deliveryAddress?.address?.city,
+                          "country": deliveryAddress?.address?.country,
+                          "door": deliveryAddress?.address?.door,
+                          "lat": deliveryAddress?.address?.lat,
+                          "lng": deliveryAddress?.address?.lng,
+                          "state": deliveryAddress?.address?.state,
+                          "street": deliveryAddress?.address?.street,
+                          "tag": deliveryAddress?.address?.tag
+                        },
                       },
                     },
                     payment: {
@@ -1767,7 +2127,7 @@ useEffect(() => {
         let c = cartItems.map((item) => {
           return item.item;
         });
-        console.log(cartItems,"payment integration 1");
+        // console.log("payment integration 1",updatedCartItems);
         const request_object = constructQouteObject(
           c.filter(({ provider }) => responseReceivedIds.includes(provider.local_id.toString()))
         );
