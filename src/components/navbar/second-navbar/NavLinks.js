@@ -40,18 +40,7 @@ const NavLinks = () => {
                         setRestaurantModal={setRestaurantModal}
                         languageDirection={languageDirection}
                     />
-                    <NavCuisines
-                        openModal={openCategoryModal}
-                        setModal={setCategoryModal}
-                        setRestaurantModal={setRestaurantModal}
-                        languageDirection={languageDirection}
-                    />
-
-                    <NavResturant
-                        openModal={openRestaurantModal}
-                        setModal={setRestaurantModal}
-                        languageDirection={languageDirection}
-                    />
+                    
                 
             
         </Stack>

@@ -46,7 +46,8 @@ const NavCatagory = ({
     // test mneu drop down start
     const router = useRouter()
     const { global } = useSelector((state) => state.globalSettings)
-    const { featuredCategories } = useSelector((state) => state.storedData)
+    const  featuredCategories  =  useSelector(state => state.globalSettings.categoriesList); // Adjust the path according to your Redux store structure
+
     const catImageUrl = `${global?.base_urls?.category_image_url}`
     const dispatch = useDispatch()
     const [anchorEl, setAnchorEl] = useState(null)
@@ -143,10 +144,8 @@ const NavCatagory = ({
                                                     >
                                                         <Link
                                                             href={{
-                                                                pathname: `/category/${category.id}`,
-                                                                query: {
-                                                                    name: category?.name,
-                                                                },
+                                                                pathname: `/home/?category=${category.title}`,
+                                                               
                                                             }}
                                                         >
                                                             <MenuItem
@@ -194,19 +193,10 @@ const NavCatagory = ({
                                                                     }
                                                                 >
                                                                     {
-                                                                        category.name
+                                                                        category.title
                                                                     }
                                                                 </Typography>
-                                                                <CustomTypographyGray
-                                                                    variant="h5"
-                                                                    nodefaultfont="true"
-                                                                >
-                                                                    (
-                                                                    {
-                                                                        category.products_count
-                                                                    }
-                                                                    )
-                                                                </CustomTypographyGray>
+                                                                
                                                             </MenuItem>
                                                         </Link>
                                                     </Grid>
@@ -218,10 +208,8 @@ const NavCatagory = ({
                                                     >
                                                         <Link
                                                             href={{
-                                                                pathname: `/category/${category.id}`,
-                                                                query: {
-                                                                    name: category?.name,
-                                                                },
+                                                                pathname: `/home/?category=${category.title}`,
+                                                                
                                                             }}
                                                         >
                                                             <MenuItem
@@ -269,19 +257,10 @@ const NavCatagory = ({
                                                                     }
                                                                 >
                                                                     {
-                                                                        category.name
+                                                                        category.title
                                                                     }
                                                                 </Typography>
-                                                                <CustomTypographyGray
-                                                                    variant="h5"
-                                                                    nodefaultfont="true"
-                                                                >
-                                                                    (
-                                                                    {
-                                                                        category.products_count
-                                                                    }
-                                                                    )
-                                                                </CustomTypographyGray>
+                                                                
                                                             </MenuItem>
                                                         </Link>
                                                     </Grid>
@@ -298,12 +277,10 @@ const NavCatagory = ({
                                             {index % 2 === 0 ? (
                                                 <Grid item md={6} key={index}>
                                                     <Link
-                                                        href={{
-                                                            pathname: `/category/${category.id}`,
-                                                            query: {
-                                                                name: category?.name,
-                                                            },
-                                                        }}
+                                                       href={{
+                                                        pathname: `/home/?category=${category.title}`,
+                                                        
+                                                    }}
                                                     >
                                                         <MenuItem
                                                             onClick={
@@ -348,18 +325,9 @@ const NavCatagory = ({
                                                                         .neutral[1000]
                                                                 }
                                                             >
-                                                                {category.name}
+                                                                {category.title}
                                                             </Typography>
-                                                            <CustomTypographyGray
-                                                                variant="h5"
-                                                                nodefaultfont="true"
-                                                            >
-                                                                (
-                                                                {
-                                                                    category.products_count
-                                                                }
-                                                                )
-                                                            </CustomTypographyGray>
+                                                            
                                                         </MenuItem>
                                                     </Link>
                                                 </Grid>
@@ -367,10 +335,8 @@ const NavCatagory = ({
                                                 <Grid item md={6} key={index}>
                                                     <Link
                                                         href={{
-                                                            pathname: `/category/${category.id}`,
-                                                            query: {
-                                                                name: category?.name,
-                                                            },
+                                                            pathname: `/home/?category=${category.title}`,
+                                                            
                                                         }}
                                                     >
                                                         <MenuItem
@@ -417,18 +383,9 @@ const NavCatagory = ({
                                                                         .neutral[1000]
                                                                 }
                                                             >
-                                                                {category.name}
+                                                                {category.title}
                                                             </Typography>
-                                                            <CustomTypographyGray
-                                                                variant="h5"
-                                                                nodefaultfont="true"
-                                                            >
-                                                                (
-                                                                {
-                                                                    category.products_count
-                                                                }
-                                                                )
-                                                            </CustomTypographyGray>
+                                                           
                                                         </MenuItem>
                                                     </Link>
                                                 </Grid>
@@ -439,34 +396,6 @@ const NavCatagory = ({
                             </>
                         )}
                     </Grid>
-                    {featuredCategories?.length > 0 && (
-                        <Grid
-                            container
-                            md={12}
-                            justifyContent="center"
-                            alignItems="center"
-                            p=".8rem"
-                        >
-                            <Button
-                                sx={{
-                                    background: (theme) =>
-                                        theme.palette.primary.main,
-                                    color: (theme) =>
-                                        `${theme.palette.neutral[100]} !important`,
-                                    padding: '9px 25px',
-                                    borderRadius: '5px',
-                                    '&:hover': {
-                                        background: (theme) =>
-                                            theme.palette.primary.dark,
-                                    },
-                                }}
-                                size="medium"
-                                onClick={handleClick}
-                            >
-                                {t('View all')}
-                            </Button>
-                        </Grid>
-                    )}
                 </Stack>
             </Popover>
         </div>

@@ -10,7 +10,8 @@ const initialState = {
     userLocationUpdate: false,
     isLoading: false,
     authModalOpen: false,
-    sideDrawerOpen: false
+    sideDrawerOpen: false,
+    categoriesList: []
 }
 
 export const globalSettingSlice = createSlice({
@@ -49,7 +50,10 @@ export const globalSettingSlice = createSlice({
         },
         setSideDrawerOpen:(state,action)=>{
             state.sideDrawerOpen = action.payload
-        }
+        },
+        setCategoriesList:(state,action)=>{
+            state.categoriesList = action.payload
+        },
         
     },
 })
@@ -57,7 +61,7 @@ export const globalSettingSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
     setGlobalSettings,
-
+    setCategoriesList,
     setCustomerProfile,
     setCouponInfo,
     setCouponType,

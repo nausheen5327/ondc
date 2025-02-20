@@ -26,10 +26,12 @@ import { getGuestId } from '../checkout-page/functions/getGuestUserId'
 import { ConfigApi } from '@/hooks/react-query/config/useConfig'
 import { useQuery } from 'react-query'
 import { onSingleErrorResponse } from '@/components/ErrorResponse'
-import { setGlobalSettings } from '@/redux/slices/global'
+import { setCategoriesList, setGlobalSettings } from '@/redux/slices/global'
 import CategoryMenu from './category-navbar.js'
 import { Box, styled } from '@mui/system'
 import { usePathname } from 'next/navigation'
+import { CustomToaster } from '../custom-toaster/CustomToaster'
+import { getCallStrapi } from '@/api/MainApi'
 
 const Navigation = () => {
     // const SecondNavbar = dynamic(() => import('./second-navbar/SecondNavbar'), {
@@ -45,7 +47,20 @@ const Navigation = () => {
     const scrolling = useScrollTrigger()
     const [userLocation, setUserLocation] = useState(null)
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
-
+    const categories = useSelector(state => state.globalSettings.categoriesList); // Adjust the path according to your Redux store structure
+  
+    const fetchCategories = async () => {
+      try {
+        const response = await getCallStrapi('/categories');
+        dispatch(setCategoriesList(response));
+      } catch (error) {
+        CustomToaster('error', "Please check your internet connection");
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    useEffect(() => {
+      fetchCategories();
+    }, []); 
     useEffect(() => {
         let location = undefined
         if (typeof window !== 'undefined') {
@@ -190,11 +205,11 @@ const Navigation = () => {
                     
                     location={userLocation}
                 />
-                {/* {isSmall && (
+                {isSmall && (
                     <CategoryMenuWrapper>
-                        <CategoryMenu />
+                        <CategoryMenu categories={categories} />
                     </CategoryMenuWrapper>
-                )}             */}
+                )}            
         </AppBarStyle>
         </NavigationWrapper>
     )
