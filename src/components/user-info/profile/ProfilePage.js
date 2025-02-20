@@ -203,7 +203,7 @@ const ProfilePage = () => {
                                         </Stack>
                                     ) : (
                                         <Stack>
-                                            <PrimaryButton
+                                            {/* <PrimaryButton
                                                 variant="outlined"
                                                 sx={{
                                                     marginTop: isSmall ? '0px' : '-5px',
@@ -229,7 +229,7 @@ const ProfilePage = () => {
                                                     )}
                                                     <EditSvg />
                                                 </Stack>
-                                            </PrimaryButton>
+                                            </PrimaryButton> */}
                                         </Stack>
                                     )}
                                 </CustomStackFullWidth>

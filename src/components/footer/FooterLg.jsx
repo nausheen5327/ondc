@@ -457,7 +457,7 @@ const FooterLg = (props) => {
                                 }}
                             >
                                 <Link
-                                    href="/terms-and-conditions"
+                                    href="https://policy.nazara.com/terms.html"
                                     component="button"
                                     underline="none"
                                     color="inherit"
@@ -465,7 +465,7 @@ const FooterLg = (props) => {
                                     {t('Terms & Conditions')}
                                 </Link>
                                 <Link
-                                    href="/privacy-policy"
+                                    href="https://policy.nazara.com/privacypolicy.html"
                                     component="button"
                                     underline="none"
                                     color="inherit"

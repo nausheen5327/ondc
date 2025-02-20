@@ -47,14 +47,14 @@ const PlaceOrder = (props) => {
                                         `I agree that placing the order places me under`
                                     )}{' '}
                                     <Link
-                                        href="/terms-and-conditions"
+                                        href="https://policy.nazara.com/terms.html"
                                         style={{ textDecoration: 'underline' }}
                                     >
                                         {t('Terms and Conditions')}
                                     </Link>{' '}
                                     {t('&')}
                                     <Link
-                                        href="/privacy-policy"
+                                        href="https://policy.nazara.com/privacypolicy.html"
                                         style={{ textDecoration: 'underline' }}
                                     >
                                         {t('Privacy Policy')}

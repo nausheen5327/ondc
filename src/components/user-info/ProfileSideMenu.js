@@ -25,52 +25,7 @@ export const tabData = [
         label: 'Orders',
         value: "order",
         img: order,
-    },
-    {
-        id: 3,
-        label: 'Coupons',
-        value: "coupons",
-        img: cupons,
-    },
-    {
-        id: 4,
-        label: 'Wish List',
-        value: 'wishlist',
-        img: wish,
-    },
-    {
-        id: 5,
-        label: 'Wallets',
-        value: "wallets",
-        img: wallet,
-    },
-    {
-        id: 6,
-        label: 'Tickets',
-        value: "ticket",
-        img: loyalty,
-    },
-    {
-        id: 7,
-        label: 'Referral Code',
-        value: 'referral',
-        img: refer,
-
-    },
-    {
-        id: 8,
-        label: 'Inbox',
-        value: 'inbox',
-        img: inboxIcon,
-
-    },
-
-    {
-        id: 9,
-        label: 'Settings',
-        value: 'settings',
-        img: settings,
-    },
+    }
 ]
 const ProfileSideMenu = ({ onClose, sidedrawer, page,setAttributeId }) => {
     let languageDirection = undefined
@@ -89,7 +44,8 @@ const ProfileSideMenu = ({ onClose, sidedrawer, page,setAttributeId }) => {
                 padding="1rem"
                 sx={{
                     borderRadius: "5px",
-                   // height: "100vh",
+                   height: "100vh",
+                   minHeight:'250px',
                     paddingTop: "15px",
                     marginTop: "2px",
                     paddingBottom:"25px"
