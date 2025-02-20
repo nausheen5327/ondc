@@ -10,7 +10,7 @@ const Privacypolicy = dynamic(() =>
 const index = ({ configData }) => {
     return (
         <div className="div">
-            <Meta title={`Privacy Policy - ${configData?.business_name}`} />
+            <Meta title={`Privacy Policy - Nazara`} />
             <CssBaseline />
             <Container
                 maxWidth="lg"

@@ -343,7 +343,7 @@ const HomePage = ({  landingPageData, pathName }) => {
     return (
         <>
             <Meta
-                title={configData?.business_name}
+                title={'ONDC'}
                 ogImage={`${configData?.base_urls?.react_landing_page_images}/${landingPageData?.banner_section_full?.banner_section_img_full}`}
                 pathName={pathName}
             />
