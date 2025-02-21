@@ -10,6 +10,7 @@ import useCancellablePromise from '@/api/cancelRequest'
 import Meta from '../components/Meta'
 import LandingPage from '../components/landingpage'
 import { withAuth } from '@/components/withAuth'
+import { json } from 'react-router-dom'
 
 const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => {
   console.log("==== Component Mount ====")
