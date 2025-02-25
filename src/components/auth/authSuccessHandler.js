@@ -36,6 +36,7 @@ export const useAuthData = () => {
                 },
               }).then((data)=>{
                 dispatch(setIsLoading(false));
+                localStorage.removeItem('addrToBeAdded')
                  fetchDeliveryAddress(data.id)
               }).catch((error)=>{ 
                 dispatch(setIsLoading(false));
@@ -188,7 +189,10 @@ export const useAuthData = () => {
                     lng: address.address.lng,
                   },
                 }
-              ).then(()=>fetchDeliveryAddress());
+              ).then(()=>{
+                fetchDeliveryAddress();
+                localStorage.removeItem('addrToBeUpdated');
+              });
     }
     // Function to fetch both address and cart
     const fetchUserData = () => {

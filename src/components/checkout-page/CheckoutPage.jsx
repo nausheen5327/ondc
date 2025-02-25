@@ -66,6 +66,7 @@ import {
   Typography,
   alpha,
 } from '@mui/material'
+import LoadingScreen from '../CheckoutLoader';
 
 let currentDate = moment().format('YYYY/MM/DD HH:mm')
 let nextday = moment(currentDate).add(1, 'days').format('YYYY/MM/DD')
@@ -123,6 +124,7 @@ const CheckoutPage = () => {
     const cartContext = useSelector(state=>state.cart.cartContext)
     console.log("cartContext", cartContext);
     let currentLatLng = undefined
+    const [initializeOrderLoading, setInitializeOrderLoading] = useState(false);
     const [address, setAddress] = useState(undefined)
     const [paymenMethod, setPaymenMethod] = useState('prepaid')
     const [numberOfDay, setDayNumber] = useState(getDayNumber(today))
@@ -1720,6 +1722,7 @@ useEffect(() => {
 
 
       const confirmOrder = async (items, method) => {
+        setConfirmOrderLoading(true);
         responseRef.current = [];
         const parentOrderIDMap = new Map(
           JSON.parse(getValueFromCookie("parent_and_transaction_id_map"))
@@ -1848,7 +1851,7 @@ useEffect(() => {
       }
 
       const handleSuccess = async () => {
-        // setInitializeOrderLoading(false);
+        setInitializeOrderLoading(false);
         // updateInitLoading(false);
         let checkoutObj = {
           successOrderIds: [],
@@ -1873,7 +1876,7 @@ useEffect(() => {
         setUpdatedCartItems(data);
       }
       const onInitializeOrder = async (message_id) => {
-        // setInitializeOrderLoading(true);
+        setInitializeOrderLoading(true);
         console.log("bhai inside oninitialize order");
         try {
           localStorage.setItem("selectedItems", JSON.stringify(updatedCartItems));
@@ -1889,15 +1892,15 @@ useEffect(() => {
           handleSuccess();
         } catch (err) {
           CustomToaster('error', 'Failed to process order, Please try again')
-        //   setInitializeOrderLoading(false);
-        //   updateInitLoading(false);
+          setInitializeOrderLoading(false);
+          // updateInitLoading(false);
         }
         // eslint-disable-next-line
       };
     
       // use this function to initialize the order
       function onInit(message_id) {
-        // setInitializeOrderLoading(true);
+        setInitializeOrderLoading(true);
         eventTimeOutRef.current.forEach(({ eventSource, timer }) => {
           if (eventSource && typeof eventSource.close === 'function') {
             eventSource.close();
@@ -1938,6 +1941,7 @@ useEffect(() => {
               })
       
               if (responseRef.current.length <= 0) {
+                setInitializeOrderLoading(false);
                 CustomToaster('error', "Cannot fetch details for this product. Please try again!")
                 return
               }
@@ -1967,7 +1971,7 @@ useEffect(() => {
         const items = JSON.parse(JSON.stringify(Object.assign([], itemsList)));
         let fulfillments = updatedCartItems[0]?.message?.quote?.fulfillments
         responseRef.current = [];
-        // setInitializeOrderLoading(true);
+        setInitializeOrderLoading(true);
         console.log("updated Cart itemms", updatedCartItems)
         try {   
           const data = await cancellablePromise(
@@ -2057,7 +2061,7 @@ useEffect(() => {
           const isNACK = data.find((item) => item.error && item.message.ack.status === "NACK");
           if (isNACK) {
             CustomToaster('error',isNACK.error.message)
-            // setInitializeOrderLoading(false);
+            setInitializeOrderLoading(false);
             // updateInitLoading(false);
           } else {
             const parentTransactionIdMap = new Map();
@@ -2084,8 +2088,8 @@ useEffect(() => {
           CustomToaster('error', 'Failed to process order, Please try again')
 
           // CustomToaster('error',err)
-        //   setInitializeOrderLoading(false);
-        //   updateInitLoading(false);
+          setInitializeOrderLoading(false);
+          // updateInitLoading(false);
         }
       };
       function constructQouteObject(cartItems) {
@@ -2121,7 +2125,7 @@ useEffect(() => {
         return true;
       }
       const placeOrder = () => {
-        // setInitializeOrderLoading(true);
+        setInitializeOrderLoading(true);
         // updateInitLoading(true);
         if(!checkCustomerDetails())return;
         let c = cartItems.map((item) => {
@@ -2138,7 +2142,9 @@ useEffect(() => {
     //
 
     // console.log('payment method 123', paymenMethod);
-
+    if (initializeOrderLoading) {
+      return <LoadingScreen message={initializeOrder? "Processing your checkout...":"Confirming your order"} />
+  }
     return (
         <Grid
             container

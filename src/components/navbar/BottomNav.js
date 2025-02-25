@@ -93,6 +93,7 @@ const BottomNav = (props) => {
                     left: 0,
                     right: 0,
                     zIndex: 999,
+                    padding: 0
                 }}
                 elevation={3}
             >
@@ -103,12 +104,16 @@ const BottomNav = (props) => {
                         setValue(newValue)
                     }}
                 >
-                    <Link href="/home">
+                    
                         <MuiBottomNavigationAction
-                            label="Home"
-                            icon={<HomeIcon />}
+                        onClick={()=>router.push('/home')}
+                        icon={
+                            <Badge badgeContent={0} color="error">
+                                <HomeIcon />
+                            </Badge>
+                        }
+                           
                         />
-                    </Link>
 
                     <MuiBottomNavigationAction
                         onClick={() => setOpenWishlistModal(!openWishlistModal)}
@@ -132,15 +137,7 @@ const BottomNav = (props) => {
                         }
                     />
 
-                    <MuiBottomNavigationAction
-                        onClick={() => routeToWishList('inbox')}
-                        // label="Notification"
-                        icon={
-                            <Badge badgeContent={0} color="error">
-                                <ChatIcon />
-                            </Badge>
-                        }
-                    />
+                   
                 </BottomNavigation>
             </Paper>
         </>

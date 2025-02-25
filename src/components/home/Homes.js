@@ -428,7 +428,7 @@ const Homes = () => {
     return (
         <>
              <PushNotificationLayout>
-                <CustomContainer>
+                {query &&<CustomContainer>
                     <CustomStackFullWidth
                         sx={{
                             marginTop: { xs: '60px', md: '130px' },
@@ -446,14 +446,14 @@ const Homes = () => {
                             {t('Find Best Restaurants and Foods')}
                         </Typography>
                     </CustomStackFullWidth>
-                </CustomContainer>
-                <SearchFilterTag
+                </CustomContainer>}
+                {query && <SearchFilterTag
                     sort_by={sort_by}
                     setSort_by={setSort_by}
                     tags={tags}
                     query={query}
                     page={page}
-                />
+                />}
                 {query || page || restaurantType || tags ? (
                     <CustomContainer>
                         <ProductSearchPage

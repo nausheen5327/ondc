@@ -225,7 +225,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
                         variant="contained"
                         startIcon={<LockIcon />}
                         onClick={() => handleOpenAuthModal('sign-in')}
-                        sx={{ borderRadius: '5px' }}
+                        sx={{ borderRadius: '5px',padding:0, width:'100px' }}
                     >
                         Sign In
                     </Button>}
@@ -251,7 +251,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     const handleShowSearch = () => {
 
         return (
-            <Box sx={{ minWidth:'350px', marginInlineEnd: '20px' }}>
+            <Box sx={{ flex:1, marginInlineEnd: '8px' }}>
                 <SearchBox query={query} setOpenSearchBox={setOpenSearchBox} />
             </Box>
         )
@@ -274,20 +274,24 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
                                 direction="row"
                                 justifyContent="space-between"
                             >
-                                <Stack
+                               {!isSmall && <Stack
                                     direction="row"
                                     alignItems="center"
                                     justifyContent="center"
                                     gap="1rem"
                                 >
 
-                                    {!isSmall && (
+                                    
                                         <NavLinks
                                         />
-                                    )}
-                                </Stack>
-                                <Stack direction="row" alignItems="center">
+                                   
+                                </Stack>}
+                                <Stack direction="row" alignItems="center" width={"100%"}>
                                     {handleShowSearch()}
+                                    
+                                </Stack>
+                               {!isSmall&& <Stack direction="row" alignItems="center">
+                                    
                                     <Box
                                         sx={{
                                             display: { xs: 'none', md: 'flex' },
@@ -298,7 +302,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
                                     >
                                         {handleAuthBasedOnRoute()}
                                     </Box>
-                                </Stack>
+                                </Stack>}
                             </CustomStackFullWidth>
                         </Toolbar>
                     </CustomContainer>

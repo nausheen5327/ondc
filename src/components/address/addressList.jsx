@@ -24,12 +24,13 @@ const AddressList = (props) => {
   const router = useRouter();
   console.log("route is..", router);
 
-  const fetchDeliveryAddress = async () => {
+  const fetchDeliveryAddress = async (updatedAddedAddr=null) => {
     // setFetchDeliveryAddressLoading(true);
     try {
       dispatch(setIsLoading(true));
       let data = await getCall("/clientApis/v1/delivery_address");
       if (updatedAddedAddr) {
+        console.log("data from API in fetch delivery address", updatedAddedAddr);
         const findIndex = data.findIndex(
           (item) => item.id === updatedAddedAddr.id
         );
@@ -46,6 +47,8 @@ const AddressList = (props) => {
         }
         // dispatch(setlocation(updatedAddedAddr));
       }
+      console.log("data from API get is", data);
+      localStorage.setItem("addressList", JSON.stringify(data));
       dispatch(setAddressList(data));
       dispatch(setIsLoading(false));
       if(router.pathname==="/")router.push("/home");
@@ -132,7 +135,7 @@ const AddressList = (props) => {
     } else {
       try {
         dispatch(setIsLoading(true));
-        const data = await postCall(
+        const data = postCall(
           `/clientApis/v1/update_delivery_address/${address.id}`,
           {
             descriptor: {
@@ -154,10 +157,12 @@ const AddressList = (props) => {
               lng: address.address.lng,
             },
           }
-        );
-        setUpdatedAddedAddr(data);
-        dispatch(setIsLoading(false));
-        fetchDeliveryAddress();
+        ).then((data)=>{
+          console.log("data from API is ",data);
+          setUpdatedAddedAddr(data);
+          dispatch(setIsLoading(false));
+          fetchDeliveryAddress(data);
+        })
       } catch (err) {
         CustomToaster("error", "Unable to update address");
         dispatch(setIsLoading(false));
@@ -197,7 +202,7 @@ const AddressList = (props) => {
       dispatch(setlocation(data));
       dispatch(setAddressList(addedAddresses));
       localStorage.setItem("location", JSON.stringify(data));
-      localStorage.setItem("addrToBeAdded", JSON.stringify(addedAddresses));
+      localStorage.setItem("addrToBeAdded", JSON.stringify(data));
       localStorage.setItem("addressList", JSON.stringify(addedAddresses));
       const values = { lat: address.address.lat, lng: address.address.lng };
       localStorage.setItem("currentLatLng", JSON.stringify(values));
@@ -209,7 +214,7 @@ const AddressList = (props) => {
     }
     try {
       dispatch(setIsLoading(true));
-      const data = await postCall(`/clientApis/v1/delivery_address`, {
+      const data = postCall(`/clientApis/v1/delivery_address`, {
         descriptor: {
           name: address.descriptor.name.trim(),
           email: address.descriptor.email.trim(),
@@ -228,10 +233,11 @@ const AddressList = (props) => {
           lat: address.address.lat,
           lng: address.address.lng,
         },
-      });
-      dispatch(setIsLoading(false));
-      setUpdatedAddedAddr(data);
-      fetchDeliveryAddress();
+      }).then((data)=>{
+        dispatch(setIsLoading(false));
+        setUpdatedAddedAddr(data);
+        fetchDeliveryAddress(data);
+      })
     } catch (err) {
       CustomToaster("error", "Unable to add delivery address ");
       dispatch(setIsLoading(false));

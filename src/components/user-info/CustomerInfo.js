@@ -3,12 +3,19 @@ import { t } from 'i18next'
 import moment from 'moment'
 import { useSelector } from 'react-redux'
 import { CustomStackFullWidth } from "@/styled-components/CustomStyles.style"
+import { useEffect, useState } from 'react'
 const CustomerInfo = () => {
     const theme = useTheme()
     const { userData } = useSelector((state) => state.user)
-    const { global } = useSelector((state) => state.globalSettings)
-    const customerbaseUrl = global?.base_urls?.customer_image_url
-
+    const [customerData, setCustomerData] = useState(null);
+    useEffect(()=>{
+        let customerInfo = localStorage.getItem('customerInfo');
+        if(customerInfo)
+        {
+            customerInfo = JSON.parse(customerInfo);
+            setCustomerData(customerInfo.customer);
+        }
+    },[])
     return (
         <CustomStackFullWidth
             direction="row"
@@ -41,12 +48,18 @@ const CustomerInfo = () => {
                     {userData?.phone}
                 </Typography>
                 <Typography
-                    fontSize="0.65rem"
+                    fontSize="1rem"
                     fontWeight="400"
                     color={theme.palette.neutral[500]}
                 >
-                    {t('Joined')}{' '}
-                    {moment(userData?.created_at).format('MMM Do YY')}
+                    {customerData?.name}
+                </Typography>
+                <Typography
+                    fontSize="0.8rem"
+                    fontWeight="400"
+                    color={theme.palette.neutral[500]}
+                >
+                    {customerData?.phone}
                 </Typography>
             </CustomStackFullWidth>
         </CustomStackFullWidth>

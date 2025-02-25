@@ -49,6 +49,12 @@ export const menuData = [
         label: 'Profile',
         value: 'profile',
         img: profile,
+    },
+    {
+        id: 2,
+        label: 'My Cart',
+        value: 'My Cart',
+        img: wish,
     }
 ]
 

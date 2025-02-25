@@ -134,7 +134,7 @@ const SearchBox = ({ query,setOpenSearchBox }) => {
     }
 
     return (
-      <Stack>
+      <Stack width={"100%"}>
           <CustomSearchInput
             setInputValue={setInputValue}
             handleSearchResult={handleKeyPress}
