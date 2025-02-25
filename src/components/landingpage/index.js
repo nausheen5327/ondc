@@ -14,6 +14,10 @@ import CookiesConsent from '../CookiesConsent'
 import DiscountBanner from './DiscountBanner'
 import AvailableZoneSection from '@/components/landingpage/AvailableZoneSection'
 import AddressList from '../address/addressList'
+import CouponGrid from './Coupon'
+import BrandSlider from './BrandSlider'
+import Deals from './DealsSection'
+import GiftCardSection from './GiftCardSection'
 
 const LandingPage = ({ global, isAuthenticated }) => {
     console.log("LandingPage render:", { 
@@ -84,32 +88,12 @@ const LandingPage = ({ global, isAuthenticated }) => {
     return (
         <NoSsr>
             <CssBaseline />
-            
-            {/* Address Modal - Only show if authenticated and no location */}
             {isAuthenticated && !location && (
                 <AddressList 
                     openAddressModal={openAddressModal} 
                     setOpenAddressModal={setOpenAddressModal} 
                 />
             )}
-
-            <HeroSection
-                business_name={global?.business_name}
-                banner_section_title={landingPageData?.react_header_title}
-                banner_section_subTitle={landingPageData?.react_header_sub_title}
-                banner_section_image={landingPageData?.react_header_image_full_url}
-                banner_section_image_base_url={landingPageData?.base_urls?.react_header_image_url}
-                handleModalClose={handleModalClose}
-                isLoading={isLoading}
-            />
-
-            <FunFactSection
-                global={global}
-                react_feature={landingPageData?.react_services}
-                isLoading={isLoading}
-                fun_base_url={landingPageData?.base_urls?.react_services_image_url}
-            />
-
             <BannerSection
                 global={global}
                 banner_section_half={landingPageData?.react_promotional_banner}
@@ -117,28 +101,12 @@ const LandingPage = ({ global, isAuthenticated }) => {
                 isLoading={isLoading}
                 promotional_banner_image_url={landingPageData?.base_urls?.react_promotional_banner_image_url}
             />
-
-            {landingPageData?.available_zone_status === 1 && 
-             landingPageData?.available_zone_list?.length > 0 && (
-                <AvailableZoneSection landingPageData={landingPageData} />
-            )}
-
-            <LinkSection
-                self_registration_restaurant={landingPageData?.restaurant_section}
-                self_registration_deliveryMan={landingPageData?.delivery_section}
-                restaurant_registration_image_url={landingPageData?.base_urls?.react_restaurant_section_image_url}
-                isLoading={isLoading}
-                deliveryman_registration_image_url={landingPageData?.base_urls?.react_delivery_section_image_url}
-            />
-
-            {landingPageData?.download_app_section?.react_download_apps_banner_image && (
-                <DiscountBanner
-                    global={global}
-                    discount_banner={landingPageData?.download_app_section?.react_download_apps_banner_image_full_url}
-                    isLoading={isLoading}
-                    discount_banner_url={landingPageData?.base_urls?.react_download_apps_banner_image_url}
-                />
-            )}
+            <BrandSlider brands={landingPageData?.brands}/>
+            <Deals deals={landingPageData?.deals}/>
+            <GiftCardSection giftCards={landingPageData?.giftCards}/>
+            <CouponGrid coupons={landingPageData?.coupons}/>
+            
+            
 
             {(landingPageData?.download_app_section?.react_download_apps_play_store?.react_download_apps_play_store_status === '1' ||
               landingPageData?.download_app_section?.react_download_apps_app_store?.react_download_apps_link_status === '1') && (

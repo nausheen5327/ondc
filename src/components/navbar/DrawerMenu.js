@@ -174,6 +174,7 @@ const DrawerMenu = ({  cartListRefetch }) => {
     )
    
 
+       const categories = useSelector(state => state.globalSettings.categoriesList); // Adjust the path according to your Redux store structure
    
 
     // useEffect(() => {
@@ -187,18 +188,8 @@ const DrawerMenu = ({  cartListRefetch }) => {
     const collapsableMenu = {
         cat: {
             text: 'Categories',
-            items: [],
-            path: '/category',
-        },
-        res: {
-            text: 'Restaurants',
-            items: [],
-            path: '/restaurant',
-        },
-        cuisine: {
-            text: 'Cuisines',
-            items: [],
-            path: '/cuisines',
+            items: categories,
+            path: '/home',
         },
         profile: {
             text: 'Profile',

@@ -1,50 +1,65 @@
-import React from 'react';
-import { 
-  Smartphone, 
-  Pizza, 
-  ShoppingBag, 
-  ShoppingCart, 
-  Gift, 
-  Home 
-} from 'lucide-react';
-import { styled } from '@mui/system'
+import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {  setCategoriesList } from '@/redux/slices/global';
+import { getCallStrapi } from '@/api/MainApi';
+import { CustomToaster } from '@/components/custom-toaster/CustomToaster';
+import styled from '@emotion/styled';
 import styles from './CategoryMenu.module.css';
+import { useRouter } from 'next/router';
 
-const CategoryMenu = () => {
-  const categories = [
-    { icon: <Smartphone size={24} />, name: 'Electronics' },
-    { icon: <Pizza size={24} />, name: 'Food' },
-    { icon: <ShoppingBag size={24} />, name: 'Fashion' },
-    { icon: <ShoppingCart size={24} />, name: 'Grocery' },
-    { icon: <Gift size={24} />, name: 'Gift Card' },
-    { icon: <Home size={24} />, name: 'Decor' },
-  ];
-  const MenuWrapper = styled('div')({
-    width: '100%',
-    backgroundColor: '#1E1E1E',
-    padding: '6px 0',
-    height: '64px',
+const MenuWrapper = styled('div')({
+  width: '100%',
+  backgroundColor: '#1E1E1E',
+  padding: '6px 0',
+  height: '64px',
 });
+
+
+const CategoriesNavigation = ({categories}) => {
+  
+  
+
+  if (!categories?.length) {
+    return null; 
+  }
+
+  const router = useRouter();
+
+  const CategoryItem = ({ category }) => (
+    <button 
+      className={styles.categoryItem}
+      aria-label={`Select ${category.title} category`}
+      onClick={()=>router.push(`/home?category=${category.title}`)}
+    >
+      <div className={styles.iconWrapper}>
+        <img 
+          src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${category.image.url}`} 
+          alt={`${category.title} icon`}
+        />
+      </div>
+      <span className={styles.categoryName}>
+        {category.title}
+      </span>
+    </button>
+  );
+
   return (
     <MenuWrapper>
-    <div className={styles.menuWrapper}>
-      <div className={styles.categoryContainer}>
-        <div className={styles.categoryGrid}>
-          {categories.map((category, index) => (
-            <button key={index} className={styles.categoryItem}>
-              <div className={styles.iconWrapper}>
-                {category.icon}
-              </div>
-              <span className={styles.categoryName}>
-                {category.name}
-              </span>
-            </button>
-          ))}
+      <div className={styles.menuWrapper}>
+        <div className={styles.categoryContainer}>
+          <div className={styles.categoryGrid}>
+            {categories.map((category) => (
+              <CategoryItem 
+                key={category.id || category.title}
+                category={category}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
     </MenuWrapper>
   );
 };
 
-export default CategoryMenu;
+export default CategoriesNavigation;

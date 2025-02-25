@@ -5,11 +5,13 @@ import { setGlobalSettings, setIsLoading } from "@/redux/slices/global"
 import { setAddressList } from '@/redux/slices/customer'
 import { setlocation } from '@/redux/slices/addressData'
 import { setCartList } from '@/redux/slices/cart'
-import { getCall } from '@/api/MainApi'
+import { getCall, getCallStrapi } from '@/api/MainApi'
 import useCancellablePromise from '@/api/cancelRequest'
 import Meta from '../components/Meta'
 import LandingPage from '../components/landingpage'
 import { withAuth } from '@/components/withAuth'
+import { setLandingPageData } from '@/redux/slices/storedData'
+
 import { json } from 'react-router-dom'
 
 const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => {
@@ -32,10 +34,8 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
 
   // First useEffect - initialization
   useEffect(() => {
-      console.log("==== Initialization Effect ====")
       
       const currentToken = localStorage.getItem('token')
-      console.log("Token from localStorage:", !!currentToken)
       setToken(currentToken)
 
       const storedLocation = localStorage.getItem('location')
@@ -43,11 +43,7 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
 
       const storedCartItems = localStorage.getItem('cartItemsPreAuth')
       
-      console.log("Stored data present:", {
-          hasStoredLocation: !!storedLocation,
-          hasStoredUser: !!storedUser,
-          hasStoredCart: !!storedCartItems
-      })
+      
       if(storedCartItems){
         const parsedCartItems = JSON.parse(storedCartItems)
         setCartData(parsedCartItems)
@@ -68,6 +64,10 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
           dispatch(setGlobalSettings(configData))
       } else {
           console.warn("No configData available for global settings")
+      }
+      if(landingPageData)
+      {
+        dispatch(setLandingPageData(landingPageData));
       }
   }, [])
   const fetchDeliveryAddress = async () => {
@@ -130,14 +130,6 @@ const getCartItems = async () => {
 }
   // Token-dependent operations
   useEffect(() => {
-      console.log("==== Token Effect ====")
-      console.log("Current state:", {
-          hasToken: !!token,
-          hasConfigData: !!configData,
-          hasUserData: !!userData,
-          hasLocationData: !!locationData
-      })
-      
       if (token) {
           console.log("Authenticated state - fetching user data")
           fetchDeliveryAddress()
@@ -152,16 +144,7 @@ const getCartItems = async () => {
       }
   }, [])
 
-  // Render validation
-  useEffect(() => {
-      console.log("==== Render Validation ====")
-      console.log("Render state:", {
-          hasToken: !!token,
-          hasConfigData: !!configData,
-          hasLandingPageData: !!landingPageData,
-          isAuthenticated
-      })
-  }, [token, configData, landingPageData, isAuthenticated])
+ 
 
   if (!configData) {
       console.warn("Rendering fallback - configData missing")
@@ -173,7 +156,6 @@ const getCartItems = async () => {
       )
   }
 
-  console.log("Rendering main component")
   return (
       <>
           <Meta
@@ -248,17 +230,42 @@ export async function getServerSideProps(context) {
       }
 
       // Fetch landing page data
-      let landingPageData
+      let landingPageData={
+        banner_section_full: { 
+            banner_section_img_full: "https://source.unsplash.com/random/400x300" 
+        }
+      }
       try {
-          landingPageData = await getCall('/clientApis/v1/landing-page')  // Adjust endpoint as per your API
+          landingPageData['react_promotional_banner'] = await getCallStrapi('/offers')  // Adjust endpoint as per your API
       } catch (error) {
           console.error('Error fetching landing page data:', error)
-          landingPageData = {
-              banner_section_full: { 
-                  banner_section_img_full: "https://source.unsplash.com/random/400x300" 
-              }
-          }
       }
+
+
+      try {
+        landingPageData['deals'] = await getCallStrapi('/coupons')  // Adjust endpoint as per your API
+    } catch (error) {
+        console.error('Error fetching landing page data:', error)
+    }
+
+    try {
+        landingPageData['giftCards'] = await getCallStrapi('/gift-cards')  // Adjust endpoint as per your API
+    } catch (error) {
+        console.error('Error fetching landing page data:', error)
+    }
+
+    try {
+        landingPageData['coupons'] = await getCallStrapi('/site-coupons')  // Adjust endpoint as per your API
+    } catch (error) {
+        console.error('Error fetching landing page data:', error)
+    }
+
+
+    try {
+        landingPageData['brands'] = await getCallStrapi('/brands')  // Adjust endpoint as per your API
+    } catch (error) {
+        console.error('Error fetching landing page data:', error)
+    }
 
       // Handle search query if present
       let searchResults = null

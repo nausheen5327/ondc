@@ -36,11 +36,8 @@ const demoData = [
 ]
 const BannerSection = ({
     banner_section_half,
-    discount_banner,
-    global,
-    isLoading,
-    promotional_banner_image_url,
-}) => {
+    isLoading=false,
+}) => {    
     const { t } = useTranslation()
     const [data, setData] = useState([])
     const [hoverOn, setHoverOn] = useState(false)
@@ -192,6 +189,7 @@ const BannerSection = ({
             },
         ],
     }
+    const [imageError, setImageError] = useState(false);
 
     return (
         <RTL direction={languageDirection}>
@@ -201,38 +199,39 @@ const BannerSection = ({
                         onMouseEnter={() => setHoverOn(true)}
                         onMouseLeave={() => setHoverOn(false)}
                     >
-                        {!isLoading ? (
+                        
                             <SliderCustom
                                 languageDirection={languageDirection}
                                 gap="0px"
                             >
                                 <Slider ref={discountRef} {...settings}>
                                     {banner_section_half?.map((item, index) => {
+                                        const imageUrl = item?.image[0]?.url 
+                                        ? `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${item.image[0].url}`
+                                        : ImageNotFound;
                                         return (
                                             <>
                                                 <Stack
                                                     height={{
-                                                        xs: '131px',
-                                                        sm: '155px',
+                                                        xs: '200px',
+                                                        sm: '350px',
+                                                        md: '200px',
+                                                        lg: '200px',
                                                     }}
                                                     key={index}
                                                     sx={{
                                                         paddingInlineEnd: {
                                                             xs: '12px',
-                                                            sm: '20px',
-                                                            md: '20px',
+                                                            sm: '12px',
+                                                            md: '12px',
+                                                            md: '12px',
                                                         },
                                                     }}
                                                 >
                                                     <Card
                                                         elevation={0}
                                                         sx={{
-                                                            backgroundImage: `url(${typeof item.image_full_url ===
-                                                                'string'
-                                                                ? `${item?.image_full_url}`
-                                                                : ImageNotFound.src
-                                                                })`,
-                                                            height: '100%',
+                                                            backgroundImage: `url(${imageError ? ImageNotFound : imageUrl})`,                                                            height: '100%',
                                                             width: "100%",
                                                             backgroundSize: 'cover',
                                                             backgroundRepeat: 'no-repeat',
@@ -265,7 +264,7 @@ const BannerSection = ({
                                                                         'capitalize',
                                                                 }}
                                                             >
-                                                                {item.title}
+                                                                {''}
                                                             </LandingPageTypography>
                                                             <LandingPageTypography
                                                                 color={
@@ -284,7 +283,7 @@ const BannerSection = ({
                                                                 fontSize="16px"
                                                             >
                                                                 {
-                                                                    item.description
+                                                                    ''
                                                                 }
                                                             </LandingPageTypography>
                                                         </Stack>
@@ -295,25 +294,7 @@ const BannerSection = ({
                                     })}
                                 </Slider>
                             </SliderCustom>
-                        ) : (
-                            <Slider ref={discountRef} {...settings}>
-                                {[...Array(3)].map((item) => {
-                                    return (
-                                        <Stack
-                                            maxWidth="375px"
-                                            width="100%"
-                                            height="155px"
-                                        >
-                                            <Skeleton
-                                                variant="rectangular"
-                                                width="100%"
-                                                height="200px"
-                                            />
-                                        </Stack>
-                                    )
-                                })}
-                            </Slider>
-                        )}
+                       
                     </CustomStackFullWidth>
                 </Stack>
             </CustomContainer>
