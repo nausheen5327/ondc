@@ -123,7 +123,7 @@ const SecondNavbar = ({ isSticky, cartListRefetch }) => {
     }
 
     let location = useSelector(state => state.addressData.location);
-    console.log("location in second nav")
+    // console.log("location in second nav")
 
     const customerbaseUrl = global?.base_urls?.customer_image_url
     const handleClick = (value) => {
