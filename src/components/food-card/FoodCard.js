@@ -88,7 +88,7 @@ const FoodCard = ({
     
     // Usage example
     const productInfo = formatProductDetails(product);
-    console.log(product,"info product...");
+    // console.log(product,"info product...");
 
     const [openModal, setOpenModal] = React.useState(false)
     const [openAddressModalAlert, setOpenAddressModalAlert] = useState(false)

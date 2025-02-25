@@ -335,7 +335,7 @@ const SignInPage = ({
         }
     }
     const handleClick = () => {
-        window.open('/terms-and-conditions')
+        window.open('https://policy.nazara.com/terms.html')
     }
    
 
@@ -431,8 +431,30 @@ const SignInPage = ({
     }
     console.log(state.status,"test");
     const loginView = () => {
+        const handleCloseAuth=()=>{
+            console.log("helloooooooooooooooooooooooooooooo")
+            dispatch(setAuthModalOpen(false));
+        }
         return (
             <LoginWrapper direction={{ xs: 'column', md: 'row' }}>
+                 <button 
+                onClick={handleClose}
+                style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    padding: '8px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    color: 'white',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    zIndex: 1
+                }}
+                aria-label="Close"
+            >
+                ✕
+            </button>
                 <Stack
                     sx={{
                         flexGrow: { xs: 'none', sm: 'none', md: '1' },

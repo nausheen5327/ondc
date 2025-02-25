@@ -7,7 +7,16 @@ import { getCall } from "./MainApi";
 export const getAllProductRequest = (params) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const data = await getCall(`/clientApis/v2/search`, params);
+            let location = localStorage.getItem('location');
+            let latitude = null;
+            let longitude = null;
+            if(location)
+            {
+                latitude = JSON.parse(location).address.lat;
+                longitude = JSON.parse(location).address.lng;
+            }
+            console.log("inside search API", latitude, longitude);
+            const data = await getCall(`/clientApis/v2/search`, {...params,lat:`${latitude}`,lon:`${longitude}`});
             return resolve(data.response);
         } catch (err) {
             return reject(err);

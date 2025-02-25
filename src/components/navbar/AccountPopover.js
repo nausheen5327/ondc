@@ -34,6 +34,8 @@ import { CustomToaster } from '../custom-toaster/CustomToaster'
 import { removeCookie } from '@/utils/cookies'
 import { setlocation } from '@/redux/slices/addressData'
 import { setIsLoading } from '@/redux/slices/global'
+import { getToken } from '../checkout-page/functions/getGuestUserId'
+import { LogIn } from 'lucide-react'
 
 export const menuData = [
     {
@@ -49,53 +51,27 @@ export const menuData = [
         img: profile,
     },
     {
-        id: 3,
-        label: 'Coupons',
-        value: 'coupons',
-        img: cupons,
-    },
-    {
-        id: 4,
-        label: 'Wallets',
-        value: 'wallets',
-        img: wallet,
-    },
-    {
-        id: 5,
-        label: 'Loyalty Points',
-        value: 'loyalty',
-        img: loyalty,
-    },
-    {
-        id: 6,
-        label: 'Referral Code',
-        value: 'referral',
-        img: refer,
-    },
-    {
-        id: 7,
-        label: 'Wish List',
-        value: 'wishlist',
+        id: 2,
+        label: 'My Cart',
+        value: 'My Cart',
         img: wish,
-    },
-    { id: 8, label: 'Inbox', value: 'inbox' },
-    {
-        id: 9,
-        label: 'Settings',
-        value: 'settings',
-        img: settings,
-    },
+    }
 ]
 
 export const AccountPopover = (props) => {
     const [openModal, setOpenModal] = useState(false)
+    const [authModalOpen, setAuthModalOpen] = useState(false)
     const [isLogoutLoading, setIsLogoutLoading] = useState(false)
     const [languageDirection, setLanguageDirection] = useState('ltr')
     const { global } = useSelector((state) => state.globalSettings)
     const router = useRouter()
     const { t } = useTranslation()
+    const [forSignup, setForSignup] = useState('')
+    const [modalFor, setModalFor] = useState('sign-in')
     const { cartListRefetch, anchorEl, onClose, open, ...other } = props
     const dispatch = useDispatch()
+        const token = getToken()
+    
     const handleLogout = async () => {
         setIsLogoutLoading(true)
         try {
@@ -137,6 +113,11 @@ export const AccountPopover = (props) => {
         }
     }, [])
 
+    const handleOpenAuthModal = (page) => {
+        setModalFor(page)
+        setOpenModal(true)
+        setForSignup(page)
+    }
     return (
         <>
             <Popover
@@ -152,7 +133,7 @@ export const AccountPopover = (props) => {
                 transitionDuration={5}
                 {...other}
             >
-                <Box
+                {token && <Box
                     sx={{
                         alignItems: 'center',
                         p: 1,
@@ -198,8 +179,8 @@ export const AccountPopover = (props) => {
                             }
                         })}
                     </MenuList>
-                </Box>
-                <Divider />
+                </Box>}
+                {token && <Divider />}
                 <Box
                     sx={{ my: 1, cursor: 'pointer' }}
                     alignItems={languageDirection === 'rtl' ? 'end' : 'start'}
@@ -230,7 +211,7 @@ export const AccountPopover = (props) => {
                             }
                         />
                     </MenuItem>
-                </Box>
+                </Box> 
             </Popover>
             <CustomDialogConfirm
                 isLoading={isLogoutLoading}
@@ -239,6 +220,15 @@ export const AccountPopover = (props) => {
                 onClose={() => setOpenModal(false)}
                 onSuccess={handleLogout}
             />
+            {authModalOpen && (
+                <AuthModal
+                    open={authModalOpen}
+                    handleClose={()=>setAuthModalOpen(false)}
+                    forSignup={forSignup}
+                    modalFor={modalFor}
+                    setModalFor={setModalFor}
+                />
+            )}
         </>
     )
 }

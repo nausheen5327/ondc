@@ -12,6 +12,8 @@ import LandingPage from '../components/landingpage'
 import { withAuth } from '@/components/withAuth'
 import { setLandingPageData } from '@/redux/slices/storedData'
 
+import { json } from 'react-router-dom'
+
 const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => {
   console.log("==== Component Mount ====")
   console.log("Initial props:", { 

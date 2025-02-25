@@ -12,7 +12,7 @@ export const useAuthData = () => {
     const dispatch = useDispatch();
     const { cancellablePromise } = useCancellablePromise();
     const location = useSelector(state=>state.addressData.location);
-    const postUserLocation = async()=>{
+    const postUserLocation = async(location)=>{
        
               dispatch(setIsLoading(true));
               postCall(`/clientApis/v1/delivery_address`, {
@@ -36,6 +36,7 @@ export const useAuthData = () => {
                 },
               }).then((data)=>{
                 dispatch(setIsLoading(false));
+                localStorage.removeItem('addrToBeAdded')
                  fetchDeliveryAddress(data.id)
               }).catch((error)=>{ 
                 dispatch(setIsLoading(false));
@@ -164,14 +165,49 @@ export const useAuthData = () => {
             console.error('Error syncing pre-auth cart:', error);
           }
     }
+
+    const updateUserAddress = async(address) =>{
+      postCall(
+                `/clientApis/v1/update_delivery_address/${address.id}`,
+                {
+                  descriptor: {
+                    name: address.descriptor.name.trim(),
+                    email: address.descriptor.email.trim(),
+                    phone: address.descriptor.phone.trim(),
+                  },
+                  address: {
+                    areaCode: address.address.areaCode.trim(),
+                    building: address.address.building.trim(),
+                    city: address.address.city.trim(),
+                    country: "IND",
+                    door: address.address.building.trim(),
+                    building: address.address.building.trim(),
+                    state: address.address.state.trim(),
+                    street: address.address.street.trim(),
+                    tag: address.address.tag.trim(),
+                    lat: address.address.lat,
+                    lng: address.address.lng,
+                  },
+                }
+              ).then(()=>{
+                fetchDeliveryAddress();
+                localStorage.removeItem('addrToBeUpdated');
+              });
+    }
     // Function to fetch both address and cart
     const fetchUserData = () => {
         const token = localStorage.getItem('token');
         let cartItemsPreAuth = localStorage.getItem('cartItemsPreAuth');
+        let addrToBeUpdated = localStorage.getItem('addrToBeUpdated');
+        let addrToBeAdded = localStorage.getItem('addrToBeAdded');
         console.log('verified 1',token);
         if (token) {
-            if(!location?.id) {
-               postUserLocation();
+            if(addrToBeUpdated)
+            {
+              updateUserAddress(JSON.parse(addrToBeUpdated));
+            }
+            if(addrToBeAdded) {
+               postUserLocation(JSON.parse(addrToBeAdded));
             }else{
               fetchDeliveryAddress();
             }

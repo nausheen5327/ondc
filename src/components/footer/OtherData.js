@@ -2,12 +2,12 @@ export const OtherData = [
     {
         name: 'Privacy Policy',
         value: 'privacy-policy',
-        link: '/privacy-policy',
+        link: 'https://policy.nazara.com/privacypolicy.html',
     },
     {
         name: 'Term & Conditions',
         value: 'term-&-Conditions',
-        link: '/terms-and-conditions',
+        link: 'https://policy.nazara.com/terms.html',
     },
     // {
     //     name: 'Refund Policy',

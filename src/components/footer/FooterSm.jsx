@@ -210,7 +210,7 @@ const FooterSm = (props) => {
                                             >
                                                 Others
                                             </Typography>
-                                            <Link href="/terms-and-conditions">
+                                            <Link href="https://policy.nazara.com/terms.html">
                                                 <Typography
                                                     underline="none"
                                                     color="#000000"
@@ -218,7 +218,7 @@ const FooterSm = (props) => {
                                                     {t('Terms & Conditions')}
                                                 </Typography>
                                             </Link>
-                                            <Link href="/privacy-policy">
+                                            <Link href="https://policy.nazara.com/privacypolicy.html">
                                                 <Typography
                                                     underline="none"
                                                     color="#000000"
