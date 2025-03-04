@@ -11,13 +11,8 @@ import { capitalize } from '../../utils/capitalize'
 import CustomContainer from "../container";
 
 const FooterBottom = (props) => {
-    const { global } = useSelector((state) => state.globalSettings)
 
     const { t } = useTranslation()
-    const handleClick = (href) => {
-        Router.push(href)
-    }
-    const languageDirection = 'ltr'
     return (
         <CustomStackFullWidth py="1.5rem">
             <CustomContainer >
@@ -36,7 +31,7 @@ const FooterBottom = (props) => {
                         color="whiteContainer.main"
                     >
                         {t("Copyright")} &#9400;{'  '}
-                        {global?.footer_text || ''}
+                        {new Date().getFullYear()}
                     </CustomColouredTypography>
 
                 </CustomStackFullWidth>

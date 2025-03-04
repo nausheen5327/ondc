@@ -39,36 +39,28 @@ const FoodCard = ({
     const theme = useTheme()
     const dispatch = useDispatch()
     const formatProductDetails = (data) => {
-        const {
-            item_details: {
-                descriptor: {
-                    name: itemName,
-                    short_desc: shortDescription,
-                    long_desc: longDescription,
-                    symbol: mainImage,
-                    images: itemImages
-                },
-                price: {
-                    currency,
-                    value: priceValue
-                },
-                quantity: {
-                    unitized: { measure: { unit, value: quantity } }
-                }
-            },
-            provider_details: {
-                descriptor: {
-                    name: providerName,
-                    long_desc: providerDescription,
-                    symbol: providerLogo
-                },
-                "@ondc/org/fssai_license_no": licenseNumber
-            },
-            // location_details: {
-            //     address: { city, state, street, area_code }
-            // }
-        } = data;
-    
+        const itemName = data?.item_details?.descriptor?.name || '';
+        const shortDescription = data?.item_details?.descriptor?.short_desc || '';
+        const longDescription = data?.item_details?.descriptor?.long_desc || '';
+        const mainImage = data?.item_details?.descriptor?.symbol || '';
+        const itemImages = data?.item_details?.descriptor?.images || [];
+        const currency = data?.item_details?.price?.currency || '';
+        const priceValue = data?.item_details?.price?.value || 0;
+        
+        // Safely access the quantity properties with fallbacks
+        let quantity = '';
+        let unit = '';
+        
+        if (data?.item_details?.quantity?.unitized?.measure) {
+            unit = data.item_details.quantity.unitized.measure.unit || '';
+            quantity = data.item_details.quantity.unitized.measure.value || '';
+        }
+        
+        const providerName = data?.provider_details?.descriptor?.name || '';
+        const providerDescription = data?.provider_details?.descriptor?.long_desc || '';
+        const providerLogo = data?.provider_details?.descriptor?.symbol || '';
+        const licenseNumber = data?.provider_details?.["@ondc/org/fssai_license_no"] || '';
+        
         return {
             itemName,
             shortDescription,
@@ -76,13 +68,12 @@ const FoodCard = ({
             mainImage,
             itemImages,
             price: `${currency} ${priceValue}`,
-            quantity: `${quantity} ${unit}`,
+            quantity: `${quantity} ${unit}`.trim(),
             providerName,
             providerDescription,
             providerLogo,
             licenseNumber,
-            // location: `${street}, ${city}, ${state} - ${area_code}`,
-            discount:0
+            discount: 0
         };
     };
     

@@ -205,7 +205,7 @@ const Navigation = () => {
                     
                     location={userLocation}
                 />
-                {isSmall && (
+                {isSmall && (router.pathname==='/' || router.pathname==='/home') &&  (
                     <CategoryMenuWrapper>
                         <CategoryMenu categories={categories} />
                     </CategoryMenuWrapper>

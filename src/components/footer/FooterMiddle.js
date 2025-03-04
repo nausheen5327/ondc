@@ -6,15 +6,10 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import CustomContainer from '../container'
-import AppLinks from '../landingpage/AppLinks'
-import LogoSide from '../navbar/second-navbar/LogoSide'
-import ContactInfo, { CustomSkelenton } from './ContactInfo'
 import { OtherData } from './OtherData'
-import { QuickLinkData } from './QuickLinkData'
-import { QuickLinkData1 } from './QuickLinkData1'
 import RouteLinks from './RouteLinks'
 
-const FooterMiddle = ({ landingPageData, isLoading }) => {
+const FooterMiddle = () => {
     const { global } = useSelector((state) => state.globalSettings)
     const { token } = useSelector((state) => state.userToken)
     const { t } = useTranslation()
@@ -25,7 +20,6 @@ const FooterMiddle = ({ landingPageData, isLoading }) => {
     const theme = useTheme()
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
     const isXSmall = useMediaQuery(theme.breakpoints.down('md'))
-    const businessLogo = global?.logo_full_url
     return (
         <CustomStackFullWidth
             alignItems="center"

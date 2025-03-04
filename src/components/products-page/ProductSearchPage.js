@@ -10,7 +10,6 @@ import { CustomToaster } from '../custom-toaster/CustomToaster'
 import { removeSpecialCharacters } from '@/utils/customFunctions'
 
 const ProductSearchPage = ({
-    configData,
     query,
     page,
     restaurantType,

@@ -17,9 +17,7 @@ const CustomLogo = ({ logoImg, atlText, height, width }) => {
     }
 
     const handleClick = () => {
-        const shouldRedirectToHome =
-            zoneid && currentLocation?.lat && currentLocation?.lng
-        const newPath = shouldRedirectToHome ? '/home' : '/'
+        const newPath =  '/'
 
         router.push(newPath, undefined, { shallow: true }).then(() => {
             window.scrollTo(0, 0)

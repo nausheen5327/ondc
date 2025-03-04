@@ -158,7 +158,7 @@ const theme = useTheme();
           style={styles.imageList}
           className="image-list"
         >
-          {brands.map((brand,index) => (
+          {brands?.map((brand,index) => (
             <div 
               key={index}
               style={styles.imageCard}

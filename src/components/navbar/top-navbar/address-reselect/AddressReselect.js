@@ -15,7 +15,6 @@ import { useGeolocated } from "react-geolocated";
 import { setOpenMapDrawer, setUserLocationUpdate } from "@/redux/slices/global"
 import MapModal from "@/components/landingpage/google-map/MapModal";
 import AddressList from '@/components/address/addressList'
-import GuestAddressList from '@/components/address/guestAddress'
 export const AddressTypographyGray = styled(Typography)(({ theme }) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -137,7 +136,6 @@ const AddressReselect = ({ location }) => {
                 coords={coords}
 
             /> */}
-            {/* {openGuestAddr && <GuestAddressList openAddressModal={openGuestAddr} setOpenAddressModal={handleCloseGuest}/>} */}
             {open && <AddressList openAddressModal={open} setOpenAddressModal={handleClose}/>
 }
         </>

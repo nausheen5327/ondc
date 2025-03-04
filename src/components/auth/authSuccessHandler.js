@@ -4,7 +4,7 @@ import { setIsLoading } from '@/redux/slices/global';
 import { setAddressList } from '@/redux/slices/customer';
 import { setlocation } from '@/redux/slices/addressData';
 import { setCartList } from '@/redux/slices/cart';
-import { getCall, postCall } from '@/api/MainApi';
+import { deleteCall, getCall, postCall } from '@/api/MainApi';
 import useCancellablePromise from '@/api/cancelRequest';
 import { CustomToaster } from '../custom-toaster/CustomToaster';
 
@@ -194,12 +194,30 @@ export const useAuthData = () => {
                 localStorage.removeItem('addrToBeUpdated');
               });
     }
+
+
+    const deleteCartItem = async (itemId) => {
+      // dispatch(setIsLoading(true));
+      // const user = JSON.parse(getValueFromCookie("user"));
+      let user  = localStorage.getItem("user");
+      if(user)
+      {
+        user = JSON.parse(user)
+        const url = `/clientApis/v2/cart/${user}/${itemId}`;
+        const res = await deleteCall(url);
+        // dispatch(setIsLoading(false));
+        // getCartItems();
+      }
+    };
+
+
     // Function to fetch both address and cart
     const fetchUserData = () => {
         const token = localStorage.getItem('token');
         let cartItemsPreAuth = localStorage.getItem('cartItemsPreAuth');
         let addrToBeUpdated = localStorage.getItem('addrToBeUpdated');
         let addrToBeAdded = localStorage.getItem('addrToBeAdded');
+        let orderNowItem = localStorage.getItem('orderNowItem');
         console.log('verified 1',token);
         if (token) {
             if(addrToBeUpdated)
@@ -211,7 +229,18 @@ export const useAuthData = () => {
             }else{
               fetchDeliveryAddress();
             }
-            if(cartItemsPreAuth)
+            if (orderNowItem) {
+              orderNowItem = JSON.parse(orderNowItem);
+              cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
+              let orderItem = cartItemsPreAuth.filter(cartItem => cartItem.id === orderNowItem);
+              deleteCartItem().then(() => {
+                  postCartItems(orderItem[0]).then(() => {
+                      fetchCartItems();
+                      localStorage.removeItem('orderNowItem');
+                  });
+              });
+          } 
+            else if(cartItemsPreAuth)
             {
                 cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
                 if(cartItemsPreAuth?.length)

@@ -22,6 +22,15 @@ const apiStrapi = axios.create({
   withCredentials: true // Important for CORS
 });
 
+const apiStrapiSearch = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_STRAPI_SEARCH_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  withCredentials: true // Important for CORS
+});
+
 // Add request interceptor
 api.interceptors.request.use(
   config => {
@@ -108,6 +117,18 @@ export function getCallStrapi(url, params = null) {
       console.log(`cURL: curl -X GET "${fullUrl}" ${headerString}`);
 
       const response = await apiStrapi.get(url, { params });
+      return resolve(response.data);
+    } catch (error) {
+      handleApiError(error);
+      return reject(error);
+    }
+  });
+}
+
+export function getCallStrapiSearch(url, params = null) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await apiStrapiSearch.get(url, { params });
       return resolve(response.data);
     } catch (error) {
       handleApiError(error);

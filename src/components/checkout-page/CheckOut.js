@@ -69,6 +69,8 @@ import { setAuthModalOpen } from '../../redux/slices/global';
 import { CustomToaster } from '../custom-toaster/CustomToaster';
 import { setCartContext, setCartList } from '@/redux/slices/cart';
 import LoadingScreen from '../CheckoutLoader';
+import AuthModal from '../auth';
+import { useRouter } from 'next/router';
 
   
 const CheckOut = () => {
@@ -81,11 +83,23 @@ const CheckOut = () => {
     const cartContext = useSelector(state => state.cart.cartContext);
     const [isLoading, setIsLoading] = useState(true)
     const [isProcessing, setIsProcessing] = useState(false)
+    const router = useRouter();
     
+
+     // Auth modal state
+     const [authModalOpen, setAuthModalOpen] = useState(false)
+     const [modalFor, setModalFor] = useState('sign-in')
+ 
+     const handleCloseAuthModal = () => {
+         setAuthModalOpen(false);
+         router.push('/home');
+     }
+
     const initializeCheckout = async () => {
         if (!token) {
-            dispatch(setAuthModalOpen(true))
-            setIsLoading(false)
+            setAuthModalOpen(true)
+            setIsLoading(false);
+            setIsProcessing(false);
             return
         }
         
@@ -121,16 +135,40 @@ const CheckOut = () => {
           initializeCheckout()
         
         
-    }, [])
+    }, [token])
+    console.log("isloading kya hai...",isLoading, isProcessing, isQuoteComplete)
+    if (token && ( isLoading || isProcessing || !isQuoteComplete)) {
+        return (
+            <>
+                <LoadingScreen message={isProcessing ? "Processing your checkout..." : "Loading your order details..."} />
+            </>
+        )
+    }
     
     if (!token) {
-        return null
-    }
-    if (isLoading || isProcessing || !isQuoteComplete) {
-        return <LoadingScreen message={isProcessing ? "Processing your checkout..." : "Loading your order details..."} />
+        return (
+            <AuthModal
+                open={authModalOpen}
+                handleClose={handleCloseAuthModal}
+                modalFor={modalFor}
+                setModalFor={setModalFor}
+            />
+        )
     }
     
-    return <CheckoutPage />
+    return (
+        <>
+            {authModalOpen && (
+                <AuthModal
+                    open={authModalOpen}
+                    handleClose={handleCloseAuthModal}
+                    modalFor={modalFor}
+                    setModalFor={setModalFor}
+                />
+            )}
+            <CheckoutPage />
+        </>
+    )
 }
 
 export default CheckOut;

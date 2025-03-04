@@ -456,11 +456,9 @@ const FoodDetailModal = ({
       };
 
     const handleOrderNow=()=>{
-        console.log("order now flow",cartItems,modalData[0])
         let isPresentInCart = cartItems.filter(cartItem=> cartItem.item.id === modalData[0].id)
-        console.log(" order now flow isPresentInCart",isPresentInCart)
+        localStorage.setItem("orderNowItem", modalData[0].id);
         if(isPresentInCart.length<1 ){
-            console.log("order now flow, adding to cart")
             addToCart(true);
         }else{
             handleModalClose();
