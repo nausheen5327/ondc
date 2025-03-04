@@ -55,10 +55,11 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
   useEffect(() => {
     console.log("location selection", location);
     
-    if (location && token) {
-      setSelectedAddressId(location.id);
-    }else{
-      setSelectedAddressId(location.updatedAt);
+    if (location) {
+      if(token)
+      {
+        setSelectedAddressId(location.id);
+      }else setSelectedAddressId(location.updatedAt);
     }
   }, [location]);
 
