@@ -50,10 +50,15 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
   });
   const [customTag, setCustomTag] = useState("");
   const [formErrors, setFormErrors] = useState({});
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (location) {
+    console.log("location selection", location);
+    
+    if (location && token) {
       setSelectedAddressId(location.id);
+    }else{
+      setSelectedAddressId(location.updatedAt);
     }
   }, [location]);
 
@@ -207,15 +212,38 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
 
   return (
     <div
-      style={{
-        marginTop: "16px",
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      height: "90%", // Take full height of parent
+      position: "relative", // For absolute positioning of children
+    }}
+    className="containerBox"
+  >
+      <RTL direction="ltr">
+      <div style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
+        backgroundColor: theme.palette.background.default,
+        paddingTop: "16px",
+        paddingBottom: "8px"
+      }}>
+        <h4 style={{
+          color: "white",
+          textAlign: "center",
+          margin: 0
+        }}>Select Address</h4>
+      </div>
+      <div style={{
+        overflowY: "auto",
+        flex: 1,
         display: "flex",
         flexDirection: "column",
         gap: "16px",
-      }}
-      className="containerBox"
-    >
-      <RTL direction="ltr">
+        paddingTop: "8px",
+        maxHeight: "100%" // Adjust based on your layout needs
+      }}>
       {addresses.length>0 && addresses.map((address) => (
         <Card
           key={address.id}
@@ -230,13 +258,13 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
                 ? `2px solid ${theme.palette.primary.main}`
                 : "1px solid #e5e7eb",
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-            flexWrap: "wrap",
+            // flexWrap: "wrap",
           }}
           onClick={() => handleSelectAddress(address)}
         >
           <div style={{ display: "flex", flexDirection: "row" }}>
             <Radio
-              checked={selectedAddressId === address.id}
+              checked={token ?selectedAddressId === address.id : selectedAddressId === address.updatedAt}
               onChange={() => handleSelectAddress(address)}
               value={address.id}
               style={{ marginBottom: "8px" }}
@@ -282,14 +310,14 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
           </div>
         </Card>
       ))}
-
+</div>
      {addresses.length>0 && <Button
         variant="contained"
         color="primary"
         onClick={handleAddAddress}
         style={{ width: "100%", marginTop: "16px" }}
       >
-        Add Address
+        Add New Address
       </Button>}
 
       {/* Dialog for editing or adding an address */}

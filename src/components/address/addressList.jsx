@@ -260,7 +260,7 @@ const AddressList = (props) => {
   return (
     <CustomModal
       openModal={openAddressModal}
-      bgColor={theme.palette.customColor.ten}
+      // bgColor={theme.palette.customColor.ten}
       closeButton={false}
       disable
       maxWidth={isSmall ? "350px" : "450px"}
