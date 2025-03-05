@@ -220,10 +220,10 @@ export const useAuthData = () => {
         let orderNowItem = localStorage.getItem('orderNowItem');
         console.log('verified 1',token);
         if (token) {
-            if(addrToBeUpdated)
-            {
-              updateUserAddress(JSON.parse(addrToBeUpdated));
-            }
+            // if(addrToBeUpdated)
+            // {
+            //   postUserLocation(JSON.parse(addrToBeUpdated));
+            // }
             if(addrToBeAdded) {
                postUserLocation(JSON.parse(addrToBeAdded));
             }else{

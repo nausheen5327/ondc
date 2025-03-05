@@ -94,7 +94,7 @@ const LandingPage = ({ global, isAuthenticated }) => {
                     setOpenAddressModal={setOpenAddressModal} 
                 />
             )}
-            {/* <BannerSection
+            <BannerSection
                 global={global}
                 banner_section_half={landingPageData?.react_promotional_banner}
                 discount_banner={landingPageData?.discount_banner}
@@ -105,7 +105,7 @@ const LandingPage = ({ global, isAuthenticated }) => {
             <Deals deals={landingPageData?.deals}/>
             <GiftCardSection giftCards={landingPageData?.giftCards}/>
             <CouponGrid coupons={landingPageData?.coupons}/>
-             */}
+            
             
 
             {/* {(landingPageData?.download_app_section?.react_download_apps_play_store?.react_download_apps_play_store_status === '1' ||

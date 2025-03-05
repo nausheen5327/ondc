@@ -115,7 +115,7 @@ const AddressList = (props) => {
       // Update localStorage
       localStorage.setItem("location", JSON.stringify(data));
       localStorage.setItem("addressList", JSON.stringify(updatedAddresses));
-      localStorage.setItem("addrToBeUpdated", JSON.stringify({
+      localStorage.setItem("addrToBeAdded", JSON.stringify({
         id: address.id,
         ...data,
       }));

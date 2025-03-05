@@ -31,7 +31,7 @@ import CategoryMenu from './category-navbar.js'
 import { Box, styled } from '@mui/system'
 import { usePathname } from 'next/navigation'
 import { CustomToaster } from '../custom-toaster/CustomToaster'
-import { getCallStrapi } from '@/api/MainApi'
+import { getCallStrapi, getCallTest } from '@/api/MainApi'
 
 const Navigation = () => {
     // const SecondNavbar = dynamic(() => import('./second-navbar/SecondNavbar'), {
@@ -51,7 +51,7 @@ const Navigation = () => {
   
     const fetchCategories = async () => {
       try {
-        const response = await getCallStrapi('/categories');
+        const response = await getCallTest('/nodeStrapi/strapi/categories');
         dispatch(setCategoriesList(response));
       } catch (error) {
         CustomToaster('error', "Please check your internet connection");

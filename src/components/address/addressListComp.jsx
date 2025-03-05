@@ -12,12 +12,14 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  IconButton,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import MapPointer from "../placePickerMap/placePickerMap";
 import PlacePickerMap from "../placePickerMap/placePickerMap";
 import { useSelector } from "react-redux";
 import { RTL } from "../RTL/RTL";
+import { EditIcon } from "lucide-react";
 const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddAddress }) => {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -56,7 +58,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
     console.log("location selection", location);
     
     if (location) {
-      if(token)
+      if(location.id)
       {
         setSelectedAddressId(location.id);
       }else setSelectedAddressId(location.updatedAt);
@@ -259,13 +261,30 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
                 ? `2px solid ${theme.palette.primary.main}`
                 : "1px solid #e5e7eb",
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+            position: "relative",
             // flexWrap: "wrap",
           }}
           onClick={() => handleSelectAddress(address)}
         >
+          <IconButton
+            size="small"
+            color="primary"
+            style={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              zIndex: 2
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEditAddress(address);
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <Radio
-              checked={token ?selectedAddressId === address.id : selectedAddressId === address.updatedAt}
+              checked={address.id ?selectedAddressId === address.id : selectedAddressId === address.updatedAt}
               onChange={() => handleSelectAddress(address)}
               value={address.id}
               style={{ marginBottom: "8px" }}
@@ -289,7 +308,7 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
               </Typography>
             </CardContent>
           </div>
-          <div
+          {/* <div
             style={{
               flexBasis: "100%",
               display: "flex",
@@ -308,14 +327,15 @@ const UserAddressList = ({ addresses, onUpdateAddresses, onSelectAddress, onAddA
             >
               Edit
             </Button>
-          </div>
+          </div> */}
         </Card>
       ))}
 </div>
-     {addresses.length>0 && <Button
+     {addresses.length>0 &&  <Button
         variant="contained"
         color="primary"
         onClick={handleAddAddress}
+        disabled={(!token && addresses.length>=1)? true: false}
         style={{ width: "100%", marginTop: "16px" }}
       >
         Add New Address

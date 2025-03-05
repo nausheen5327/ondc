@@ -55,7 +55,7 @@ const DealsComponent = ({ title, image }) => (
     height:'180px'
   }}>
     <img 
-      src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${image.url}`}
+      src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${image[0].url}`}
       alt={title}
       style={{
         width: '100%',
@@ -67,6 +67,7 @@ const DealsComponent = ({ title, image }) => (
 );
 
 const Deals = ({deals}) => {
+  console.log("deals are",deals);
   
   React.useEffect(() => {
     const style = document.createElement('style');

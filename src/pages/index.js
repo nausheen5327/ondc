@@ -5,7 +5,7 @@ import { setGlobalSettings, setIsLoading } from "@/redux/slices/global"
 import { setAddressList } from '@/redux/slices/customer'
 import { setlocation } from '@/redux/slices/addressData'
 import { setCartList } from '@/redux/slices/cart'
-import { getCall, getCallStrapi } from '@/api/MainApi'
+import { getCall, getCallTest } from '@/api/MainApi'
 import useCancellablePromise from '@/api/cancelRequest'
 import Meta from '../components/Meta'
 import LandingPage from '../components/landingpage'
@@ -236,33 +236,33 @@ export async function getServerSideProps(context) {
         }
       }
       try {
-          landingPageData['react_promotional_banner'] = await getCallStrapi('/offers')  // Adjust endpoint as per your API
+          landingPageData['react_promotional_banner'] = await getCallTest('/nodeStrapi/strapi/offers')  // Adjust endpoint as per your API
       } catch (error) {
           console.error('Error fetching landing page data:', error)
       }
 
 
       try {
-        landingPageData['deals'] = await getCallStrapi('/coupons')  // Adjust endpoint as per your API
+        landingPageData['deals'] = await getCallTest('/nodeStrapi/strapi/coupons')  // Adjust endpoint as per your API
     } catch (error) {
         console.error('Error fetching landing page data:', error)
     }
 
     try {
-        landingPageData['giftCards'] = await getCallStrapi('/gift-cards')  // Adjust endpoint as per your API
+        landingPageData['giftCards'] = await getCallTest('/nodeStrapi/strapi/gift-cards')  // Adjust endpoint as per your API
     } catch (error) {
         console.error('Error fetching landing page data:', error)
     }
 
     try {
-        landingPageData['coupons'] = await getCallStrapi('/site-coupons')  // Adjust endpoint as per your API
+        landingPageData['coupons'] = await getCallTest('/nodeStrapi/strapi/site-coupons')  // Adjust endpoint as per your API
     } catch (error) {
         console.error('Error fetching landing page data:', error)
     }
 
 
     try {
-        landingPageData['brands'] = await getCallStrapi('/brands')  // Adjust endpoint as per your API
+        landingPageData['brands'] = await getCallTest('/nodeStrapi/strapi/brands')  // Adjust endpoint as per your API
     } catch (error) {
         console.error('Error fetching landing page data:', error)
     }
