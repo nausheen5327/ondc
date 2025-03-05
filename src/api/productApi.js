@@ -1,4 +1,4 @@
-import { getCall, getCallStrapiSearch } from "./MainApi";
+import { getCall, getCallStrapiSearch, getCallTest } from "./MainApi";
 
 /**
  * function to get all products
@@ -15,8 +15,7 @@ export const getAllProductRequest = (params) => {
                 latitude = JSON.parse(location).address.lat;
                 longitude = JSON.parse(location).address.lng;
             }
-            console.log("inside search API", latitude, longitude);
-            const data = await getCallStrapiSearch(`/search`, {...params,lat:`${latitude}`,lon:`${longitude}`});
+            const data = await getCallTest(`/nodeStrapi/search`, {...params,lat:`${latitude}`,lon:`${longitude}`});
             return resolve(data.response);
         } catch (err) {
             return reject(err);
