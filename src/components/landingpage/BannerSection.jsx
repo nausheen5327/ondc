@@ -207,7 +207,7 @@ const BannerSection = ({
                                 <Slider ref={discountRef} {...settings}>
                                     {banner_section_half?.map((item, index) => {
                                         const imageUrl = item?.image[0]?.url 
-                                        ? `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${item.image[0].url}`
+                                        ? `${item.imageSrc}`
                                         : ImageNotFound;
                                         return (
                                             <>

@@ -60,7 +60,7 @@ const theme = useTheme();
               height: '120px'
             }}>
               <img 
-                src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${card.image.url}`}
+                src={`${card.imageSrc}`}
                 alt={card.title}
                 style={{
                   width: '100%',

@@ -55,7 +55,7 @@ const DealsComponent = ({ title, image }) => (
     height:'180px'
   }}>
     <img 
-      src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${image[0].url}`}
+      src={`${image}`}
       alt={title}
       style={{
         width: '100%',
@@ -116,7 +116,7 @@ const theme = useTheme();
         {deals.map((deal) => (
           <DealsComponent
             title={deal.title}
-            image={deal.image}
+            image={deal.imageSrc}
           />
         ))}
       </div>

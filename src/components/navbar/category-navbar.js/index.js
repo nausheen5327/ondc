@@ -34,7 +34,7 @@ const CategoriesNavigation = ({categories}) => {
     >
       <div className={styles.iconWrapper}>
         <img 
-          src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${category.image.url}`} 
+          src={`${category.imageSrc}`} 
           alt={`${category.title} icon`}
         />
       </div>

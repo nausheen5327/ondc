@@ -204,11 +204,11 @@ const Navigation = () => {
                     
                     location={userLocation}
                 />
-                {/* {isSmall && (router.pathname==='/' || router.pathname==='/home') &&  (
+                {isSmall && (router.pathname==='/' || router.pathname==='/home') &&  (
                     <CategoryMenuWrapper>
                         <CategoryMenu categories={categories} />
                     </CategoryMenuWrapper>
-                )}             */}
+                )}            
         </AppBarStyle>
         </NavigationWrapper>
     )

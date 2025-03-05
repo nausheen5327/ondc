@@ -165,7 +165,7 @@ const theme = useTheme();
               className="image-card"
             >
               <img
-                src={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL}${brand.image.url}`}
+                src={`${brand.imageSrc}`}
                 alt={brand.title}
                 style={styles.image}
               />
