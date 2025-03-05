@@ -68,7 +68,7 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
     const MainContentWrapper = styled('div')(({ hasAllNavs, isSmall }) => ({
         paddingTop: router.pathname === '/checkout' || router.pathname === '/info' 
             ? '0'
-            : (isSmall ? '192px' : '164px'),
+            : (isSmall ? '192px' : '82px'),
         minHeight: '100vh',
     }));
     return (

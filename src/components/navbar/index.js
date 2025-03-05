@@ -54,7 +54,6 @@ const Navigation = () => {
         const response = await getCallTest('/nodeStrapi/strapi/categories');
         dispatch(setCategoriesList(response));
       } catch (error) {
-        CustomToaster('error', "Please check your internet connection");
         console.error('Failed to fetch categories:', error);
       }
     };
@@ -205,11 +204,11 @@ const Navigation = () => {
                     
                     location={userLocation}
                 />
-                {isSmall && (router.pathname==='/' || router.pathname==='/home') &&  (
+                {/* {isSmall && (router.pathname==='/' || router.pathname==='/home') &&  (
                     <CategoryMenuWrapper>
                         <CategoryMenu categories={categories} />
                     </CategoryMenuWrapper>
-                )}            
+                )}             */}
         </AppBarStyle>
         </NavigationWrapper>
     )

@@ -94,7 +94,7 @@ const LandingPage = ({ global, isAuthenticated }) => {
                     setOpenAddressModal={setOpenAddressModal} 
                 />
             )}
-            <BannerSection
+            {/* <BannerSection
                 global={global}
                 banner_section_half={landingPageData?.react_promotional_banner}
                 discount_banner={landingPageData?.discount_banner}
@@ -104,7 +104,7 @@ const LandingPage = ({ global, isAuthenticated }) => {
             <BrandSlider brands={landingPageData?.brands}/>
             <Deals deals={landingPageData?.deals}/>
             <GiftCardSection giftCards={landingPageData?.giftCards}/>
-            <CouponGrid coupons={landingPageData?.coupons}/>
+            <CouponGrid coupons={landingPageData?.coupons}/> */}
             
             
 
