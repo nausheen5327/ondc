@@ -14,7 +14,7 @@ docker stop $CONTAINER_NAME || true
 docker rm $CONTAINER_NAME || true
 
 echo "Pulling latest image from ECR..."
-docker pull  https://$IMAGE_URI
+docker pull  $IMAGE_URI
 
 echo "Running new container..."
 docker run -d --name $CONTAINER_NAME -p 80:3000 $IMAGE_URI
