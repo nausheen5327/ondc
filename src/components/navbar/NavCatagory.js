@@ -46,7 +46,7 @@ const NavCatagory = ({
     // test mneu drop down start
     const router = useRouter()
     const { global } = useSelector((state) => state.globalSettings)
-    const  featuredCategories  =  useSelector(state => state.globalSettings.categoriesList); // Adjust the path according to your Redux store structure
+    const featuredCategories = useSelector(state => state.globalSettings.categoriesList); // Adjust the path according to your Redux store structure
 
     const catImageUrl = `${global?.base_urls?.category_image_url}`
     const dispatch = useDispatch()
@@ -144,9 +144,10 @@ const NavCatagory = ({
                                                     >
                                                         <Link
                                                             href={{
-                                                                pathname: `/home/?category=${category.title}`,
-                                                               
+                                                                pathname: '/home',
+                                                                query: { category: category.title }
                                                             }}
+                                                            passHref
                                                         >
                                                             <MenuItem
                                                                 key={index}
@@ -196,7 +197,7 @@ const NavCatagory = ({
                                                                         category.title
                                                                     }
                                                                 </Typography>
-                                                                
+
                                                             </MenuItem>
                                                         </Link>
                                                     </Grid>
@@ -208,9 +209,10 @@ const NavCatagory = ({
                                                     >
                                                         <Link
                                                             href={{
-                                                                pathname: `/home/?category=${category.title}`,
-                                                                
+                                                                pathname: '/home',
+                                                                query: { category: category.title }
                                                             }}
+                                                            passHref
                                                         >
                                                             <MenuItem
                                                                 key={index}
@@ -260,7 +262,7 @@ const NavCatagory = ({
                                                                         category.title
                                                                     }
                                                                 </Typography>
-                                                                
+
                                                             </MenuItem>
                                                         </Link>
                                                     </Grid>
@@ -277,10 +279,11 @@ const NavCatagory = ({
                                             {index % 2 === 0 ? (
                                                 <Grid item md={6} key={index}>
                                                     <Link
-                                                       href={{
-                                                        pathname: `/home/?category=${category.title}`,
-                                                        
-                                                    }}
+                                                        href={{
+                                                            pathname: '/home',
+                                                            query: { category: category.title }
+                                                        }}
+                                                        passHref
                                                     >
                                                         <MenuItem
                                                             onClick={
@@ -327,7 +330,7 @@ const NavCatagory = ({
                                                             >
                                                                 {category.title}
                                                             </Typography>
-                                                            
+
                                                         </MenuItem>
                                                     </Link>
                                                 </Grid>
@@ -335,9 +338,10 @@ const NavCatagory = ({
                                                 <Grid item md={6} key={index}>
                                                     <Link
                                                         href={{
-                                                            pathname: `/home/?category=${category.title}`,
-                                                            
+                                                            pathname: '/home',
+                                                            query: { category: category.title }
                                                         }}
+                                                        passHref
                                                     >
                                                         <MenuItem
                                                             key={index}
@@ -385,7 +389,7 @@ const NavCatagory = ({
                                                             >
                                                                 {category.title}
                                                             </Typography>
-                                                           
+
                                                         </MenuItem>
                                                     </Link>
                                                 </Grid>
