@@ -1,5 +1,4 @@
 import React from 'react';
-import {CustomBoxFullWidth} from "../../chat/Chat.style";
 import {Typography} from "@mui/material";
 import {t} from "i18next";
 import {CustomStackFullWidth} from "../../../styled-components/CustomStyles.style";

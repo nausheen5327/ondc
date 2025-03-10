@@ -1,4 +1,5 @@
-import { getCall, getCallStrapiSearch, getCallTest } from "./MainApi";
+import axios from "axios";
+import { getCall, getCallTest, getCallWithBodyTest } from "./MainApi";
 
 /**
  * function to get all products
@@ -10,12 +11,11 @@ export const getAllProductRequest = (params) => {
             let location = localStorage.getItem('location');
             let latitude = null;
             let longitude = null;
-            if(location)
-            {
+            if (location) {
                 latitude = JSON.parse(location).address.lat;
                 longitude = JSON.parse(location).address.lng;
             }
-            const data = await getCallTest(`/nodeStrapi/search`, {...params,lat:`${latitude}`,lon:`${longitude}`});
+            const data = await getCallTest(`/nodeStrapi/search`, { ...params, lat: `${latitude}`, lon: `${longitude}` });
             return resolve(data.response);
         } catch (err) {
             return reject(err);
@@ -27,15 +27,15 @@ export const getAllProductRequest = (params) => {
  * function to get all filters
  * @returns
  */
-export const getAllFiltersRequest = (subCatName=null, providerId=null) => {
+export const getAllFiltersRequest = (subCatName = null, providerId = null) => {
     let params = {};
-    if(subCatName){
+    if (subCatName) {
         let subCategoryName = subCatName.replace("And", "&");
         params.category = subCategoryName;
     }
-    if(providerId){
+    if (providerId) {
         params.provider = providerId;
-    }else{}
+    } else { }
     return new Promise(async (resolve, reject) => {
         try {
             const data = await getCall(`/clientApis/v2/attributes`, params);
@@ -54,13 +54,13 @@ export const getAllFilterValuesRequest = (attributeCode, subCatName = null, prov
     let params = {
         attribute_code: attributeCode,
     };
-    if(subCatName){
+    if (subCatName) {
         let subCategoryName = subCatName.replace("And", "&");
         params.category = subCategoryName;
     }
-    if(providerId){
+    if (providerId) {
         params.provider = providerId;
-    }else{}
+    } else { }
     return new Promise(async (resolve, reject) => {
         try {
             const data = await getCall(`/clientApis/v2/attributeValues`, params);

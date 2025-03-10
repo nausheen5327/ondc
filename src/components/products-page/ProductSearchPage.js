@@ -95,7 +95,7 @@ const ProductSearchPage = ({
     }, [offset, searchValue])
 
 
-
+    console.log('Search value', searchValue)
     return (
         <>
             <Meta

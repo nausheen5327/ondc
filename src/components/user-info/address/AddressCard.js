@@ -17,7 +17,6 @@ import DeleteIcon from '../../../assets/images/icons/DeleteIcon';
 import EditLocationOutlinedIcon from '@mui/icons-material/EditLocationOutlined';
 import CustomPopover from '../../custom-popover/CustomPopover'
 import { RTL } from '../../RTL/RTL';
-import MapWithSearchBox from "../../google-map/MapWithSearchBox";
 import AddressForm from './AddressForm'
 import { useMutation, useQuery } from 'react-query'
 import { AddressApi } from "@/hooks/react-query/config/addressApi"

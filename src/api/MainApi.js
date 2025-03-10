@@ -135,6 +135,8 @@ export function getCallTest(url, params = null) {
     }
   });
 }
+
+
 export function getCallStrapi(url, params = null) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -182,6 +184,19 @@ export function postCall(url, params) {
     console.log(resolve, reject, "testing");
     try {
       const response = await api.post(url, params);
+      return resolve(response.data);
+    } catch (error) {
+      handleApiError(error);
+      return reject(error);
+    }
+  });
+}
+
+export function postCallTest(url, params) {
+  return new Promise(async (resolve, reject) => {
+    console.log(resolve, reject, "testing");
+    try {
+      const response = await apiStrapiTest.post(url, params);
       return resolve(response.data);
     } catch (error) {
       handleApiError(error);

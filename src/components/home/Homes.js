@@ -13,14 +13,6 @@ import {
     setSelectedName,
     setSelectedValue,
 } from '@/redux/slices/searchTagSlice'
-import {
-    setBanners,
-    setBestReviewedFood,
-    setCampaignFoods,
-    setPopularFood,
-} from '@/redux/slices/storedData'
-import { setWelcomeModal } from '@/redux/slices/utils'
-import { setWishList } from '@/redux/slices/wishList'
 import { CustomStackFullWidth } from '@/styled-components/CustomStyles.style'
 import { Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
@@ -33,7 +25,6 @@ import { useQuery } from 'react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { onSingleErrorResponse } from '../ErrorResponse'
 import PushNotificationLayout from '../PushNotificationLayout'
-import CashBackPopup from '../cash-back-popup/CashBackPopup'
 import CustomContainer from '../container'
 import CustomModal from '../custom-modal/CustomModal'
 import ProductSearchPage from '../products-page/ProductSearchPage'
@@ -45,8 +36,7 @@ import Restaurant from './Restaurant'
 import SearchFilterTag from './Search-filter-tag/SearchFilterTag'
 import Cuisines from './cuisines'
 import FeatureCatagories from './featured-categories/FeatureCatagories'
-import VisitAgain from './visit-again'
-import AddsSection from '@/components/home/add-section'
+
 
 const Homes = () => {
     

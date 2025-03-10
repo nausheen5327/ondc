@@ -113,7 +113,7 @@ const theme = useTheme();
 
                         </Stack>
       <div className="coupon-grid" style={styles.grid}>
-        {deals.map((deal) => (
+        {deals?.map((deal) => (
           <DealsComponent
             title={deal.title}
             image={deal.imageSrc}
