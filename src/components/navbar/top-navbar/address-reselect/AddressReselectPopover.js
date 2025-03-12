@@ -71,12 +71,12 @@ const AddressReselectPopover = (props) => {
     }
     const setUserCurrentLocation = async () => {
         if (coords) {
-            // dispatch(setLocation(
-            //     {
-            //         lat: coords?.latitude,
-            //         lng: coords?.longitude,
-            //     }
-            // ))
+            dispatch(setLocation(
+                {
+                    lat: coords?.latitude,
+                    lng: coords?.longitude,
+                }
+            ))
             if (zoneId) {
                 localStorage.setItem('zoneid', zoneId)
             }
