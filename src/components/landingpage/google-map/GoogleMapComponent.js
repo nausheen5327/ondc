@@ -483,13 +483,6 @@ const GoogleMapComponent = ({
                     onLoad={onLoad}
                     zoom={zoom}
                     onUnmount={onUnmount}
-                    onClick={eventHandlers.onClick}
-                    onDragStart={eventHandlers.onDragStart}
-                    onDrag={eventHandlers.onDrag}
-                    onDragEnd={eventHandlers.onDragEnd}
-                    onMouseDown={eventHandlers.onMouseDown}
-                    onMouseUp={eventHandlers.onMouseUp}
-                    onZoomChanged={eventHandlers.onZoomChanged}
                     options={{ ...options, styles: grayscaleMapStyles }}
                 >
                     {!locationLoading ? (
