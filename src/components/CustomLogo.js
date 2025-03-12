@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import placeholder from '../../public/static/no-image-found.jpg'
 import CustomImageContainer from '@/components/CustomImageContainer'
 
-const CustomLogo = ({ logoImg, atlText, height, width }) => {
+const CustomLogo = ({ logoImg, atlText, height, width }) => {    
     const router = useRouter()
     let zoneid = undefined
     if (typeof window !== 'undefined') {
@@ -17,7 +17,7 @@ const CustomLogo = ({ logoImg, atlText, height, width }) => {
     }
 
     const handleClick = () => {
-        const newPath =  '/'
+        const newPath =  '/home'
 
         router.push(newPath, undefined, { shallow: true }).then(() => {
             window.scrollTo(0, 0)

@@ -4,7 +4,6 @@ import CustomLogo from '../../CustomLogo'
 import Image from 'next/image'
 
 const LogoSide = ({ global, width, businessLogo }) => {
-    const businessLogoUrl = global?.base_urls?.business_logo_url
     return (
         <CustomLogo
             atlText="logo"

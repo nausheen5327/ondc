@@ -777,7 +777,7 @@ const PlacePickerMap = (props) => {
   // Get user's current location
   const getCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      CustomToaster("error", "Geolocation is not supported by your browser");
+      // CustomToaster("error", "Geolocation is not supported by your browser");
       return;
     }
 
@@ -795,7 +795,7 @@ const PlacePickerMap = (props) => {
       },
       (error) => {
         console.error("Error getting location:", error);
-        CustomToaster("error", "Unable to retrieve your location");
+        // CustomToaster("error", "Unable to retrieve your location");
       },
       {
         enableHighAccuracy: true,
@@ -876,7 +876,7 @@ const PlacePickerMap = (props) => {
           setPinnedAddress(response[0].formatted_address);
         }
       } catch (error) {
-        CustomToaster("error", "Failed to get address details");
+        // CustomToaster("error", "Failed to get address details");
         console.error("Geocoding error:", error);
       }
     },
@@ -886,7 +886,7 @@ const PlacePickerMap = (props) => {
   const handleConfirmLocation = () => {
     if (tempLocation && setLocation) {
       setLocation(tempLocation);
-      CustomToaster("success", "Location confirmed successfully");
+      // CustomToaster("success", "Location confirmed successfully");
     }
   };
 
@@ -1044,7 +1044,7 @@ const PlacePickerMap = (props) => {
         });
       }
     } catch (error) {
-      CustomToaster("error", "Failed to initialize map, Please check your settings");
+      // CustomToaster("error", "Failed to initialize map, Please check your settings");
       console.error("Map initialization error:", error);
     }
   }, [
@@ -1089,7 +1089,7 @@ const PlacePickerMap = (props) => {
     };
 
     script.onerror = () => {
-      CustomToaster("error", "Failed to load Google Maps");
+      // CustomToaster("error", "Failed to load Google Maps");
     };
 
     document.head.appendChild(script);

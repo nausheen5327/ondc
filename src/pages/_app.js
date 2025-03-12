@@ -2,7 +2,7 @@ import { WrapperForApp } from '@/App.style'
 import { SettingsConsumer, SettingsProvider } from '@/contexts/settings-context'
 import { store } from '@/redux/store'
 import { CacheProvider } from '@emotion/react'
-import { Box } from '@mui/material'
+import { Box, useMediaQuery } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import i18n, { t } from 'i18next'
@@ -19,6 +19,7 @@ import { Provider, useSelector } from 'react-redux'
 import DynamicFavicon from '../components/favicon/DynamicFavicon'
 import FloatingCardManagement from '../components/floating-cart/FloatingCardManagement'
 import Navigation from '../components/navbar'
+import { useTheme } from '@mui/material/styles'
 import ScrollToTop from '../components/scroll-top/ScrollToTop'
 import '../language/i18n'
 import '../styles/global.css'
@@ -63,14 +64,18 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
     })
     const authModalOpen = useSelector(state => state.globalSettings.authModalOpen)
     const customerInfo = useSelector(state=> state.addressData.customerInfo);
-    console.log("customer info", router.pathname)
     // Main content wrapper to provide proper spacing
-    const MainContentWrapper = styled('div')(({ hasAllNavs, isSmall }) => ({
-        paddingTop: router.pathname === '/checkout' || router.pathname === '/info' 
-            ? '0'
-            : (router.pathname === '/category/[id]' ? '40px' : '164px'),
-        minHeight: '100vh',
-    }));
+    const MainContentWrapper = styled('div')(() => {
+            const theme = useTheme()
+        const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+        const currentPath = router?.pathname || '/'
+        return {    
+            paddingTop: currentPath === '/checkout' || currentPath === '/info' 
+                ? '0'
+                : (currentPath === '/category/[id]' ? isSmall?'40px':'10px' : isSmall?'164px':'84px'),
+            minHeight: '100vh',
+        }
+    });
     return (
         <ThemeProvider
             theme={createTheme({
@@ -85,10 +90,10 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
                 <title>{'ONDC'}</title>
             </Head>
             <LoadingOverlay open={isLoading} />
-            <WrapperForApp pathname={router.pathname}>
+            <WrapperForApp pathname={router?.pathname}>
                 <ScrollToTop />
                 {/* Conditionally render Navigation */}
-                {!isAuthRoute && router.pathname !== '/maintenance' && (
+                {!isAuthRoute && router?.pathname !== '/maintenance' && (
                     <Navigation />
                 )}
                 <DynamicFavicon />
@@ -98,12 +103,12 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
                             height: '100%',
                             mt: {
                                 xs:
-                                    router.pathname ===
+                                    router?.pathname ===
                                         '/home'
                                         ? '2.5rem'
                                         : '2rem',
                                 md:
-                                    router.pathname === '/'
+                                    router?.pathname === '/'
                                         ? zoneid
                                             ? '4rem'
                                             : '2rem'
@@ -112,9 +117,9 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
                         }}
                     >
                         {
-                            router.pathname !==
-                            '/checkout' && router.pathname !=='/info' &&
-                            router.pathname !== '/chat' && (
+                            router?.pathname !==
+                            '/checkout' && router?.pathname !=='/info' &&
+                            router?.pathname !== '/chat' && (
                                 <FloatingCardManagement
                                 />
                             )}
@@ -184,7 +189,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
         }
     }, []);
 
-    const isAuthRoute = router.pathname === '/login' || router.pathname === '/register';
+    const isAuthRoute = router?.pathname === '/login' || router?.pathname === '/register';
     return (
         <CacheProvider value={emotionCache}>
             <QueryClientProvider client={queryClient}>

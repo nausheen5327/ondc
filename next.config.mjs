@@ -30,7 +30,7 @@ const nextConfig = {
         ];
     },
     images: {
-        domains: ['ondcpreprod.nazarasdk.com'], // Fixed domain configuration
+        domains: ['ondcpreprod.nazarasdk.com','res.cloudinary.com'], // Fixed domain configuration
     },
     webpack: (config) => {
         return config; // Removed unnecessary parameters

@@ -487,7 +487,7 @@ const SignInPage = ({
                     <CustomStackFullWidth spacing={{ xs: 1, md: 4 }}>
                         <CustomStackFullWidth alignItems="center">
                             <CustomImageContainer
-                                src={process.env.LOGO}
+                                src={process.env.NEXT_PUBLIC_LOGO}
                                 width="50%"
                                 height="70px"
                                 alt="NazaraSDK"

@@ -160,7 +160,7 @@ const getCartItems = async () => {
       <>
           <Meta
               title={"ONDC"}
-              ogImage={`https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg`}
+              ogImage={process.env.NEXT_PUBLIC_LOGO}
           />
           <LandingPage
               global={configData}
@@ -235,37 +235,37 @@ export async function getServerSideProps(context) {
             banner_section_img_full: "https://source.unsplash.com/random/400x300" 
         }
       }
-      try {
-          landingPageData['react_promotional_banner'] = await getCallTest('/nodeStrapi/strapi/offers')  // Adjust endpoint as per your API
-      } catch (error) {
-          console.error('Error fetching landing page data:', error)
-      }
+    //   try {
+    //       landingPageData['react_promotional_banner'] = await getCallTest('/nodeStrapi/strapi/offers')  // Adjust endpoint as per your API
+    //   } catch (error) {
+    //       console.error('Error fetching landing page data:', error)
+    //   }
 
 
-      try {
-        landingPageData['deals'] = await getCallTest('/nodeStrapi/strapi/coupons')  // Adjust endpoint as per your API
-    } catch (error) {
-        console.error('Error fetching landing page data:', error)
-    }
+    //   try {
+    //     landingPageData['deals'] = await getCallTest('/nodeStrapi/strapi/coupons')  // Adjust endpoint as per your API
+    // } catch (error) {
+    //     console.error('Error fetching landing page data:', error)
+    // }
 
-    try {
-        landingPageData['giftCards'] = await getCallTest('/nodeStrapi/strapi/gift-cards')  // Adjust endpoint as per your API
-    } catch (error) {
-        console.error('Error fetching landing page data:', error)
-    }
+    // try {
+    //     landingPageData['giftCards'] = await getCallTest('/nodeStrapi/strapi/gift-cards')  // Adjust endpoint as per your API
+    // } catch (error) {
+    //     console.error('Error fetching landing page data:', error)
+    // }
 
-    try {
-        landingPageData['coupons'] = await getCallTest('/nodeStrapi/strapi/site-coupons')  // Adjust endpoint as per your API
-    } catch (error) {
-        console.error('Error fetching landing page data:', error)
-    }
+    // try {
+    //     landingPageData['coupons'] = await getCallTest('/nodeStrapi/strapi/site-coupons')  // Adjust endpoint as per your API
+    // } catch (error) {
+    //     console.error('Error fetching landing page data:', error)
+    // }
 
 
-    try {
-        landingPageData['brands'] = await getCallTest('/nodeStrapi/strapi/brands')  // Adjust endpoint as per your API
-    } catch (error) {
-        console.error('Error fetching landing page data:', error)
-    }
+    // try {
+    //     landingPageData['brands'] = await getCallTest('/nodeStrapi/strapi/brands')  // Adjust endpoint as per your API
+    // } catch (error) {
+    //     console.error('Error fetching landing page data:', error)
+    // }
 
       // Handle search query if present
       let searchResults = null

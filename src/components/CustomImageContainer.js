@@ -27,8 +27,8 @@ const CustomImageContainer = ({
         if (src) {
             setState(src);
         } else {
-            setState("https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg");
-            setNewObjectFit("contain");
+            // setState("https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg");
+            // setNewObjectFit("contain");
         }
     }, [src]);
     const errorHeight = smHeight ? smHeight : "104px";

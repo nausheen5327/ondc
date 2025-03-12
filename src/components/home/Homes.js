@@ -36,6 +36,8 @@ import Restaurant from './Restaurant'
 import SearchFilterTag from './Search-filter-tag/SearchFilterTag'
 import Cuisines from './cuisines'
 import FeatureCatagories from './featured-categories/FeatureCatagories'
+import Image from 'next/image'
+import Link from 'next/link'
 
 
 const Homes = () => {
@@ -44,6 +46,7 @@ const Homes = () => {
     const { filterData, foodOrRestaurant } = useSelector(
         (state) => state.searchFilterStore
     )
+    let comingSoonImageUrl = 'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741774448/comingSoon_b42usi.jpg'
     const [sort_by, setSort_by] = useState('')
     const { searchTagData } = useSelector((state) => state.searchTags)
     const router = useRouter()
@@ -75,7 +78,7 @@ const Homes = () => {
    
     return (
         <>
-             <PushNotificationLayout>
+             {(router.query?.category==='Food' || !router.query.category) ?<PushNotificationLayout>
                 {query &&<CustomContainer>
                     <CustomStackFullWidth
                         sx={{
@@ -136,7 +139,42 @@ const Homes = () => {
                         </CustomContainer>
                     </>
                 )}
-            </PushNotificationLayout>
+            </PushNotificationLayout>:
+             <Box
+             sx={{
+                 display: 'flex',
+                 justifyContent: 'center',
+                 alignItems: 'start',
+                 minHeight: 'auto',
+                 width: '100%',
+                 backgroundColor: theme.palette.background.default
+             }}
+         >
+             <Box
+                 sx={{
+                     width: { xs: '100%', sm: '100%', md: '70%' },
+                     maxWidth: '1000px',
+                     height: 'auto',
+                     borderRadius: '8px',
+                     overflow: 'hidden',
+                    //  boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'
+                 }}
+             >
+                 <img 
+                     src={comingSoonImageUrl} 
+                     alt="Coming Soon" 
+                     style={{ 
+                         width: '100%', 
+                         height: 'auto', 
+                         objectFit: 'contain'
+                     }} 
+                 />
+                 <Link style={{
+                    cursor:'pointer'
+                 }} href='/home'><p style={{textAlign:'center', color:'#ff7818b3'}}>Explore Food</p></Link>
+             </Box>
+         </Box>
+            }
 
         </>
     )
