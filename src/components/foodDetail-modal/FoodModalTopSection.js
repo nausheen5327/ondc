@@ -85,7 +85,7 @@ const FoodModalTopSection = ({
                 </Stack>
                 
                     <>
-                        {!isInList(product?.id) ? (
+                        {/* {!isInList(product?.id) ? (
                             <CustomFavICon
                                 languageDirection={languageDirection}
                             >
@@ -106,7 +106,7 @@ const FoodModalTopSection = ({
                                     <FavoriteIcon color="primary" />
                                 </IconButton>
                             </CustomFavICon>
-                        )}
+                        )} */}
                     </>
                 
             </CustomStackForFoodModal>
