@@ -64,10 +64,10 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
     })
     const authModalOpen = useSelector(state => state.globalSettings.authModalOpen)
     const customerInfo = useSelector(state=> state.addressData.customerInfo);
+    const theme = useTheme()
+    const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     // Main content wrapper to provide proper spacing
     const MainContentWrapper = styled('div')(() => {
-            const theme = useTheme()
-        const isSmall = useMediaQuery(theme.breakpoints.down('md'))
         const currentPath = router?.pathname || '/'
         return {    
             paddingTop: currentPath === '/checkout' || currentPath === '/info' 
