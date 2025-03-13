@@ -115,14 +115,14 @@ const BottomNav = (props) => {
                            
                         />
 
-                    <MuiBottomNavigationAction
+                    {/* <MuiBottomNavigationAction
                         onClick={() => setOpenWishlistModal(!openWishlistModal)}
                         icon={
                             <Badge badgeContent={0} color="error">
                                 <FavoriteBorderIcon />
                             </Badge>
                         }
-                    />
+                    /> */}
 
                     <MuiBottomNavigationAction
                         onClick={() => setSideDrawerOpen(true)}
