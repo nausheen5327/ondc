@@ -55,6 +55,28 @@ const Navigation = () => {
         dispatch(setCategoriesList(response));
       } catch (error) {
         console.error('Failed to fetch categories:', error);
+        let categories = [
+            {title:'Food',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167043/pizza_r66op5.png'
+            },
+            {title:'Electronics',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167046/smartphone_dotw66.png'
+            },
+            {title:'Fashion',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167043/shirt_pvhvvp.png'
+            },
+            {title:'Groceries',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167042/shopping-basket_fayoda.png'
+            },
+            {title:'Home Decor',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167042/bed-double_lhr4iq.png'
+            },
+            {title:'Gift-Cards',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167043/gift_uxvev1.png'
+            }
+            
+        ]
+        dispatch(setCategoriesList(categories))
       }
     };
     useEffect(() => {
