@@ -99,14 +99,12 @@ const GoogleMapComponent = ({
 
     // Handlers that don't depend on map
     const handleZoomIn = (e) => {
-        e.stopPropagation();
         if (map && zoom < 21) {
             setZoom((prevZoom) => Math.min(prevZoom + 1, 21));
         }
     };
 
     const handleZoomOut = (e) => {
-        e.stopPropagation();
         if (map && zoom > 1) {
             setZoom((prevZoom) => Math.max(prevZoom - 1, 1));
         }
@@ -207,17 +205,11 @@ const GoogleMapComponent = ({
         if (!map) {
             // Return dummy handlers when map is not yet initialized
             return {
-                onClick: (e) => e.stopPropagation(),
-                onDragStart: (e) => e.stopPropagation(),
-                onDrag: (e) => e.stopPropagation(),
-                onDragEnd: (e) => e.stopPropagation(),
                 onMouseDown: (e) => {
-                    e.stopPropagation();
                     setMapSetup(true);
                     setDisablePickButton(true);
                 },
                 onMouseUp: (e) => {
-                    e.stopPropagation();
                     setMapSetup(false);
                     setDisablePickButton(false);
                 },
@@ -227,26 +219,21 @@ const GoogleMapComponent = ({
 
         // Return real handlers when map is ready
         return {
-            onClick: (e) => e.stopPropagation(),
+            
             onDragStart: (e) => {
-                e.stopPropagation();
                 setMapSetup(true);
                 setDisablePickButton(true);
             },
-            onDrag: (e) => e.stopPropagation(),
             onDragEnd: (e) => {
-                e.stopPropagation();
                 setMapSetup(false);
                 setDisablePickButton(false);
                 updateLocationFromMap();
             },
             onMouseDown: (e) => {
-                e.stopPropagation();
                 setMapSetup(true);
                 setDisablePickButton(true);
             },
             onMouseUp: (e) => {
-                e.stopPropagation();
                 setMapSetup(false);
                 setDisablePickButton(false);
                 updateLocationFromMap();
@@ -306,8 +293,6 @@ const GoogleMapComponent = ({
             sx={{ 
                 pointerEvents: 'auto'  // Ensure events are captured
             }}
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
         >
             <Stack 
                 position="absolute"
@@ -316,7 +301,6 @@ const GoogleMapComponent = ({
                 bottom={isGps ? "18%" : "6%"}
                 direction="column"
                 spacing={1}
-                onClick={(e) => e.stopPropagation()}
             >
                 <IconWrapper
                     padding={{ xs: "3px", sm: "5px" }}
@@ -336,7 +320,7 @@ const GoogleMapComponent = ({
             
            
             
-            <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+            <div>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={centerPosition}

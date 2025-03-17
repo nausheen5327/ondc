@@ -426,10 +426,18 @@ const finalizeLocationSelection = (coordinates) => {
         refetch: locationRefetch,
     } = useQuery(
         ['zoneId', location],
-        async () => GoogleApi.getZoneId(location),
+        async () => {
+            console.log("Fetching zone ID for location:", location); // Debugging
+            const response = await GoogleApi.getZoneId(location);
+            console.log("Zone API Response:", response); // Debugging
+            return response;
+        },
         {
             enabled: locationEnabled,
-            onError: onErrorResponse,
+            onError: (error) => {
+                console.error("Zone API Error:", error); // Debugging
+                onErrorResponse(error);
+            },
             retry: 1,
         }
     );
@@ -444,16 +452,16 @@ const finalizeLocationSelection = (coordinates) => {
     useEffect(() => {
         if (placeDetails && placeDetails.data && placeDetails.data.result?.geometry?.location) {
             const resultLocation = placeDetails.data.result.geometry.location;
-
-            // Ensure we have a valid location
+    
+            // Normalize the location to ensure valid coordinates
             const normalizedLocation = normalizeLocation(resultLocation);
-
+    
+            // Update the location state
             setLocation(normalizedLocation);
-            setLocationEnabled(true);
-
+    
             // Force map rerender
             setRerenderMap(prev => !prev);
-
+    
             // Reset after successful update
             setTimeout(() => {
                 setPlaceDetailsEnabled(false);
@@ -461,9 +469,33 @@ const finalizeLocationSelection = (coordinates) => {
         }
     }, [placeDetails]);
 
-    // Update current location description when geocode results change
+   
+    useEffect(() => {
+        if (locationEnabled && location && location.lat && location.lng) {
+            console.log("Fetching zone ID for valid location:", location); // Debugging
+            locationRefetch();
+        } else {
+            console.error("Invalid location:", location); // Debugging
+        }
+    }, [locationEnabled, location, locationRefetch]);
+    // Update zone data when it changes
+    useEffect(() => {
+        if (zoneData) {
+            console.log("Zone Data:", zoneData); // Debugging
+            if (zoneData?.data?.zone_id) {
+                setZoneId(zoneData.data.zone_id);
+                dispatch(setZoneData(zoneData?.data?.zone_data));
+            } else {
+                console.error("Zone ID not found in response:", zoneData); // Debugging
+                CustomToaster('error', 'Your location is not within our service area.');
+            }
+            setLocationEnabled(false);
+        }
+    }, [zoneData, dispatch, locationEnabled]);
+    
     useEffect(() => {
         if (geoCodeResults && geoCodeResults.data && geoCodeResults.data.results && geoCodeResults.data.results.length > 0) {
+            console.log("Geocode Results:", geoCodeResults); // Debugging
             setCurrentLocationValue({
                 description: geoCodeResults.data.results[0].formatted_address || '',
             });
@@ -471,21 +503,6 @@ const finalizeLocationSelection = (coordinates) => {
             setCurrentLocationValue({ description: '' });
         }
     }, [geoCodeResults]);
-
-    // Update zone data when it changes
-    useEffect(() => {
-        if (zoneData) {
-            setZoneId(zoneData?.data?.zone_id);
-            dispatch(setZoneData(zoneData?.data?.zone_data));
-            setLocationEnabled(false);
-        } else if (locationEnabled) {
-            locationRefetch();
-        }
-
-        if (!zoneData) {
-            setZoneId(undefined);
-        }
-    }, [zoneData, dispatch, locationEnabled, locationRefetch]);
 
     // Update predictions when places data changes
     useEffect(() => {
@@ -562,16 +579,22 @@ const finalizeLocationSelection = (coordinates) => {
     // Handle location selection from autocomplete
     const handleLocationSelection = (value) => {
         if (!value) return;
-
+    
+        // Set place details to be fetched
         setPlaceId(value.place_id);
-        setPlaceDescription(value.description);
-        setPlaceDetailsEnabled(true);
+        setPlaceDescription(value.description || '');
+        setPlaceDetailsEnabled(true); // Enable place details fetch
+        setLocationEnabled(true); // Enable zone ID fetch
+
     };
 
     // Handle final location selection for saving
     const handlePickLocationOnClick = (e) => {
-        if (e) e.stopPropagation();
-
+    
+        console.log("Location:", location); // Debugging
+        console.log("Zone ID:", zoneId); // Debugging
+        console.log("Geocode Results:", geoCodeResults); // Debugging
+    
         if (zoneId && geoCodeResults && location) {
             try {
                 // Save location data to localStorage
@@ -583,13 +606,13 @@ const finalizeLocationSelection = (coordinates) => {
                     );
                 }
                 localStorage.setItem('currentLatLng', JSON.stringify(location));
-
+    
                 // Update redux state
                 dispatch(setUserLocationUpdate(!userLocationUpdate));
-
+    
                 // Show success message
                 CustomToaster('success', 'New location has been set.');
-
+    
                 // Handle redirection
                 if (redirectUrl) {
                     if (redirectUrl?.query === undefined) {
@@ -610,13 +633,12 @@ const finalizeLocationSelection = (coordinates) => {
                 CustomToaster('error', 'Error saving location. Please try again.');
             }
         }
-
+    
         handleClose();
     };
 
     // Modal click handler to prevent event propagation
     const handleModalContentClick = (e) => {
-        e.stopPropagation();
     };
 
     // Autocomplete change handler
@@ -687,7 +709,7 @@ const finalizeLocationSelection = (coordinates) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} sm={12} md={8}>
-                        <Paper sx={{ outline: 'none' }} onClick={(e) => e.stopPropagation()}>
+                        <Paper sx={{ outline: 'none' }} >
                             {loadingAuto ? (
                                 <Skeleton
                                     width="100%"
@@ -802,9 +824,7 @@ const finalizeLocationSelection = (coordinates) => {
                                     options={predictions || []}
                                     onChange={(event, value) => {
                                         if (value && typeof value !== 'string' && value.place_id) {
-                                            setPlaceId(value.place_id);
-                                            setPlaceDescription(value.description || '');
-                                            setPlaceDetailsEnabled(true);
+                                            handleLocationSelection(value); // Call the selection handler
                                         }
                                     }}
                                     onInputChange={(event, newInputValue) => {
@@ -944,7 +964,6 @@ const finalizeLocationSelection = (coordinates) => {
                                 color: (theme) => theme.palette.whiteContainer.main,
                             }}
                             onClick={(e) => {
-                                e.stopPropagation();
                                 handleUseCurrentLocation();
                             }}
                             startIcon={<GpsFixedIcon />}
@@ -968,7 +987,6 @@ const finalizeLocationSelection = (coordinates) => {
                 >
                     <button
                         onClick={(e) => {
-                            e.stopPropagation();
                             handleClose();
                         }}
                         className="closebtn"
@@ -990,7 +1008,7 @@ const finalizeLocationSelection = (coordinates) => {
                         onReset={() => setRerenderMap(prev => !prev)}
                     >
                         {location && isValidLocation(location) && googleMapsAvailable ? (
-                            <Box onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                            <Box >
                                 <GoogleMapComponent
                                     setDisablePickButton={setDisablePickButton}
                                     setLocationEnabled={setLocationEnabled}
@@ -1036,10 +1054,8 @@ const finalizeLocationSelection = (coordinates) => {
                                 disabled={!location || !isValidLocation(location)}
                                 variant="contained"
                                 onClick={(e) => {
-                                    e.stopPropagation();
                                     handlePickLocationOnClick(e);
                                 }}
-                                onMouseDown={(e) => e.stopPropagation()}
                             >
                                 {t('Pick Locations')}
                             </PrimaryButton>
