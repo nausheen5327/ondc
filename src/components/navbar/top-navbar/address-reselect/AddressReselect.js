@@ -35,7 +35,7 @@ const AddressReselect = ({ location }) => {
     const { t } = useTranslation()
     const dispatch = useDispatch()
     const anchorRef = useRef(null)
-
+    
     useEffect(() => {
         if (address) {
             localStorage.setItem('location', address?.address)
@@ -81,6 +81,7 @@ const AddressReselect = ({ location }) => {
             handleModalClose()
         }
     }
+    console.log("coords in loc",coords);
 
     return (
         <>{location ?
@@ -138,7 +139,7 @@ const AddressReselect = ({ location }) => {
                 address={address?.address}
                 setAddress={setAddress}
                 mapOpen={mapOpen}
-                // setUserLocationUpdate={setUserLocationUpdate}
+                setUserLocationUpdate={setUserLocationUpdate}
                 setMapOpen={setMapOpen}
                 coords={coords}
 

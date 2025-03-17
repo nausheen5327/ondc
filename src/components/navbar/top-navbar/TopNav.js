@@ -20,29 +20,36 @@ import { getValueFromCookie } from '@/utils/cookies'
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
     const theme = useTheme()
-    const [query,setQuery] = useState("");
+    const [query, setQuery] = useState("");
     const router = useRouter()
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     const { global, userLocationUpdate } = useSelector(
         (state) => state.globalSettings
     )
-    const location = useSelector((state)=>state.addressData.location)
+    const location = useSelector((state) => state.addressData.location)
+    const [userLocation, setUserLocation] = useState(null)
+    useEffect(() => {
+        let location = undefined
+        if (typeof window !== 'undefined') {
+            location = localStorage.getItem('location')
+        }
+        setUserLocation((location))
+    }, [userLocationUpdate])
     const addresses = useSelector((state) => state.user.addressList);
-    console.log("location...",location);
+    console.log("location...", location);
     const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
-    const token= getValueFromCookie('token')
-useEffect(() => {
-        let location =localStorage.getItem('location');
-        let addressList = localStorage.getItem('addressList');
-        if(location){
+    const token = getValueFromCookie('token')
+    useEffect(() => {
+        let location = localStorage.getItem('currentLatLng');
+        // let addressList = localStorage.getItem('addressList');
+        if (location) {
             dispatch(setlocation(JSON.parse(location)))
-           if(!token) dispatch(setAddressList([JSON.parse(location)]));
+            // if (!token) dispatch(setAddressList([JSON.parse(location)]));
             // router.push('/home')
         };
-        if(addressList)
-        {
-            dispatch(setAddressList(JSON.parse(addressList)));
-        }
+        // if (addressList) {
+        //     dispatch(setAddressList(JSON.parse(addressList)));
+        // }
     }, [])
 
     return (
@@ -73,19 +80,20 @@ useEffect(() => {
                                     direction="row"
                                     spacing={2}
                                 >
-                                    
-                                        <LogoSide
-                                            global={global}
-                                            width="unset"
-                                            businessLogo={businessLogo}
-                                        />
-                                    
+
+                                    <LogoSide
+                                        global={global}
+                                        width="unset"
+                                        businessLogo={businessLogo}
+                                    />
+
 
                                     <AddressReselect
-                                        location={location}
+                                        location={userLocation}
+                                        userLocationUpdate={userLocationUpdate}
                                     />
                                 </CustomStackForLoaction>
-                               
+
                                 {/* {!isSmall && (
                                     <Stack
                                         direction="row"
@@ -98,7 +106,7 @@ useEffect(() => {
                             </Stack>
                             {isSmall && (
                                 <DrawerMenu
-                                   
+
                                 />
                             )}
                         </Box>

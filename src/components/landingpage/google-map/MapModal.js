@@ -36,6 +36,7 @@ import { CustomStackFullWidth } from '../../../styled-components/CustomStyles.st
 import { CustomTypographyGray } from '../../error/Errors.style'
 import { CustomToaster } from '@/components/custom-toaster/CustomToaster'
 import { ErrorBoundary } from 'react-error-boundary'
+import { setlocation } from '@/redux/slices/addressData'
 
 const CustomBoxWrapper = styled(Box)(({ theme }) => ({
     outline: 'none',
@@ -221,6 +222,131 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
 
         return { lat, lng };
     };
+
+
+    ///////////////////////////////////////////
+    // Handle current location selection - Updated to directly set location and close modal
+const handleUseCurrentLocation = async () => {
+    setIsLoadingGeolocation(true);
+
+    // If coords are already available, use them directly
+    if (coords && coords.latitude && coords.longitude) {
+        finalizeLocationSelection({
+            latitude: coords.latitude,
+            longitude: coords.longitude
+        });
+    } else {
+        // If coords aren't available yet, try to get them manually
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    finalizeLocationSelection({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    });
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    setIsLoadingGeolocation(false);
+                    setIsEnableLocation(true);
+                    CustomToaster('error', 'Could not get your location. Please check your browser settings.');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            console.error("Geolocation not available");
+            setIsLoadingGeolocation(false);
+            setIsEnableLocation(true);
+            CustomToaster('error', 'Geolocation is not supported by your browser.');
+        }
+    }
+};
+
+// New helper function to finalize location selection and close modal
+const finalizeLocationSelection = (coordinates) => {
+    const newLocation = {
+        lat: coordinates.latitude,
+        lng: coordinates.longitude
+    };
+
+    // Update state with current coordinates
+    setLocation(newLocation);
+    
+    // Save current location to check for zone
+    GoogleApi.getZoneId(newLocation)
+        .then((response) => {
+            if (response?.data?.zone_id) {
+                const zoneId = response.data.zone_id;
+                
+                // Get the address from geocoding
+                GoogleApi.geoCodeApi(newLocation)
+                    .then((geoResponse) => {
+                        if (geoResponse?.data?.results && geoResponse.data.results.length > 0) {
+                            const address = geoResponse.data.results[0].formatted_address;
+                            
+                            try {
+                                // Save all data to localStorage
+                                localStorage.setItem('zoneid', JSON.stringify(zoneId));
+                                localStorage.setItem('location', JSON.stringify(address));
+                                localStorage.setItem('currentLatLng', JSON.stringify(newLocation));
+                                
+                                // Update redux state
+                                dispatch(setZoneData(response.data.zone_data));
+                                dispatch(setUserLocationUpdate(!userLocationUpdate));
+                                
+                                // Show success message
+                                CustomToaster('success', 'New location has been set.');
+                                
+                                // Handle redirection
+                                if (redirectUrl) {
+                                    if (redirectUrl?.query === undefined) {
+                                        router.push({ pathname: redirectUrl?.pathname });
+                                    } else {
+                                        router.push({
+                                            pathname: redirectUrl?.pathname,
+                                            query: {
+                                                restaurantType: redirectUrl?.query,
+                                            },
+                                        });
+                                    }
+                                } else {
+                                    router.push('/home');
+                                }
+                                
+                                // Close the modal
+                                handleClose();
+                                
+                            } catch (e) {
+                                console.error("Error saving location", e);
+                                CustomToaster('error', 'Error saving location. Please try again.');
+                                setIsLoadingGeolocation(false);
+                            }
+                        } else {
+                            setIsLoadingGeolocation(false);
+                            CustomToaster('error', 'Could not determine your address. Please try again.');
+                        }
+                    })
+                    .catch((error) => {
+                        setIsLoadingGeolocation(false);
+                        console.error("Geocoding error:", error);
+                        CustomToaster('error', 'Could not determine your address. Please try again.');
+                    });
+            } else {
+                setIsLoadingGeolocation(false);
+                CustomToaster('error', 'Your location is not within our service area. Please select a different location.');
+            }
+        })
+        .catch((error) => {
+            setIsLoadingGeolocation(false);
+            console.error("Zone error:", error);
+            CustomToaster('error', 'Could not determine your service area. Please try again.');
+        });
+};
+    //////////////////////////////////////////
 
     // Check if location is valid
     const isValidLocation = (loc) => {
@@ -819,7 +945,7 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleAgreeLocation();
+                                handleUseCurrentLocation();
                             }}
                             startIcon={<GpsFixedIcon />}
                             loadingPosition="start"

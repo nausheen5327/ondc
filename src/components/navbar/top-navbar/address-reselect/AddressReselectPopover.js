@@ -16,7 +16,7 @@ import { useGetLocation } from "@/utils/custom-hook/useGetLocation";
 import { AnimationDots } from "../../../products-page/AnimationDots";
 import IconButton from "@mui/material/IconButton";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import { setLocation } from "@/redux/slices/addressData";
+import { setlocation } from "@/redux/slices/addressData";
 import { useQuery } from "react-query";
 import { GoogleApi } from "@/hooks/react-query/config/googleApi";
 import { setUserLocationUpdate } from "@/redux/slices/global";
@@ -31,6 +31,7 @@ const AddressReselectPopover = (props) => {
     const { coords, anchorEl, setMapOpen, mapOpen, onClose, open, t, address, setAddress, ...other } = props
     const { geoCodeLoading } = useGetLocation(coords);
     const { location, formatted_address, zoneId } = useSelector((state) => state.addressData)
+    console.log("map with address reselect popover", location);
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
     const languageDirection = 'ltr'
     const handleSuccess = () => {
@@ -47,6 +48,8 @@ const AddressReselectPopover = (props) => {
 
 
     }
+
+    console.log("coords in location", coords);
 
     const { data: geoCodeResults, refetch: refetchCurrentLocation } = useQuery(
         ['geocode-api', location],
@@ -71,17 +74,19 @@ const AddressReselectPopover = (props) => {
     }
     const setUserCurrentLocation = async () => {
         if (coords) {
-            dispatch(setLocation(
-                {
-                    lat: coords?.latitude,
-                    lng: coords?.longitude,
-                }
+            let location = {
+                lat: coords?.latitude,
+                lng: coords?.longitude,
+            }
+            dispatch(setlocation(
+                location
             ))
             if (zoneId) {
                 localStorage.setItem('zoneid', zoneId)
             }
             await refetchCurrentLocation()
             setRerenderMap((prvMap) => !prvMap)
+            onClose();
         }
 
     }
@@ -133,7 +138,7 @@ const AddressReselectPopover = (props) => {
                             </CustomStackFullWidth>
 
                         ) : (<CustomStackFullWidth position="relative" justifyContent="center" alignItems="center">
-                            <MapWithSearchBox isGps={true} rerenderMap={rerenderMap} orderType="dd" padding="0px" coords={coords} mapHeight="400px" />
+                            <MapWithSearchBox isGps={true} rerenderMap={rerenderMap} orderType="dd" padding="0px" coords={coords} mapHeight="400px" handleClose={onClose} />
                             <Stack width={{ xs: "80%", sm: "85%", md: "90%" }} position="absolute" right="15px" bottom="5%" direction="row" spacing={1}>
                                 {geoCodeLoading ? (
                                     <Button

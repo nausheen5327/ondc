@@ -169,7 +169,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     // }
 
 
-    const zoneid = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('zoneid')) : undefined;
+    const zoneid = typeof window !== 'undefined' ? (localStorage.getItem('zoneid')) : undefined;
 
 
     useEffect(() => {

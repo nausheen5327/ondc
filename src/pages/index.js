@@ -49,7 +49,7 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
         setCartData(parsedCartItems)
       }
       if (storedLocation) {
-          const parsedLocation = JSON.parse(storedLocation)
+          const parsedLocation = (storedLocation)
           setLocationData(parsedLocation)
       }
       
