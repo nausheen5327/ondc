@@ -286,7 +286,51 @@ handleClose}) => {
                                     localStorage.setItem('zoneid', JSON.stringify(zoneId));
                                     localStorage.setItem('location', JSON.stringify(address));
                                     localStorage.setItem('currentLatLng', JSON.stringify(newLocation));
-                                    
+                                    if (geoResponse?.data?.results && geoResponse.data?.results.length > 0) {
+                                        const addressComponents = geoResponse.data.results[0].address_components;
+                                        
+                                        // Initialize location details object
+                                        const locationDetails = {
+                                            areaCode: '',
+                                            street: '',
+                                            road: '',
+                                            building: '',
+                                            country: '',
+                                            city: '',
+                                            state: '',
+                                            formattedAddress: geoResponse.data.results[0].formatted_address
+                                        };
+                                        
+                                        // Extract components from Google's response
+                                        addressComponents.forEach(component => {
+                                            const types = component.types;
+                                            
+                                            if (types.includes('postal_code')) {
+                                                locationDetails.areaCode = component.long_name;
+                                            }
+                                            if (types.includes('route')) {
+                                                locationDetails.road = component.long_name;
+                                            }
+                                            if (types.includes('street_number')) {
+                                                locationDetails.street = component.long_name;
+                                            }
+                                            if (types.includes('premise') || types.includes('subpremise')) {
+                                                locationDetails.building = component.long_name;
+                                            }
+                                            if (types.includes('country')) {
+                                                locationDetails.country = component.long_name;
+                                            }
+                                            if (types.includes('locality') || types.includes('sublocality')) {
+                                                locationDetails.city = component.long_name;
+                                            }
+                                            if (types.includes('administrative_area_level_1')) {
+                                                locationDetails.state = component.long_name;
+                                            }
+                                        });
+                                        
+                                        // Store the detailed location information
+                                        localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+                                    }  
                                     // Update redux state
                                     dispatch(setZoneData(response.data.zone_data));
                                     dispatch(setUserLocationUpdate(!userLocationUpdate));

@@ -297,7 +297,51 @@ const finalizeLocationSelection = (coordinates) => {
                                 // Update redux state
                                 dispatch(setZoneData(response.data.zone_data));
                                 dispatch(setUserLocationUpdate(!userLocationUpdate));
-                                
+                                if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
+                                    const addressComponents = geoCodeResults.data.results[0].address_components;
+                                    
+                                    // Initialize location details object
+                                    const locationDetails = {
+                                        areaCode: '',
+                                        street: '',
+                                        road: '',
+                                        building: '',
+                                        country: '',
+                                        city: '',
+                                        state: '',
+                                        formattedAddress: geoCodeResults.results[0].formatted_address
+                                    };
+                                    
+                                    // Extract components from Google's response
+                                    addressComponents.forEach(component => {
+                                        const types = component.types;
+                                        
+                                        if (types.includes('postal_code')) {
+                                            locationDetails.areaCode = component.long_name;
+                                        }
+                                        if (types.includes('route')) {
+                                            locationDetails.road = component.long_name;
+                                        }
+                                        if (types.includes('street_number')) {
+                                            locationDetails.street = component.long_name;
+                                        }
+                                        if (types.includes('premise') || types.includes('subpremise')) {
+                                            locationDetails.building = component.long_name;
+                                        }
+                                        if (types.includes('country')) {
+                                            locationDetails.country = component.long_name;
+                                        }
+                                        if (types.includes('locality') || types.includes('sublocality')) {
+                                            locationDetails.city = component.long_name;
+                                        }
+                                        if (types.includes('administrative_area_level_1')) {
+                                            locationDetails.state = component.long_name;
+                                        }
+                                    });
+                                    
+                                    // Store the detailed location information
+                                    localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+                                }  
                                 // Show success message
                                 CustomToaster('success', 'New location has been set.');
                                 
@@ -606,7 +650,53 @@ const finalizeLocationSelection = (coordinates) => {
                     );
                 }
                 localStorage.setItem('currentLatLng', JSON.stringify(location));
-    
+                //
+                if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
+                    const addressComponents = geoCodeResults.data.results[0].address_components;
+                    
+                    // Initialize location details object
+                    const locationDetails = {
+                        areaCode: '',
+                        street: '',
+                        road: '',
+                        building: '',
+                        country: '',
+                        city: '',
+                        state: '',
+                        formattedAddress: geoCodeResults.data.results[0].formatted_address
+                    };
+                    
+                    // Extract components from Google's response
+                    addressComponents.forEach(component => {
+                        const types = component.types;
+                        
+                        if (types.includes('postal_code')) {
+                            locationDetails.areaCode = component.long_name;
+                        }
+                        if (types.includes('route')) {
+                            locationDetails.road = component.long_name;
+                        }
+                        if (types.includes('street_number')) {
+                            locationDetails.street = component.long_name;
+                        }
+                        if (types.includes('premise') || types.includes('subpremise')) {
+                            locationDetails.building = component.long_name;
+                        }
+                        if (types.includes('country')) {
+                            locationDetails.country = component.long_name;
+                        }
+                        if (types.includes('locality') || types.includes('sublocality')) {
+                            locationDetails.city = component.long_name;
+                        }
+                        if (types.includes('administrative_area_level_1')) {
+                            locationDetails.state = component.long_name;
+                        }
+                    });
+                    
+                    // Store the detailed location information
+                    localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+                }  
+                //
                 // Update redux state
                 dispatch(setUserLocationUpdate(!userLocationUpdate));
     
@@ -717,102 +807,6 @@ const finalizeLocationSelection = (coordinates) => {
                                     variant="rectangular"
                                 />
                             ) : (
-                                // <Autocomplete
-                                //     fullWidth
-                                //     freeSolo
-                                //     id="location-autocomplete"
-                                //     getOptionLabel={(option) => {
-                                //         console.log("place predictions option", option);
-                                //         if (!option) return '';
-                                //         return option.description || (typeof option === 'string' ? option : '');
-                                //     }}
-                                //     options={predictions || []}
-                                //     onChange={handleAutocompleteChange}
-                                //     clearOnBlur={false}
-                                //     value={currentLocationValue || { description: '' }}
-                                //     loading={placesIsLoading}
-                                //     isOptionEqualToValue={(option, value) => {
-                                //         if (!option || !value) return false;
-                                //         if (option.place_id && value.place_id) return option.place_id === value.place_id;
-                                //         return option.description === value.description;
-                                //     }}
-                                //     renderInput={(params) => (
-                                //         <CssTextField
-                                //             label={null}
-                                //             {...params}
-                                //             placeholder={t('Search location here...')}
-                                //             onChange={(event) => {
-                                //                 event.stopPropagation();
-                                //                 const value = event.target.value;
-                                //                 setSearchKey(value);
-                                //             }}
-                                //             onKeyPress={(e) => {
-                                //                 if (e.key === 'Enter') {
-                                //                     e.preventDefault();
-                                //                     e.stopPropagation();
-                                //                     refetchPlaces();
-                                //                 }
-                                //             }}
-                                //             onClick={(e) => {
-                                //                 e.stopPropagation();
-                                //             }}
-                                //             onMouseDown={(e) => {
-                                //                 e.stopPropagation();
-                                //             }}
-                                //             InputProps={{
-                                //                 ...params.InputProps,
-                                //                 endAdornment: (
-                                //                     <React.Fragment>
-                                //                         {placesIsLoading ? (
-                                //                             <CircularProgress color="inherit" size={20} />
-                                //                         ) : null}
-                                //                         {params.InputProps.endAdornment}
-                                //                     </React.Fragment>
-                                //                 ),
-                                //             }}
-                                //         />
-                                //     )}
-                                //     noOptionsText={t('No locations found')}
-                                //     loadingText={t('Search suggestions are loading...')}
-                                //     renderOption={(props, option) => {
-                                //         const customProps = {
-                                //             ...props,
-                                //             onClick: (event) => {
-                                //                 event.stopPropagation();
-                                //                 event.preventDefault();
-
-                                //                 // Set values directly
-                                //                 setPlaceId(option.place_id);
-                                //                 setPlaceDescription(option.description || '');
-                                //                 setPlaceDetailsEnabled(true);
-
-                                //                 // Call original onClick if it exists
-                                //                 if (props.onClick) {
-                                //                     props.onClick(event);
-                                //                 }
-                                //             }
-                                //         };
-
-                                //         return (
-                                //             <li {...customProps} key={option.place_id || option.description}>
-                                //                 {option.description}
-                                //             </li>
-                                //         );
-                                //     }}
-                                //     onClick={(e) => e.stopPropagation()}
-                                //     onMouseDown={(e) => e.stopPropagation()}
-                                //     PopperProps={{
-                                //         onClick: (e) => e.stopPropagation(),
-                                //         onMouseDown: (e) => e.stopPropagation()
-                                //     }}
-                                //     ListboxProps={{
-                                //         onClick: (e) => e.stopPropagation(),
-                                //         onMouseDown: (e) => e.stopPropagation()
-                                //     }}
-                                // />
-                                // Replace your current Autocomplete component with this implementation
-                                // Replace your current Autocomplete component with this enhanced version
-                                // Replace your current Autocomplete component with this refined version
                                 <Autocomplete
                                     fullWidth
                                     freeSolo

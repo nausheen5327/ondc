@@ -28,12 +28,16 @@ const TopNav = ({ cartListRefetch }) => {
     )
     const location = useSelector((state) => state.addressData.location)
     const [userLocation, setUserLocation] = useState(null)
+    const [userDetailedLocation, setUserDetailedLocation] = useState(null);
     useEffect(() => {
         let location = undefined
+        let detailedLocation = undefined
         if (typeof window !== 'undefined') {
             location = localStorage.getItem('location')
+            detailedLocation = localStorage.getItem('locationDetails');
         }
         setUserLocation((location))
+       if(detailedLocation) setUserDetailedLocation(JSON.parse(detailedLocation));
     }, [userLocationUpdate])
     const addresses = useSelector((state) => state.user.addressList);
     console.log("location...", location);
@@ -90,6 +94,7 @@ const TopNav = ({ cartListRefetch }) => {
 
                                     <AddressReselect
                                         location={userLocation}
+                                        detailedLocation = {userDetailedLocation}
                                         userLocationUpdate={userLocationUpdate}
                                     />
                                 </CustomStackForLoaction>

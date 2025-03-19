@@ -31,7 +31,7 @@ const AddressReselectPopover = (props) => {
     const { coords, anchorEl, setMapOpen, mapOpen, onClose, open, t, address, setAddress, ...other } = props
     const { geoCodeLoading } = useGetLocation(coords);
     const { location, formatted_address, zoneId } = useSelector((state) => state.addressData)
-    console.log("map with address reselect popover", location);
+    console.log("address reselect popover", address);
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
     const languageDirection = 'ltr'
     const handleSuccess = () => {
@@ -66,6 +66,53 @@ const AddressReselectPopover = (props) => {
                 formatted_address
             )
             localStorage.setItem('currentLatLng', JSON.stringify(location))
+            console.log("inside geoCode result ", geoCodeResults);
+            
+            if (geoCodeResults?.data?.results && geoCodeResults.data.results.length > 0) {
+                const addressComponents = geoCodeResults.data.results[0].address_components;
+                
+                // Initialize location details object
+                const locationDetails = {
+                    areaCode: '',
+                    street: '',
+                    road: '',
+                    building: '',
+                    country: '',
+                    city: '',
+                    state: '',
+                    formattedAddress: formatted_address
+                };
+                
+                // Extract components from Google's response
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    
+                    if (types.includes('postal_code')) {
+                        locationDetails.areaCode = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        locationDetails.road = component.long_name;
+                    }
+                    if (types.includes('street_number')) {
+                        locationDetails.street = component.long_name;
+                    }
+                    if (types.includes('premise') || types.includes('subpremise')) {
+                        locationDetails.building = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        locationDetails.country = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('sublocality')) {
+                        locationDetails.city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        locationDetails.state = component.long_name;
+                    }
+                });
+                
+                // Store the detailed location information
+                localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+            }
             CustomToaster('success', 'New location has been set.');
             setAddress(null)
             dispatch(setUserLocationUpdate(!userLocationUpdate))
@@ -85,6 +132,51 @@ const AddressReselectPopover = (props) => {
                 localStorage.setItem('zoneid', zoneId)
             }
             await refetchCurrentLocation()
+            if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
+                const addressComponents = geoCodeResults.data.results[0].address_components;
+                
+                // Initialize location details object
+                const locationDetails = {
+                    areaCode: '',
+                    street: '',
+                    road: '',
+                    building: '',
+                    country: '',
+                    city: '',
+                    state: '',
+                    formattedAddress: geoCodeResults.results[0].formatted_address
+                };
+                
+                // Extract components from Google's response
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    
+                    if (types.includes('postal_code')) {
+                        locationDetails.areaCode = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        locationDetails.road = component.long_name;
+                    }
+                    if (types.includes('street_number')) {
+                        locationDetails.street = component.long_name;
+                    }
+                    if (types.includes('premise') || types.includes('subpremise')) {
+                        locationDetails.building = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        locationDetails.country = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('sublocality')) {
+                        locationDetails.city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        locationDetails.state = component.long_name;
+                    }
+                });
+                
+                // Store the detailed location information
+                localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+            }    
             setRerenderMap((prvMap) => !prvMap)
             onClose();
         }

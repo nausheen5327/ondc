@@ -26,7 +26,7 @@ export const AddressTypographyGray = styled(Typography)(({ theme }) => ({
     color: theme.palette.neutral[1000],
     fontSize: "13px"
 }))
-const AddressReselect = ({ location }) => {
+const AddressReselect = ({ location,detailedLocation }) => {
     const [mapOpen, setMapOpen] = useState(false)
     const router = useRouter()
     const [open, setOpen] = useState(false)
@@ -46,7 +46,6 @@ const AddressReselect = ({ location }) => {
                 localStorage.setItem('zoneid', JSON.stringify(address.zone_ids))
                 toast.success(t('New delivery address selected.'))
                 handleClosePopover()
-                dispatch(setClearCart())
                 dispatch(setUserLocationUpdate(!userLocationUpdate))
                 router.push('/home')
             }
@@ -81,7 +80,7 @@ const AddressReselect = ({ location }) => {
             handleModalClose()
         }
     }
-    console.log("coords in loc",coords);
+    console.log("location in top nav",address);
 
     return (
         <>{location ?
@@ -104,7 +103,7 @@ const AddressReselect = ({ location }) => {
                 <AddressTypographyGray
                     align="left"
                 >
-                    {location}
+                    {detailedLocation?.areaCode}
                 </AddressTypographyGray>
                 <KeyboardArrowDownIcon />
             </Stack> :
