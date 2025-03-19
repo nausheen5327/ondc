@@ -20,29 +20,40 @@ import { getValueFromCookie } from '@/utils/cookies'
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
     const theme = useTheme()
-    const [query,setQuery] = useState("");
+    const [query, setQuery] = useState("");
     const router = useRouter()
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     const { global, userLocationUpdate } = useSelector(
         (state) => state.globalSettings
     )
-    const location = useSelector((state)=>state.addressData.location)
+    const location = useSelector((state) => state.addressData.location)
+    const [userLocation, setUserLocation] = useState(null)
+    const [userDetailedLocation, setUserDetailedLocation] = useState(null);
+    useEffect(() => {
+        let location = undefined
+        let detailedLocation = undefined
+        if (typeof window !== 'undefined') {
+            location = localStorage.getItem('location')
+            detailedLocation = localStorage.getItem('locationDetails');
+        }
+        setUserLocation((location))
+       if(detailedLocation) setUserDetailedLocation(JSON.parse(detailedLocation));
+    }, [userLocationUpdate])
     const addresses = useSelector((state) => state.user.addressList);
-    console.log("location...",location);
-    // const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
-    const token= getValueFromCookie('token')
-useEffect(() => {
-        let location =localStorage.getItem('location');
-        let addressList = localStorage.getItem('addressList');
-        if(location){
+    console.log("location...", location);
+    const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
+    const token = getValueFromCookie('token')
+    useEffect(() => {
+        let location = localStorage.getItem('currentLatLng');
+        // let addressList = localStorage.getItem('addressList');
+        if (location) {
             dispatch(setlocation(JSON.parse(location)))
-           if(!token) dispatch(setAddressList([JSON.parse(location)]));
+            // if (!token) dispatch(setAddressList([JSON.parse(location)]));
             // router.push('/home')
         };
-        if(addressList)
-        {
-            dispatch(setAddressList(JSON.parse(addressList)));
-        }
+        // if (addressList) {
+        //     dispatch(setAddressList(JSON.parse(addressList)));
+        // }
     }, [])
     return (
         <NoSsr>
@@ -81,10 +92,12 @@ useEffect(() => {
                                     
 
                                     <AddressReselect
-                                        location={location}
+                                        location={userLocation}
+                                        detailedLocation = {userDetailedLocation}
+                                        userLocationUpdate={userLocationUpdate}
                                     />
                                 </CustomStackForLoaction>
-                               
+
                                 {/* {!isSmall && (
                                     <Stack
                                         direction="row"
@@ -97,7 +110,7 @@ useEffect(() => {
                             </Stack>
                             {isSmall && (
                                 <DrawerMenu
-                                   
+
                                 />
                             )}
                         </Box>

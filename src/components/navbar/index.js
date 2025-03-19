@@ -80,7 +80,7 @@ const Navigation = () => {
       }
     };
     useEffect(() => {
-      fetchCategories();
+    //   fetchCategories();
     }, []); 
     useEffect(() => {
         let location = undefined

@@ -20,7 +20,7 @@ export const useGetLocation = (coords) => {
     const [predictions, setPredictions] = useState([]);
     const [placeId, setPlaceId] = useState('');
     const [value, setValue] = useState();
-    const [currentLocationValue, setCurrentLactionValue] = useState({
+    const [currentLocationValue, setCurrentLocationValue] = useState({
         description: '',
     })
 
@@ -136,12 +136,12 @@ export const useGetLocation = (coords) => {
     }, [geoCodeResults]);
     useEffect(() => {
         if (geoCodeResults) {
-            setCurrentLactionValue({
+            setCurrentLocationValue({
                 description:
                     geoCodeResults?.data?.results[0]?.formatted_address,
             })
         } else {
-            setCurrentLactionValue({
+            setCurrentLocationValue({
                 description: '',
             })
         }
@@ -174,7 +174,7 @@ export const useGetLocation = (coords) => {
         isLoadingPlacesApi,
         geoCodeLoading,
         currentLocationValue,
-        setCurrentLactionValue
+        setCurrentLocationValue
 
         // Other state variables and functions...
     };
