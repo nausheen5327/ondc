@@ -178,7 +178,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
 
 
     useEffect(() => {
-        if(router.pathname==='/')router.push('/home')
+        // if(router.pathname==='/')router.push('/home')
         const storedVersion = localStorage.getItem('appVersion');
         if (storedVersion !== currentVersion) {
             localStorage.clear();

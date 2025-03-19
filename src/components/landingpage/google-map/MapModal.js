@@ -309,7 +309,7 @@ const finalizeLocationSelection = (coordinates) => {
                                         country: '',
                                         city: '',
                                         state: '',
-                                        formattedAddress: geoCodeResults.results[0].formatted_address
+                                        formattedAddress: geoCodeResults.data.results[0].formatted_address
                                     };
                                     
                                     // Extract components from Google's response
@@ -1033,7 +1033,7 @@ const finalizeLocationSelection = (coordinates) => {
                     </ErrorBoundary>
 
                     <CustomStackFullWidth
-                        justifyConatent="center"
+                        justifyContent="center"
                         alignItems="center"
                     >
                         {!!location && (
