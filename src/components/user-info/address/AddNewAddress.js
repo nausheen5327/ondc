@@ -46,7 +46,6 @@ const style = {
     borderRadius: '10px',
 }
 const AddNewAddress = ({
-    refetch,
     buttonbg,
     guestUser,
     orderType,
@@ -57,6 +56,7 @@ const AddNewAddress = ({
     const [rerenderMap, setRerenderMap] = useState(false)
     const { t } = useTranslation()
     const { global } = useSelector((state) => state.globalSettings)
+    const [isLoading, setIsLoading] = useState(false);
     const { location, formatted_address } = useSelector(
         (state) => state.addressData
     )
@@ -77,23 +77,7 @@ const AddNewAddress = ({
     const handleChange = (e) => {
         setValue(e.target.value)
     }
-    const { mutate, isLoading, error } = useMutation(
-        'address-add',
-        AddressApi.addNewAddress,
-        {
-            onSuccess: (response) => {
-                toast.success(response?.data?.message)
-
-                if (response?.data) {
-                    refetch()
-                    setOpen(false)
-                }
-            },
-            onError: (error) => {
-                onErrorResponse(error)
-            },
-        }
-    )
+    
     const formSubmitHandler = (values) => {
         if (token) {
             mutate(values)

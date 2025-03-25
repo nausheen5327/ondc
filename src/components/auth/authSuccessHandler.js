@@ -93,33 +93,33 @@ export const useAuthData = () => {
       try {
           const data = await getCall("/clientApis/v1/delivery_address");
           
-          if (newAddressId) {
-              // If we just posted a new address, find and set it
-              const newAddress = data.find(addr => addr.id === newAddressId);
-              if (newAddress) {
-                  dispatch(setlocation(newAddress));
-                  localStorage.setItem('location', JSON.stringify(newAddress));
-              }
-          } else {
-              // Handle existing stored location
-              const storedLocation = localStorage.getItem('location');
-              if (storedLocation) {
-                  const locationData = JSON.parse(storedLocation);
-                  const existingAddress = data.find(addr => addr.id === locationData.id);
+          // if (newAddressId) {
+          //     // If we just posted a new address, find and set it
+          //     const newAddress = data.find(addr => addr.id === newAddressId);
+          //     if (newAddress) {
+          //         dispatch(setlocation(newAddress));
+          //         localStorage.setItem('location', JSON.stringify(newAddress));
+          //     }
+          // } else {
+          //     // Handle existing stored location
+          //     const storedLocation = localStorage.getItem('location');
+          //     if (storedLocation) {
+          //         const locationData = JSON.parse(storedLocation);
+          //         const existingAddress = data.find(addr => addr.id === locationData.id);
                   
-                  if (existingAddress) {
-                      dispatch(setlocation(existingAddress));
-                      localStorage.setItem('location', JSON.stringify(existingAddress));
-                  } else {
-                      // If stored location not found, use latest address
-                      const latestAddress = data[data.length - 1];
-                      if (latestAddress) {
-                          dispatch(setlocation(latestAddress));
-                          localStorage.setItem('location', JSON.stringify(latestAddress));
-                      }
-                  }
-              }
-          }
+          //         if (existingAddress) {
+          //             dispatch(setlocation(existingAddress));
+          //             localStorage.setItem('location', JSON.stringify(existingAddress));
+          //         } else {
+          //             // If stored location not found, use latest address
+          //             const latestAddress = data[data.length - 1];
+          //             if (latestAddress) {
+          //                 dispatch(setlocation(latestAddress));
+          //                 localStorage.setItem('location', JSON.stringify(latestAddress));
+          //             }
+          //         }
+          //     }
+          // }
           
           dispatch(setAddressList(data));
           localStorage.setItem('addressList', JSON.stringify(data));

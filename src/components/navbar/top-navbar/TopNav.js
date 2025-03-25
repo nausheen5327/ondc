@@ -45,15 +45,15 @@ const TopNav = ({ cartListRefetch }) => {
     const token = getValueFromCookie('token')
     useEffect(() => {
         let location = localStorage.getItem('currentLatLng');
-        // let addressList = localStorage.getItem('addressList');
+        let addressList = localStorage.getItem('addressList');
         if (location) {
             dispatch(setlocation(JSON.parse(location)))
             // if (!token) dispatch(setAddressList([JSON.parse(location)]));
             // router.push('/home')
         };
-        // if (addressList) {
-        //     dispatch(setAddressList(JSON.parse(addressList)));
-        // }
+        if (addressList) {
+            dispatch(setAddressList(JSON.parse(addressList)));
+        }
     }, [])
     return (
         <NoSsr>

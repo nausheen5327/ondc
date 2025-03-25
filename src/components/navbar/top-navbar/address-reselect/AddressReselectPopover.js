@@ -49,7 +49,7 @@ const AddressReselectPopover = (props) => {
 
     }
 
-    console.log("coords in location", coords);
+    console.log("coords in location", address);
 
     const { data: geoCodeResults, refetch: refetchCurrentLocation } = useQuery(
         ['geocode-api', location],
@@ -72,7 +72,7 @@ const AddressReselectPopover = (props) => {
                 const addressComponents = geoCodeResults.data.results[0].address_components;
                 
                 // Initialize location details object
-                const locationDetails = {
+                const locationDetails = {address:{
                     areaCode: '',
                     street: '',
                     road: '',
@@ -81,32 +81,32 @@ const AddressReselectPopover = (props) => {
                     city: '',
                     state: '',
                     formattedAddress: formatted_address
-                };
+                }};
                 
                 // Extract components from Google's response
                 addressComponents.forEach(component => {
                     const types = component.types;
                     
                     if (types.includes('postal_code')) {
-                        locationDetails.areaCode = component.long_name;
+                        locationDetails.address.areaCode = component.long_name;
                     }
                     if (types.includes('route')) {
-                        locationDetails.road = component.long_name;
+                        locationDetails.address.road = component.long_name;
                     }
                     if (types.includes('street_number')) {
-                        locationDetails.street = component.long_name;
+                        locationDetails.address.street = component.long_name;
                     }
                     if (types.includes('premise') || types.includes('subpremise')) {
-                        locationDetails.building = component.long_name;
+                        locationDetails.address.building = component.long_name;
                     }
                     if (types.includes('country')) {
-                        locationDetails.country = component.long_name;
+                        locationDetails.address.country = component.long_name;
                     }
                     if (types.includes('locality') || types.includes('sublocality')) {
-                        locationDetails.city = component.long_name;
+                        locationDetails.address.city = component.long_name;
                     }
                     if (types.includes('administrative_area_level_1')) {
-                        locationDetails.state = component.long_name;
+                        locationDetails.address.state = component.long_name;
                     }
                 });
                 
@@ -136,7 +136,7 @@ const AddressReselectPopover = (props) => {
                 const addressComponents = geoCodeResults.data.results[0].address_components;
                 
                 // Initialize location details object
-                const locationDetails = {
+                const locationDetails = {address:{
                     areaCode: '',
                     street: '',
                     road: '',
@@ -145,32 +145,32 @@ const AddressReselectPopover = (props) => {
                     city: '',
                     state: '',
                     formattedAddress: geoCodeResults.results[0].formatted_address
-                };
+                }};
                 
                 // Extract components from Google's response
                 addressComponents.forEach(component => {
                     const types = component.types;
                     
                     if (types.includes('postal_code')) {
-                        locationDetails.areaCode = component.long_name;
+                        locationDetails.address.areaCode = component.long_name;
                     }
                     if (types.includes('route')) {
-                        locationDetails.road = component.long_name;
+                        locationDetails.address.road = component.long_name;
                     }
                     if (types.includes('street_number')) {
-                        locationDetails.street = component.long_name;
+                        locationDetails.address.street = component.long_name;
                     }
                     if (types.includes('premise') || types.includes('subpremise')) {
-                        locationDetails.building = component.long_name;
+                        locationDetails.address.building = component.long_name;
                     }
                     if (types.includes('country')) {
-                        locationDetails.country = component.long_name;
+                        locationDetails.address.country = component.long_name;
                     }
                     if (types.includes('locality') || types.includes('sublocality')) {
-                        locationDetails.city = component.long_name;
+                        locationDetails.address.city = component.long_name;
                     }
                     if (types.includes('administrative_area_level_1')) {
-                        locationDetails.state = component.long_name;
+                        locationDetails.address.state = component.long_name;
                     }
                 });
                 
@@ -254,6 +254,7 @@ const AddressReselectPopover = (props) => {
                                             '&:hover': {
                                                 backgroundColor: theme.palette.primary.dark,
                                             },
+                                            zIndex:9999
                                         }}
                                         paddingTop="10px" paddingBottom="10px"
                                         onClick={getLocation}

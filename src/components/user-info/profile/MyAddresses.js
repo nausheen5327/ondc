@@ -41,7 +41,7 @@ const MyAddresses = () => {
                     <CustomTypography fontWeight="500">
                         {t('My Addresses')}
                     </CustomTypography>
-                    {/* <AddNewAddress refetch={refetch} /> */}
+                    <AddNewAddress  />
                 </CustomStackFullWidth>
                 {addresses?.length === 0 ? (
                     <Stack

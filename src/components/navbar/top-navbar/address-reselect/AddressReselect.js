@@ -35,20 +35,18 @@ const AddressReselect = ({ location,detailedLocation }) => {
     const { t } = useTranslation()
     const dispatch = useDispatch()
     const anchorRef = useRef(null)
+    console.log("bhaiya address is", address);
     
     useEffect(() => {
         if (address) {
-            localStorage.setItem('location', address?.address)
-            const values = { lat: address?.lat, lng: address?.lng }
+            localStorage.setItem('location', `${address.address.door}, ${address.address.building}, ${address.address.street},${address.address.city}, ${address.address.state}, ${address.address.country},${address.address.areaCode}`)
+            localStorage.setItem('locationDetails', JSON.stringify(address))
+            const values = { lat: address?.address?.lat, lng: address?.address?.lng }
             localStorage.setItem('currentLatLng', JSON.stringify(values))
-            if (address.zone_ids && address.zone_ids.length > 0) {
-                const value = [address.zone_ids]
-                localStorage.setItem('zoneid', JSON.stringify(address.zone_ids))
-                toast.success(t('New delivery address selected.'))
-                handleClosePopover()
-                dispatch(setUserLocationUpdate(!userLocationUpdate))
-                router.push('/home')
-            }
+            toast.success(t('New delivery address selected.'))
+            handleClosePopover()
+            dispatch(setUserLocationUpdate(!userLocationUpdate))
+            router.push('/home')
         }
     }, [address])
 
@@ -103,7 +101,7 @@ const AddressReselect = ({ location,detailedLocation }) => {
                 <AddressTypographyGray
                     align="left"
                 >
-                    {detailedLocation?.areaCode}
+                    {detailedLocation?.address?.areaCode}
                 </AddressTypographyGray>
                 <KeyboardArrowDownIcon />
             </Stack> :
@@ -135,7 +133,7 @@ const AddressReselect = ({ location,detailedLocation }) => {
                 onClose={handleClosePopover}
                 open={openMapDrawer}
                 t={t}
-                address={address?.address}
+                address={address}
                 setAddress={setAddress}
                 mapOpen={mapOpen}
                 setUserLocationUpdate={setUserLocationUpdate}
