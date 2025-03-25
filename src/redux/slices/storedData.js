@@ -5,7 +5,7 @@ const initialState = {
         {
             "id": 7,
             "name": "Asian",
-            "image": "sushi.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167124/sushi_usigw0.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -16,7 +16,7 @@ const initialState = {
             "products_count": 6,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "sushi.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167124/sushi_usigw0.jpg",
             "childes": [],
             "translations": [
                 {
@@ -35,7 +35,7 @@ const initialState = {
         {
             "id": 6,
             "name": "Biryani",
-            "image": "biryani.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167126/biryani_gb6wfk.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -46,7 +46,7 @@ const initialState = {
             "products_count": 7,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "biryani.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167126/biryani_gb6wfk.jpg",
             "childes": [],
             "translations": [
                 {
@@ -65,7 +65,7 @@ const initialState = {
         {
             "id": 5,
             "name": "Burger",
-            "image": "burger.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167124/burger_jgo70e.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -76,7 +76,7 @@ const initialState = {
             "products_count": 11,
             "childes_count": 5,
             "order_count": "3",
-            "image_full_url": "burger.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167124/burger_jgo70e.jpg",
             "childes": [
                 {
                     "id": 24,
@@ -225,7 +225,7 @@ const initialState = {
         {
             "id": 8,
             "name": "Cake",
-            "image": "cake.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167129/cake_uxy3if.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -236,7 +236,7 @@ const initialState = {
             "products_count": 12,
             "childes_count": 3,
             "order_count": "3",
-            "image_full_url": "cake.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167129/cake_uxy3if.jpg",
             "childes": [
                 {
                     "id": 29,
@@ -340,7 +340,7 @@ const initialState = {
         {
             "id": 10,
             "name": "Chinese",
-            "image": "chinese.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167134/chinese_xfitgr.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -351,7 +351,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "3",
-            "image_full_url": "chinese.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167134/chinese_xfitgr.jpg",
             "childes": [],
             "translations": [
                 {
@@ -370,7 +370,7 @@ const initialState = {
         {
             "id": 9,
             "name": "Coffee & Drinks",
-            "image": "coffee.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167122/coffee_kzsvrs.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -381,7 +381,7 @@ const initialState = {
             "products_count": 6,
             "childes_count": 5,
             "order_count": 0,
-            "image_full_url": "coffee.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167122/coffee_kzsvrs.jpg",
             "childes": [
                 {
                     "id": 32,
@@ -530,7 +530,7 @@ const initialState = {
         {
             "id": 11,
             "name": "Fast Food",
-            "image": "fastFood.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167126/fastFood_qhqizq.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -541,7 +541,7 @@ const initialState = {
             "products_count": 12,
             "childes_count": 0,
             "order_count": "4",
-            "image_full_url": "fastFood.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167126/fastFood_qhqizq.jpg",
             "childes": [],
             "translations": [
                 {
@@ -560,7 +560,7 @@ const initialState = {
         {
             "id": 13,
             "name": "Indian",
-            "image": "indian.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167144/indian_d95oim.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -571,7 +571,7 @@ const initialState = {
             "products_count": 5,
             "childes_count": 0,
             "order_count": 0,
-            "image_full_url": "indian.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167144/indian_d95oim.jpg",
             "childes": [],
             "translations": [
                 {
@@ -590,7 +590,7 @@ const initialState = {
         {
             "id": 12,
             "name": "Kabab & More",
-            "image": "kebab.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167122/kebab_lkczjc.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -601,7 +601,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "1",
-            "image_full_url": "kebab.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167122/kebab_lkczjc.jpg",
             "childes": [],
             "translations": [
                 {
@@ -620,7 +620,7 @@ const initialState = {
         {
             "id": 15,
             "name": "Mexican Food",
-            "image": "mexican.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167130/mexican_tzm1o9.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -631,7 +631,7 @@ const initialState = {
             "products_count": 9,
             "childes_count": 0,
             "order_count": "1",
-            "image_full_url": "mexican.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167130/mexican_tzm1o9.jpg",
             "childes": [],
             "translations": [
                 {
@@ -650,7 +650,7 @@ const initialState = {
         {
             "id": 14,
             "name": "Noodles",
-            "image": "noodles.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167127/noodles_tk9377.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -661,7 +661,7 @@ const initialState = {
             "products_count": 3,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "noodles.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167127/noodles_tk9377.jpg",
             "childes": [],
             "translations": [
                 {
@@ -680,7 +680,7 @@ const initialState = {
         {
             "id": 16,
             "name": "Pasta",
-            "image": "pasta.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167131/pasta_zwhomx.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -691,7 +691,7 @@ const initialState = {
             "products_count": 10,
             "childes_count": 0,
             "order_count": 0,
-            "image_full_url": "pasta.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167131/pasta_zwhomx.jpg",
             "childes": [],
             "translations": [
                 {
@@ -710,7 +710,7 @@ const initialState = {
         {
             "id": 17,
             "name": "Pizza",
-            "image": "pizza.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167130/pizza_tzytr8.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -721,7 +721,7 @@ const initialState = {
             "products_count": 17,
             "childes_count": 0,
             "order_count": "8",
-            "image_full_url": "pizza.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167130/pizza_tzytr8.jpg",
             "childes": [],
             "translations": [
                 {
@@ -740,7 +740,7 @@ const initialState = {
         {
             "id": 18,
             "name": "Snacks",
-            "image": "snacks.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167138/snacks_imk5ut.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -751,7 +751,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "2",
-            "image_full_url": "snacks.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167138/snacks_imk5ut.jpg",
             "childes": [],
             "translations": [
                 {
@@ -770,7 +770,7 @@ const initialState = {
         {
             "id": 19,
             "name": "Thai",
-            "image": "thai.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167123/thai_mwle1y.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -781,7 +781,7 @@ const initialState = {
             "products_count": 8,
             "childes_count": 0,
             "order_count": "3",
-            "image_full_url": "thai.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167123/thai_mwle1y.jpg",
             "childes": [],
             "translations": [
                 {
@@ -800,7 +800,7 @@ const initialState = {
         {
             "id": 20,
             "name": "Varieties",
-            "image": "variety.jpg",
+            "image": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167128/variety_zldogw.jpg",
             "parent_id": 0,
             "position": 0,
             "status": 1,
@@ -811,7 +811,7 @@ const initialState = {
             "products_count": 11,
             "childes_count": 0,
             "order_count": "14",
-            "image_full_url": "variety.jpg",
+            "image_full_url": "https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167128/variety_zldogw.jpg",
             "childes": [],
             "translations": [
                 {

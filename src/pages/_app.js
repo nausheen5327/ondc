@@ -72,7 +72,7 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
         return {    
             paddingTop: currentPath === '/checkout' || currentPath === '/info' 
                 ? '0'
-                : (currentPath === '/category/[id]' ? isSmall?'40px':'10px' : isSmall?'164px':'84px'),
+                : (currentPath === '/category/[id]' ? isSmall?'40px':'10px' : isSmall?'104px':'64px'),
             minHeight: '100vh',
         }
     });

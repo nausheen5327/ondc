@@ -1,9 +1,3 @@
-import { CampaignApi } from '@/hooks/react-query/config/campaignApi'
-import {
-    MostReviewedApi,
-    PopularFoodNearbyApi,
-} from '@/hooks/react-query/config/productsApi'
-import { useWishListGet } from '@/hooks/react-query/config/wish-list/useWishListGet'
 import {
     setFilterbyByDispatch,
     setFoodOrRestaurant,
@@ -21,22 +15,15 @@ import { Box } from '@mui/system'
 import { t } from 'i18next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useQuery } from 'react-query'
 import { useDispatch, useSelector } from 'react-redux'
-import { onSingleErrorResponse } from '../ErrorResponse'
 import PushNotificationLayout from '../PushNotificationLayout'
 import CustomContainer from '../container'
-import CustomModal from '../custom-modal/CustomModal'
 import ProductSearchPage from '../products-page/ProductSearchPage'
-import Banner from './Banner'
 import DifferentFoodCompontent from './DefferntFoodCompontent'
-import NewRestaurant from './NewRestaurant'
 import PromotionalBanner from './PromotionalBanner'
-import Restaurant from './Restaurant'
 import SearchFilterTag from './Search-filter-tag/SearchFilterTag'
 import Cuisines from './cuisines'
 import FeatureCatagories from './featured-categories/FeatureCatagories'
-import Image from 'next/image'
 import Link from 'next/link'
 
 

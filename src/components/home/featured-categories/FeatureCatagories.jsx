@@ -136,7 +136,7 @@ const FeatureCatagories = () => {
                                     <FeaturedCategoryCard
                                         key={categoryItem?.id}
                                         id={categoryItem?.id}
-                                        categoryImage={`/static/food/${categoryItem?.image_full_url}`}
+                                        categoryImage={`${categoryItem?.image_full_url}`}
                                         name={categoryItem?.name}
                                         categoryImageUrl={
                                             global?.base_urls?.category_image_url
