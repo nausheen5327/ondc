@@ -212,11 +212,11 @@ const TopNav = ({ cartListRefetch }) => {
                                     />
 
                                     {/* Only render the AddressReselect component if location exists */}
-                                    {location && (
+                                    
                                         <AddressReselect
                                             location={location}
                                         />
-                                    )}
+                                    
                                 </CustomStackForLoaction>
                             </Stack>
                             {isSmall && (
