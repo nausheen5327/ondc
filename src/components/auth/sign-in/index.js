@@ -347,6 +347,7 @@ const SignInPage = ({
             phone: values.phone,
             otp: values?.reset_token,
         })        
+        localStorage.setItem('userDatafor', JSON.stringify(values))
         // Determine which modal to show based on the response
             setOpenOtpModal(false)
             let token = mainToken.split(' ')[1];

@@ -28,7 +28,7 @@ const MyAddresses = () => {
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.down("sm"))
     const addresses = useSelector((state) => state.user.addressList);
-
+console.log("are bhaiya addresses is", addresses)
     return (
         <CustomPaperBigCard padding={isXs ? "10px" : "15px 25px 25px"}>
             <CustomStackFullWidth>
