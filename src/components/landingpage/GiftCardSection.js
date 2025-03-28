@@ -34,7 +34,7 @@ const theme = useTheme();
         maxWidth: '1200px',
         margin: '0 auto'
       }}>
-        {giftCards.map((card, index) => (
+        {giftCards?.map((card, index) => (
           <div key={index} style={{
             position: 'relative',
             backgroundColor: '#ffffff',

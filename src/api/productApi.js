@@ -9,14 +9,15 @@ export const getAllProductRequest = (params) => {
     return new Promise(async (resolve, reject) => {
         try {
             let location = localStorage.getItem('location');
-            let latitude = null;
-            let longitude = null;
-            if (location) {
-                latitude = JSON.parse(location).address.lat;
-                longitude = JSON.parse(location).address.lng;
-            }
-            const data = await getCallTest(`/nodeStrapi/search`, { ...params, lat: `${latitude}`, lon: `${longitude}` });
-            return resolve(data.response);
+            return;
+            // let latitude = null;
+            // let longitude = null;
+            // if (location) {
+            //     latitude = JSON.parse(location).address.lat;
+            //     longitude = JSON.parse(location).address.lng;
+            // }
+            // const data = await getCallTest(`/nodeStrapi/search`, { ...params, lat: `${latitude}`, lon: `${longitude}` });
+            // return resolve(data.response);
         } catch (err) {
             return reject(err);
         }

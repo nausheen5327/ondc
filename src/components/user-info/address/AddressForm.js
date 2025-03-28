@@ -31,6 +31,7 @@ const AddressForm = ({
     deliveryAddress,
     personName,
     phone,
+    email,
     lat,
     lng,
     formSubmit,
@@ -93,6 +94,13 @@ const AddressForm = ({
                 : phone
                 ? phone
                 : '',
+                contact_person_email: editAddress
+                ? address?.contact_person_email
+                : guestUserInfo
+                ? guestUserInfo?.contact_person_email
+                : email
+                ? email
+                : '',
             latitude: lat,
             longitude: lng,
             road: editAddress ? address?.road : '',
@@ -127,6 +135,9 @@ const AddressForm = ({
     }
     const numberHandler = (value) => {
         addAddressFormik.setFieldValue('contact_person_number', value)
+    }
+    const emailHandler = (value) => {
+        addAddressFormik.setFieldValue('contact_person_email', value)
     }
     const addressLabelHandler = (value) => {
         addAddressFormik.setFieldValue('address_label', value)
@@ -164,7 +175,7 @@ const AddressForm = ({
                     <Grid
                         container
                         spacing={0}
-                        gap={{ xs: '15px', md: '25px' }}
+                        gap={{ xs: '10px', md: '10px' }}
                         sx={{
                             paddingInlineEnd: '10px',
                         }}
@@ -284,6 +295,26 @@ const AddressForm = ({
                                         .contact_person_number
                                 }
                                 rtlChange="true"
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={12}>
+                            <CustomTextFieldWithFormik
+                                required="true"
+                                type="text"
+                                label={t('Contact Person Email')}
+                                touched={
+                                    addAddressFormik.touched.contact_person_email
+                                }
+                                errors={
+                                    addAddressFormik.errors.contact_person_email
+                                }
+                                fieldProps={addAddressFormik.getFieldProps(
+                                    'contact_person_email'
+                                )}
+                                onChangeHandler={emailHandler}
+                                value={
+                                    addAddressFormik.values.contact_person_email
+                                }
                             />
                         </Grid>
                         <Grid item xs={12} md={12}>

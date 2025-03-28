@@ -174,11 +174,11 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     // }
 
 
-    const zoneid = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('zoneid')) : undefined;
+    const zoneid = typeof window !== 'undefined' ? (localStorage.getItem('zoneid')) : undefined;
 
 
     useEffect(() => {
-        if(router.pathname==='/')router.push('/home')
+        // if(router.pathname==='/')router.push('/home')
         const storedVersion = localStorage.getItem('appVersion');
         if (storedVersion !== currentVersion) {
             localStorage.clear();

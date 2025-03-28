@@ -33,6 +33,9 @@ import MapWithSearchBox from '../../google-map/MapWithSearchBox'
 import { useGeolocated } from 'react-geolocated'
 import GpsFixedIcon from '@mui/icons-material/GpsFixed'
 import { setLocation } from '@/redux/slices/addressData'
+import { getCall, postCall } from '@/api/MainApi'
+import { setAddressList } from '@/redux/slices/customer'
+import { CustomToaster } from '@/components/custom-toaster/CustomToaster'
 
 const style = {
     position: 'absolute',
@@ -46,7 +49,6 @@ const style = {
     borderRadius: '10px',
 }
 const AddNewAddress = ({
-    refetch,
     buttonbg,
     guestUser,
     orderType,
@@ -57,16 +59,15 @@ const AddNewAddress = ({
     const [rerenderMap, setRerenderMap] = useState(false)
     const { t } = useTranslation()
     const { global } = useSelector((state) => state.globalSettings)
-    const { location, formatted_address } = useSelector(
+    const [isLoading, setIsLoading] = useState(false);
+    const { location, formatted_address, locationDetailed } = useSelector(
         (state) => state.addressData
     )
     const [open, setOpen] = useState(false)
     const [searchKey, setSearchKey] = useState({ description: '' })
     const [value, setValue] = useState()
-    const { token } = useSelector((state) => state.userToken)
     const isXs = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const { data, isError } = useQuery(['profile-info'], ProfileApi.profileInfo)
     const clickAddNew = () => {
         if (guestUser && orderType === 'take_away') {
             setOpenGuestUserModal(true)
@@ -77,26 +78,67 @@ const AddNewAddress = ({
     const handleChange = (e) => {
         setValue(e.target.value)
     }
-    const { mutate, isLoading, error } = useMutation(
-        'address-add',
-        AddressApi.addNewAddress,
-        {
-            onSuccess: (response) => {
-                toast.success(response?.data?.message)
 
-                if (response?.data) {
-                    refetch()
-                    setOpen(false)
-                }
-            },
-            onError: (error) => {
-                onErrorResponse(error)
-            },
+
+    const fetchDeliveryAddress = async (newAddressId = null) => {
+        setIsLoading(true);
+          try {
+              const data = await getCall("/clientApis/v1/delivery_address");
+              dispatch(setAddressList(data));
+              localStorage.setItem('addressList', JSON.stringify(data));
+          } catch (err) {
+              console.error('Error fetching delivery address:', err);
+              CustomToaster('error', 'Error fetching delivery address');
+              setIsLoading(false);
+          } finally {
+            setIsLoading(false);
+          }
+      };
+
+      console.log("location detailed", locationDetailed);
+      
+    const postUserLocation = async(customerValue)=>{
+        setIsLoading(true);
+                  postCall(`/clientApis/v1/delivery_address`, {
+                    descriptor: {
+                      name: customerValue?.contact_person_name.trim(),
+                      email: customerValue?.contact_person_email.trim(),
+                      phone: customerValue?.contact_person_number.trim(),
+                    },
+                    address: {
+                      areaCode: locationDetailed?.address?.areaCode.trim(),
+                      building: customerValue?.house.trim(),
+                      city: locationDetailed?.address?.city.trim(),
+                      country: "IND",
+                      door: customerValue?.floor.trim(),
+                      state: locationDetailed?.address?.state.trim(),
+                      street: customerValue?.road.trim(),
+                      tag: customerValue?.address_type,
+                      lat: customerValue?.latitude,
+                      lng: locationDetailed?.address?.longitude,
+                    },
+                  }).then((data)=>{
+                     fetchDeliveryAddress(data.id)
+                  }).catch((error)=>{ 
+                    setIsLoading(false);
+                  }).finally(()=>{
+                    setIsLoading(false);
+                  })
+                
+                  
+                //   dispatch(setlocation(null));
+                //   dispatch(setAddressList([]));
+               
         }
-    )
+    
     const formSubmitHandler = (values) => {
+        const token = localStorage.getItem('token');
+        console.log("values", values);
+        
         if (token) {
-            mutate(values)
+            //add address
+            postUserLocation(values);
+            setOpen(false)
         } else {
             dispatch(setGuestUserInfo(values))
             setOpen(false)
@@ -127,17 +169,7 @@ const AddNewAddress = ({
     }
     return (
         <>
-            {guestUser === 'true' ? (
-                <IconButton onClick={clickAddNew} padding="0px">
-                    <CreateIcon
-                        sx={{
-                            width: '18px',
-                            height: '20px',
-                            color: (theme) => theme.palette.primary.main,
-                        }}
-                    />
-                </IconButton>
-            ) : (
+            
                 <PrimaryButton
                     variant={buttonbg === 'true' ? '' : 'outlined'}
                     sx={{
@@ -203,7 +235,7 @@ const AddNewAddress = ({
                         )}
                     </Stack>
                 </PrimaryButton>
-            )}
+            
 
             {open && (
                 <Modal
@@ -238,6 +270,8 @@ const AddNewAddress = ({
                                     coords={coords}
                                     orderType={orderType}
                                     mapHeight="200px"
+                                    handleClose={()=>setOpen(false)}
+                                    isGps={true}
                                 />
                                 <IconButton
                                     sx={{
@@ -258,8 +292,6 @@ const AddNewAddress = ({
                                 </IconButton>
                                 <AddressForm
                                     deliveryAddress={formatted_address}
-                                    personName={data?.data?.f_name}
-                                    phone={data?.data?.phone}
                                     lat={location?.lat || ''}
                                     lng={location?.lng || ''}
                                     formSubmit={formSubmitHandler}

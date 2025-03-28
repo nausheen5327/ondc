@@ -23,8 +23,7 @@ import { CustomStackFullWidth } from "@/styled-components/CustomStyles.style";
 import AddNewAddress from "@/components/user-info/address/AddNewAddress";
 import { PrimaryButton } from "@/components/products-page/FoodOrRestaurant";
 import { ACTIONS } from "@/components/checkout-page/states/additionalInformationStates";
-import AddressList from '../address/addressList'
-import { EditIcon } from 'lucide-react'
+import { useSelector } from 'react-redux'
 
 const getZoneWiseAddresses = (addresses, restaurantId) => {
     const newArray = []
@@ -39,100 +38,157 @@ const DeliveryAddress = ({
     handleSize,
     renderOnNavbar,
     additionalInformationDispatch,
-    restaurantId, token, handleAddressSetSuccess,
-    handleSelectAddress, handleCloseAddress
+    restaurantId, token, handleAddressSetSuccess
 }) => {
     const theme = useTheme()
     const { t } = useTranslation()
     const [allAddress, setAllAddress] = useState()
-    const [selectedAddress, setSelectedAddress] = useState({})
+    const [selectedAddress,setSelectedAddress] = useState({})
     const [data, setData] = useState(null)
+    const [anchorEl, setAnchorEl] = useState(null);
+    const addresses = useSelector((state) => state.user.addressList);
     const mainAddress = {
         ...address,
     }
-    const handleSuccess = (response) => {
-        if (restaurantId) {
-            const newObj = {
-                ...response.data,
-                addresses: getZoneWiseAddresses(response.data.addresses, restaurantId)
-            }
-            setData(newObj)
-        } else {
-            setData(response.data)
-        }
-
-
-    }
-    const { refetch, isRefetching } = useQuery(
-        ['address-list'],
-        AddressApi.addressList,
-        {
-            enabled: false,
-            onSuccess: handleSuccess,
-            onError: onSingleErrorResponse,
-        }
-    )
-
+   
+    
+    
     useEffect(() => {
-        data && setAllAddress([mainAddress, ...data.addresses])
-    }, [data])
+        setAllAddress([mainAddress, ...addresses])
+        setSelectedAddress(mainAddress)
+        setData({
+            addresses,
+            total_size: addresses?.length
+        })
+    }, [addresses])
 
     const handleLatLng = (values) => {
-        if (renderOnNavbar === "true") {
-            setAddress({ ...values, lat: values.latitude, lng: values.longitude })
-            localStorage.setItem('currentLatLng', JSON.stringify({ lat: values.latitude, lng: values.longitude }))
-        } else {
+        console.log("values address are",values);
+        
+        if(renderOnNavbar==="true")
+        {
+            setAddress({ ...values })
+            setSelectedAddress({...values})
+            localStorage.setItem('currentLatLng', JSON.stringify({lat: values.address.lat, lng: values.address.lng}))
+        }else{
             // setAddress({ ...values, lat: values.latitude, lng: values.longitude })
-            setSelectedAddress({ ...values, lat: values.latitude, lng: values.longitude })
+            setSelectedAddress({ ...values})
         }
 
     }
+    console.log("address selected is", address, selectedAddress);
+    
+    const refetch = ()=>{
+        console.log("Okay refetch called for this purpose");
+        
+    }
 
-
-    const handleSelectedAddress = () => {
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null)
+    };
+    const handleSelectedAddress =() => {
         setAddress(selectedAddress)
-        if (additionalInformationDispatch) {
-            additionalInformationDispatch({ type: ACTIONS.setStreetNumber, payload: selectedAddress?.road || '' })
-            additionalInformationDispatch({ type: ACTIONS.setHouseNumber, payload: selectedAddress?.house || '' })
-            additionalInformationDispatch({ type: ACTIONS.setFloor, payload: selectedAddress?.floor || '' })
-            additionalInformationDispatch({ type: ACTIONS.setAddressType, payload: selectedAddress?.address_type || '' })
+        if(additionalInformationDispatch){
+            additionalInformationDispatch({type:ACTIONS.setStreetNumber , payload:selectedAddress?.road|| '' })
+            additionalInformationDispatch({type:ACTIONS.setHouseNumber, payload:selectedAddress?.house|| '' })
+            additionalInformationDispatch({type:ACTIONS.setFloor , payload:selectedAddress?.floor || '' })
+            additionalInformationDispatch({type:ACTIONS.setAddressType , payload:selectedAddress?.address_type || '' })
         }
-        handleCloseAddress()
+        handleClose()
     }
-    console.log('address 1234567', address)
     return (
         <>
-
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
-                <DeliveryCaption>{t('Delivery Addresses')}</DeliveryCaption>
-                <SaveAddressBox onClick={handleSelectAddress}>
-                    <Stack direction="row" alignItems="center" spacing={0.5}>
+            {!renderOnNavbar &&
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <DeliveryCaption>{t('Delivery Addresses')}</DeliveryCaption>
+                    <SaveAddressBox onClick={handleClick}>
                         <Typography
                             color={theme.palette.primary.main}
                             sx={{ cursor: 'pointer' }}
                             fontSize="12px"
+                            // onClick={handleRoute}
                         >
                             {t('Saved Address')}
                         </Typography>
-                        <EditIcon
-                            sx={{
-                                fontSize: '14px',
-                                color: theme.palette.primary.main,
-                                cursor: 'pointer'
-                            }}
-                        />
+                    </SaveAddressBox>
+               </Stack>
+            }
+            {hideAddressSelectionField !== 'true' && (
+                <AddressSelectionField
+                    theme={theme}
+                    address={address}
+                    refetch={refetch}
+                    t={t}
+                />
+            )}
+            {renderOnNavbar === 'true' ? (
+                <AddressSelectionList
+                    data={data}
+                    allAddress={data?.addresses}
+                    handleLatLng={handleLatLng}
+                    t={t}
+                    address={address}
+                />
+            ) : (
+                <SimpleBar style={{ maxHeight: 200 }}>
+                    {/*<AddressSelectionList*/}
+                    {/*    data={data}*/}
+                    {/*    allAddress={allAddress}*/}
+                    {/*    handleLatLng={handleLatLng}*/}
+                    {/*    t={t}*/}
+                    {/*    address={address}*/}
+                    {/*    isRefetching={isRefetching}*/}
+                    {/*    additionalInformationDispatch={additionalInformationDispatch}*/}
+                    {/*/>*/}
+                </SimpleBar>
+            )}
+            <CustomPopover
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
+                handleClose={handleClose}
+                padding="30px 30px 30px"
+            >
+                <CustomStackFullWidth >
+                    <DeliveryCaption no_margin_bottom="true" no_margin_top="true" textAlign="left">{t('Saved Address')}</DeliveryCaption>
+                    <AddressSelectionList
+                        data={data}
+                        allAddress={data?.addresses}
+                        handleLatLng={handleLatLng}
+                        t={t}
+                        address={address}
+                        isRefetching={false}
+                        additionalInformationDispatch={additionalInformationDispatch}
+                        selectedAddress={selectedAddress}
+                        renderOnNavbar={renderOnNavbar}
+                    />
+                    <Stack justifyContent="center" width="100%" alignItems={data?.addresses?.length>0 ? "star":"center"}>
+                        <AddNewAddress refetch={refetch} buttonbg="true" />
                     </Stack>
-                </SaveAddressBox>
-            </Stack>
+                    {data?.addresses?.length >0 &&
+                        <Stack direction="row" spacing={1} justifyContent="flex-end" witdh="100%" pt=".5rem" gap="10px">
+                            <Button variant="outlined"
+                                    sx={{
+                                        color:theme=>theme.palette.neutral[400],
+                                        borderColor:theme=>theme.palette.neutral[300],
+                                        '&:hover': {
+                                            borderColor: theme=>theme.palette.neutral[300], // Change border color on hover if needed
+                                        },
+                                    }}
+                                    onClick={handleClose}
+                            >
+                                {t("Cancel")}
+                            </Button>
+                            <PrimaryButton variant="contained" onClick={handleSelectedAddress}>{t("Select")}</PrimaryButton>
+                        </Stack>
+                    }
+
+                </CustomStackFullWidth>
 
 
-            <AddressSelectionField
-                theme={theme}
-                address={address}
-                t={t}
-            />
-
-
+            </CustomPopover>
 
         </>
     )

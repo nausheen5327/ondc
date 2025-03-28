@@ -64,21 +64,23 @@ const AddressCard = ({ address }) => {
         }
     }, [])
 
+console.log("address is",address);
 
     const fetchDeliveryAddress = async () => {
         // setFetchDeliveryAddressLoading(true);
         try {
-          dispatch(setIsLoading(true));
+        //   dispatch(setIsLoading(true));
           let data = await getCall("/clientApis/v1/delivery_address");
           
           dispatch(setAddressList(data));
-          dispatch(setIsLoading(false));
+          localStorage.setItem('addressList', JSON.stringify(data));
+        //   dispatch(setIsLoading(false));
         } catch (err) {
           CustomToaster("error", 'Unable to fetch delivery information');
-          dispatch(setIsLoading(false));
+        //   dispatch(setIsLoading(false));
           //toast for error in fetching addresses
         } finally {
-          dispatch(setIsLoading(false));
+        //   dispatch(setIsLoading(false));
           // setFetchDeliveryAddressLoading(false);
         }
       };
@@ -86,7 +88,7 @@ const AddressCard = ({ address }) => {
     const handleUpdateAddress = async (address) => {
         
           try {
-            dispatch(setIsLoading(true));
+            // dispatch(setIsLoading(true));
             const data = await postCall(
               `/clientApis/v1/update_delivery_address/${address.id}`,
               {
@@ -110,14 +112,14 @@ const AddressCard = ({ address }) => {
                 },
               }
             );
-            dispatch(setIsLoading(false));
-            fetchDeliveryAddress();
+            // dispatch(setIsLoading(false));
+            await fetchDeliveryAddress();
           } catch (err) {
             CustomToaster("error", 'Unable to update address');
-            dispatch(setIsLoading(false));
+            // dispatch(setIsLoading(false));
           } finally {
             // setAddAddressLoading(false);
-            dispatch(setIsLoading(false));
+            // dispatch(setIsLoading(false));
           }
         
         
@@ -228,7 +230,7 @@ const AddressCard = ({ address }) => {
                             color={theme.palette.neutral[500]}
                         >
                             
-                            {address?.address?.building}&nbsp; {address?.address?.street} &nbsp;{address?.address?.city}&nbsp; {address?.address?.state} &nbsp;{address?.address?.country} &nbsp;{address?.address?.areaCode}
+                            {address?.address?.door} &nbsp;{address?.address?.building}&nbsp; {address?.address?.street} &nbsp;{address?.address?.city}&nbsp; {address?.address?.state} &nbsp;{address?.address?.country} &nbsp;{address?.address?.areaCode}
                         </Typography>
                     </Stack>
                 </CustomStackFullWidth>

@@ -449,12 +449,12 @@ const DifferentFoodCompontent = ({ isLoading, isLoadingNearByPopularRestaurantDa
       let location = localStorage.getItem('location');
       let latitude = null;
       let longitude = null;
-      if(location) {
-        latitude = JSON.parse(location).address.lat;
-        longitude = JSON.parse(location).address.lng;
-      }      
-      const data = await postCallTest(`/clientApis/v2/getRandomItems`, {lat:latitude, lon:longitude});            
-      storeDataBySection('todays-trends', data?.data);
+      // if(location) {
+      //   latitude = JSON.parse(location).address.lat;
+      //   longitude = JSON.parse(location).address.lng;
+      // }      
+      // const data = await postCallTest(`/clientApis/v2/getRandomItems`, {lat:latitude, lon:longitude});            
+      // storeDataBySection('todays-trends', data?.data);
     } catch (err) {
       console.log("error fetching data", err);
     }

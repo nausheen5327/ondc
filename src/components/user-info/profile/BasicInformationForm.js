@@ -29,43 +29,27 @@ import OtpForm from '@/components/auth/forgot-password/OtpForm'
 
 const BasicInformationForm = ({
     data,
-    formSubmit,
-    deleteUserHandler,
-    open,
-    setOpen,
-    setOpenEmail,
-    openEmail,
-    fireBaseId,
-    resData,
-    handleCloseEmail,
-    handleClosePhone,
+    formSubmit
 }) => {
-    console.log({ data })
     const is_verified = true
     const imageContainerRef = useRef()
     const theme = useTheme()
 
     const isXSmall = useMediaQuery(theme.breakpoints.down('sm'))
     const { t } = useTranslation()
-    let { f_name, l_name, phone, email, image } = data
-    console.log('gggg', phone)
     const { global } = useSelector((state) => state.globalSettings)
     const customerImageUrl = global?.base_urls?.customer_image_url
     const profileFormik = useFormik({
         initialValues: {
-            name: f_name ? `${f_name} ${l_name}` : '',
-            // l_name: l_name ? l_name : '',
-            email: email ? email : '',
-            phone: phone ? phone : '',
-            image: image ? image : '',
-            password: '',
-            confirm_password: '',
+            name: data?.name ? data?.name : '',
+            email: data?.email ? data?.email : '',
+            phone: data?.phone ? data?.phone : ''
         },
         validationSchema: ValidationSechemaProfile(),
         onSubmit: async (values) => {
             console.log('ffffff', values)
             try {
-                formSubmitOnSuccess(values)
+                formSubmit(values)
             } catch (err) {}
         },
     })
@@ -80,12 +64,9 @@ const BasicInformationForm = ({
     }
     const handleReset = () => {
         profileFormik.setValues({
-            name: f_name ? `${f_name}${l_name}` : '',
-            // name: l_name ? l_name : '',
-            email: email ? email : '',
-            phone: phone ? phone : '',
-            image: image ? image : '',
-        })
+            name: data?.name ? data?.name : '',
+            email: data?.email ? data?.email : '',
+            phone: data?.phone ? data?.phone : ''        })
     }
     const handleVerified = (type) => {
         if (type === 'email') {
@@ -98,7 +79,7 @@ const BasicInformationForm = ({
         <CustomDivWithBorder isXSmall={isXSmall}>
             <form noValidate onSubmit={profileFormik.handleSubmit}>
                 <Grid container md={12} xs={12}>
-                    <Grid
+                    {/* <Grid
                         item
                         md={3}
                         xs={12}
@@ -165,8 +146,8 @@ const BasicInformationForm = ({
                                 </Box>
                             )}
                         </Stack>
-                    </Grid>
-                    <Grid item container md={9} xs={12} spacing={2}>
+                    </Grid> */}
+                    <Grid item container md={12} xs={12} spacing={2}>
                         <Grid item md={12} xs={12}>
                             <CustomProfileTextfield
                                 id="outlined-basic"
@@ -230,7 +211,7 @@ const BasicInformationForm = ({
                                         inputMode: 'numeric',
                                         pattern: '[0-9]*',
                                     }}
-                                    disabled={data?.is_phone_verified === 1}
+                                    disabled={true}
                                     name="phone"
                                     value={profileFormik.values.phone}
                                     onChange={(e) => {
@@ -373,7 +354,7 @@ const BasicInformationForm = ({
                         flexDirection="row"
                         gap="10px"
                         justifyContent="flex-end"
-                        pt={{ xs: '20px', md: 0 }}
+                        pt={{ xs: '20px', md: '20px' }}
                     >
                         <CancelButton variant="outlined" onClick={handleReset}>
                             {t('Reset')}
@@ -386,28 +367,6 @@ const BasicInformationForm = ({
                     </Grid>
                 </Grid>
             </form>
-            {open && (
-                <CustomModal openModal={open} setModalOpen={setOpen}>
-                    <OtpForm
-                        data={data?.phone}
-                        handleClose={handleClosePhone}
-                        formSubmitHandler={formSubmit}
-                        loginValue={resData}
-                        reSendOtp={formSubmit}
-                    />
-                </CustomModal>
-            )}
-            {openEmail && (
-                <CustomModal openModal={openEmail} setModalOpen={setOpenEmail}>
-                    <OtpForm
-                        data={data?.email}
-                        handleClose={handleCloseEmail}
-                        formSubmitHandler={formSubmit}
-                        loginValue={resData}
-                        reSendOtp={formSubmit}
-                    />
-                </CustomModal>
-            )}
         </CustomDivWithBorder>
     )
 }

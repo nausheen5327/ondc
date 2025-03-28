@@ -16,7 +16,7 @@ import { useGetLocation } from "@/utils/custom-hook/useGetLocation";
 import { AnimationDots } from "../../../products-page/AnimationDots";
 import IconButton from "@mui/material/IconButton";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import { setLocation } from "@/redux/slices/addressData";
+import { setlocation } from "@/redux/slices/addressData";
 import { useQuery } from "react-query";
 import { GoogleApi } from "@/hooks/react-query/config/googleApi";
 import { setUserLocationUpdate } from "@/redux/slices/global";
@@ -31,6 +31,7 @@ const AddressReselectPopover = (props) => {
     const { coords, anchorEl, setMapOpen, mapOpen, onClose, open, t, address, setAddress, ...other } = props
     const { geoCodeLoading } = useGetLocation(coords);
     const { location, formatted_address, zoneId } = useSelector((state) => state.addressData)
+    console.log("address reselect popover", address);
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
     const languageDirection = 'ltr'
     const handleSuccess = () => {
@@ -48,6 +49,8 @@ const AddressReselectPopover = (props) => {
 
     }
 
+    console.log("coords in location", address);
+
     const { data: geoCodeResults, refetch: refetchCurrentLocation } = useQuery(
         ['geocode-api', location],
         async () => GoogleApi.geoCodeApi(location), {
@@ -63,6 +66,53 @@ const AddressReselectPopover = (props) => {
                 formatted_address
             )
             localStorage.setItem('currentLatLng', JSON.stringify(location))
+            console.log("inside geoCode result ", geoCodeResults);
+            
+            if (geoCodeResults?.data?.results && geoCodeResults.data.results.length > 0) {
+                const addressComponents = geoCodeResults.data.results[0].address_components;
+                
+                // Initialize location details object
+                const locationDetails = {address:{
+                    areaCode: '',
+                    street: '',
+                    road: '',
+                    building: '',
+                    country: '',
+                    city: '',
+                    state: '',
+                    formattedAddress: formatted_address
+                }};
+                
+                // Extract components from Google's response
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    
+                    if (types.includes('postal_code')) {
+                        locationDetails.address.areaCode = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        locationDetails.address.road = component.long_name;
+                    }
+                    if (types.includes('street_number')) {
+                        locationDetails.address.street = component.long_name;
+                    }
+                    if (types.includes('premise') || types.includes('subpremise')) {
+                        locationDetails.address.building = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        locationDetails.address.country = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('sublocality')) {
+                        locationDetails.address.city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        locationDetails.address.state = component.long_name;
+                    }
+                });
+                
+                // Store the detailed location information
+                localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+            }
             CustomToaster('success', 'New location has been set.');
             setAddress(null)
             dispatch(setUserLocationUpdate(!userLocationUpdate))
@@ -71,17 +121,64 @@ const AddressReselectPopover = (props) => {
     }
     const setUserCurrentLocation = async () => {
         if (coords) {
-            // dispatch(setLocation(
-            //     {
-            //         lat: coords?.latitude,
-            //         lng: coords?.longitude,
-            //     }
-            // ))
+            let location = {
+                lat: coords?.latitude,
+                lng: coords?.longitude,
+            }
+            dispatch(setlocation(
+                location
+            ))
             if (zoneId) {
                 localStorage.setItem('zoneid', zoneId)
             }
             await refetchCurrentLocation()
+            if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
+                const addressComponents = geoCodeResults.data.results[0].address_components;
+                
+                // Initialize location details object
+                const locationDetails = {address:{
+                    areaCode: '',
+                    street: '',
+                    road: '',
+                    building: '',
+                    country: '',
+                    city: '',
+                    state: '',
+                    formattedAddress: geoCodeResults.results[0].formatted_address
+                }};
+                
+                // Extract components from Google's response
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    
+                    if (types.includes('postal_code')) {
+                        locationDetails.address.areaCode = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        locationDetails.address.road = component.long_name;
+                    }
+                    if (types.includes('street_number')) {
+                        locationDetails.address.street = component.long_name;
+                    }
+                    if (types.includes('premise') || types.includes('subpremise')) {
+                        locationDetails.address.building = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        locationDetails.address.country = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('sublocality')) {
+                        locationDetails.address.city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        locationDetails.address.state = component.long_name;
+                    }
+                });
+                
+                // Store the detailed location information
+                localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+            }    
             setRerenderMap((prvMap) => !prvMap)
+            onClose();
         }
 
     }
@@ -133,7 +230,7 @@ const AddressReselectPopover = (props) => {
                             </CustomStackFullWidth>
 
                         ) : (<CustomStackFullWidth position="relative" justifyContent="center" alignItems="center">
-                            <MapWithSearchBox isGps={true} rerenderMap={rerenderMap} orderType="dd" padding="0px" coords={coords} mapHeight="400px" />
+                            <MapWithSearchBox isGps={true} rerenderMap={rerenderMap} orderType="dd" padding="0px" coords={coords} mapHeight="400px" handleClose={onClose} />
                             <Stack width={{ xs: "80%", sm: "85%", md: "90%" }} position="absolute" right="15px" bottom="5%" direction="row" spacing={1}>
                                 {geoCodeLoading ? (
                                     <Button
@@ -157,6 +254,7 @@ const AddressReselectPopover = (props) => {
                                             '&:hover': {
                                                 backgroundColor: theme.palette.primary.dark,
                                             },
+                                            zIndex:9999
                                         }}
                                         paddingTop="10px" paddingBottom="10px"
                                         onClick={getLocation}

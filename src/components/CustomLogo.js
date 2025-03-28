@@ -8,7 +8,7 @@ const CustomLogo = ({ logoImg, atlText, height, width }) => {
     const router = useRouter()
     let zoneid = undefined
     if (typeof window !== 'undefined') {
-        zoneid = JSON.parse(localStorage.getItem('zoneid'))
+        zoneid = (localStorage.getItem('zoneid'))
     }
     let currentLocation = undefined
     if (typeof window !== 'undefined') {

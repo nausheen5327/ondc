@@ -4,9 +4,9 @@ import { CustomPaperBigCard, CustomStackFullWidth } from "../../../styled-compon
 import BasicInformation from "./BasicInformation";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
-const EditProfile = ({ data, refetch, deleteUserHandler }) => {
+const EditProfile = ({ data, handleSubmit }) => {
     return (
-        <BasicInformation data={data} refetch={refetch} deleteUserHandler={deleteUserHandler} />
+        <BasicInformation data={data} handleSubmit={handleSubmit} />
     );
 };
 
