@@ -214,13 +214,13 @@ const HorizontalFoodCard = (props) => {
                                 <FoodRating
                                     product_avg_rating={4.2}
                                 /> */}
-                                <Typography
+                                {/* <Typography
                                     fontSize={{ xs: '12px', md: '14px' }}
                                     fontWeight={400}
                                     color={theme.palette.text.secondary}
                                 >
                                     {getReviewCount(4.7)}
-                                </Typography>
+                                </Typography> */}
 
 
 

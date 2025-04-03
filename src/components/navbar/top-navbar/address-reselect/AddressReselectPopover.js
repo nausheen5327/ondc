@@ -63,7 +63,7 @@ const AddressReselectPopover = (props) => {
             localStorage.setItem('zoneid', zoneId)
             localStorage.setItem(
                 'location',
-                formatted_address
+                JSON.stringify(formatted_address)
             )
             localStorage.setItem('currentLatLng', JSON.stringify(location))
             console.log("inside geoCode result ", geoCodeResults);

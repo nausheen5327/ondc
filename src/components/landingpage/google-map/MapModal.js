@@ -296,6 +296,7 @@ const finalizeLocationSelection = (coordinates) => {
                                 
                                 // Update redux state
                                 dispatch(setZoneData(response.data.zone_data));
+                                dispatch(setlocation(newLocation))
                                 dispatch(setUserLocationUpdate(!userLocationUpdate));
                                 if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
                                     const addressComponents = geoCodeResults.data.results[0].address_components;
@@ -699,7 +700,7 @@ const finalizeLocationSelection = (coordinates) => {
                 //
                 // Update redux state
                 dispatch(setUserLocationUpdate(!userLocationUpdate));
-    
+                dispatch(setlocation(location))
                 // Show success message
                 CustomToaster('success', 'New location has been set.');
     

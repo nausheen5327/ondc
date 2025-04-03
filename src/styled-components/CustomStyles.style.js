@@ -324,15 +324,19 @@ export const SearchInputBase = styled(InputBase)(({ theme }) => ({
     },
 }))
 export const Logo = styled('div')(({ theme, height, width }) => ({
-    width: width,
+    width: width || 'auto',
     height: '24px',
     justifyContent: 'center',
     maxWidth: '100px',
     position: 'relative',
     cursor: 'pointer',
+    display: 'block', // Ensure it's always displayed
+    opacity: 1, // Always fully visible
+    visibility: 'visible', // Always visible
     '& img': {
         height: '100%',
         objectFit: 'contain',
+        display: 'block', // Make sure image is also always displayed
     },
 }))
 export const CustomBoxNav = styled(Box)(({ theme, isSmall }) => ({
