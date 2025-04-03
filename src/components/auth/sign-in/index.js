@@ -274,6 +274,7 @@ const SignInPage = ({
             dispatch(setToken(response.user.stsTokenManager.accessToken));
             CustomToaster('success', loginSuccessFull)
             dispatch(setToken(response.token))
+            handleClose();
             dispatch(setAuthModalOpen(false));
             fetchUserData();
                 // router.push('/')
@@ -366,7 +367,7 @@ const SignInPage = ({
             CustomToaster('success', loginSuccessFull)
             dispatch(setAuthModalOpen(false));
             fetchUserData();
-            // handleClose();
+            handleClose();
         
     }
     const otpFormSubmitHandler = async(values) => {
