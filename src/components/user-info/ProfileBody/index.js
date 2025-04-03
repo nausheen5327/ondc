@@ -6,7 +6,6 @@ import LoyalityList from '../loyality/LoyalityList'
 import ReferCodePage from '../refer-code/ReferCodePage'
 import SettingPage from '../settings/SettingPage'
 import OrderHistoryPage from '../../order-history/OrderHistoryPage'
-import Chat from '../../chat/Chat'
 import WishlistPage from '../../wishlist-page/WishlistPage'
 import { RTL } from '../../RTL/RTL'
 import OrderDetail from '../../order-details/OrderDetail'
@@ -56,9 +55,6 @@ const ProfileBody = ({ page, orderId,ticketId }) => {
         }
         if (page === 'order' && !orderId) {
             return <OrderHistoryPage />
-        }
-        if (page === 'inbox') {
-            return <Chat />
         }
         if (page === 'wishlist') {
             return <WishlistPage />
