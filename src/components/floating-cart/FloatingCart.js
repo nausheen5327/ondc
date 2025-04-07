@@ -646,8 +646,9 @@ const createTransformedArray = (dataList) => {
 
   const handleCheckout = () => {
     // handleCheckoutFlow(cartItems, location)
-    setSideDrawerOpen(false)
-    router.push('/checkout');
+    setSideDrawerOpen(false);
+    router.push('/playerInfo');
+    // router.push('/checkout');
   };
 
   // const variationPrice = cartList.map((item) => {

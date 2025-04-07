@@ -275,8 +275,8 @@ const SignInPage = ({
             CustomToaster('success', loginSuccessFull)
             dispatch(setToken(response.token))
             dispatch(setAuthModalOpen(false));
-            // fetchUserData();
-                router.push('/playerInfo')
+            fetchUserData();
+            handleClose();
         }
     }
 
@@ -372,8 +372,8 @@ const SignInPage = ({
             dispatch(setToken(token));
             CustomToaster('success', loginSuccessFull)
             dispatch(setAuthModalOpen(false));
-            router.push('/playerInfo')
-            // fetchUserData();
+            fetchUserData();
+            // router.push('/playerInfo')
             handleClose();
         
     }

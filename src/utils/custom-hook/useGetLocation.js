@@ -173,7 +173,7 @@ export const useGetLocation = (coords) => {
                                                 locationDetails.address.state = component.long_name;
                                             }
                                         });
-                                        dispatch(setDetailedLocation(locationDetails))
+                                        // dispatch(setDetailedLocation(locationDetails))
     }, [geoCodeResults]);
     useEffect(() => {
         if (geoCodeResults) {

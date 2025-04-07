@@ -151,16 +151,6 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
     // Initialize location state with proper validation
     const [location, setLocation] = useState(() => {
         try {
-            // First check if global default location exists and is valid
-            if (global?.default_location?.lat && global?.default_location?.lng) {
-                const lat = parseFloat(global.default_location.lat);
-                const lng = parseFloat(global.default_location.lng);
-                if (!isNaN(lat) && !isNaN(lng)) {
-                    return { lat, lng };
-                }
-            }
-
-            // If no global location, try getting from localStorage
             const savedLocation = localStorage.getItem('currentLatLng');
             if (savedLocation) {
                 const parsed = JSON.parse(savedLocation);
@@ -226,24 +216,71 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
 
     ///////////////////////////////////////////
     // Handle current location selection - Updated to directly set location and close modal
+// Handle current location selection - Updated to properly fetch location data
 const handleUseCurrentLocation = async () => {
     setIsLoadingGeolocation(true);
 
     // If coords are already available, use them directly
     if (coords && coords.latitude && coords.longitude) {
-        finalizeLocationSelection({
-            latitude: coords.latitude,
-            longitude: coords.longitude
-        });
+        const newLocation = {
+            lat: coords.latitude,
+            lng: coords.longitude
+        };
+        
+        // First update the location state
+        setLocation(newLocation);
+        
+        // Then fetch zone ID for this location
+        try {
+            const zoneResponse = await GoogleApi.getZoneId(newLocation);
+            
+            if (zoneResponse?.data?.zone_id) {
+                // If zone ID exists, fetch address details via geocoding
+                const geoResponse = await GoogleApi.geoCodeApi(newLocation);
+                
+                // Pass both responses to the finalization function
+                finalizeLocationSelection(newLocation, zoneResponse, geoResponse);
+            } else {
+                setIsLoadingGeolocation(false);
+                CustomToaster('error', 'Your location is not within our service area. Please select a different location.');
+            }
+        } catch (error) {
+            console.error("Error fetching location data:", error);
+            setIsLoadingGeolocation(false);
+            CustomToaster('error', 'Could not determine your service area. Please try again.');
+        }
     } else {
         // If coords aren't available yet, try to get them manually
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    finalizeLocationSelection({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    });
+                async (position) => {
+                    const newLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // Update location state
+                    setLocation(newLocation);
+                    
+                    // Then fetch zone ID for this location
+                    try {
+                        const zoneResponse = await GoogleApi.getZoneId(newLocation);
+                        
+                        if (zoneResponse?.data?.zone_id) {
+                            // If zone ID exists, fetch address details via geocoding
+                            const geoResponse = await GoogleApi.geoCodeApi(newLocation);
+                            
+                            // Pass both responses to the finalization function
+                            finalizeLocationSelection(newLocation, zoneResponse, geoResponse);
+                        } else {
+                            setIsLoadingGeolocation(false);
+                            CustomToaster('error', 'Your location is not within our service area. Please select a different location.');
+                        }
+                    } catch (error) {
+                        console.error("Error fetching location data:", error);
+                        setIsLoadingGeolocation(false);
+                        CustomToaster('error', 'Could not determine your service area. Please try again.');
+                    }
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
@@ -266,130 +303,105 @@ const handleUseCurrentLocation = async () => {
     }
 };
 
-// New helper function to finalize location selection and close modal
-const finalizeLocationSelection = (coordinates) => {
-    const newLocation = {
-        lat: coordinates.latitude,
-        lng: coordinates.longitude
-    };
-
-    // Update state with current coordinates
-    setLocation(newLocation);
+// Updated helper function to finalize location selection with proper data
+const finalizeLocationSelection = (newLocation, zoneResponse, geoResponse) => {
+    // Ensure we have valid responses
+    if (!zoneResponse?.data?.zone_id || !geoResponse?.data?.results || !geoResponse.data.results.length) {
+        setIsLoadingGeolocation(false);
+        CustomToaster('error', 'Could not get complete location information. Please try again.');
+        return;
+    }
     
-    // Save current location to check for zone
-    GoogleApi.getZoneId(newLocation)
-        .then((response) => {
-            if (response?.data?.zone_id) {
-                const zoneId = response.data.zone_id;
+    const zoneId = zoneResponse.data.zone_id;
+    const address = geoResponse.data.results[0].formatted_address;
+    
+    try {
+        // Save all data to localStorage
+        localStorage.setItem('zoneid', JSON.stringify(zoneId));
+        localStorage.setItem('location', JSON.stringify(address));
+        localStorage.setItem('currentLatLng', JSON.stringify(newLocation));
+        
+        // Update redux state
+        dispatch(setZoneData(zoneResponse.data.zone_data));
+        dispatch(setlocation(newLocation));
+        dispatch(setUserLocationUpdate(!userLocationUpdate));
+        
+        // Extract address components
+        if (geoResponse?.data?.results && geoResponse.data.results.length > 0) {
+            const addressComponents = geoResponse.data.results[0].address_components;
+            
+            // Initialize location details object
+            const locationDetails = {
+                address: {
+                    areaCode: '',
+                    street: '',
+                    road: '',
+                    building: '',
+                    country: '',
+                    city: '',
+                    state: '',
+                    formattedAddress: geoResponse.data.results[0].formatted_address
+                }
+            };
+            
+            // Extract components from Google's response
+            addressComponents.forEach(component => {
+                const types = component.types;
                 
-                // Get the address from geocoding
-                GoogleApi.geoCodeApi(newLocation)
-                    .then((geoResponse) => {
-                        if (geoResponse?.data?.results && geoResponse.data.results.length > 0) {
-                            const address = geoResponse.data.results[0].formatted_address;
-                            
-                            try {
-                                // Save all data to localStorage
-                                localStorage.setItem('zoneid', JSON.stringify(zoneId));
-                                localStorage.setItem('location', JSON.stringify(address));
-                                localStorage.setItem('currentLatLng', JSON.stringify(newLocation));
-                                
-                                // Update redux state
-                                dispatch(setZoneData(response.data.zone_data));
-                                dispatch(setlocation(newLocation))
-                                dispatch(setUserLocationUpdate(!userLocationUpdate));
-                                if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
-                                    const addressComponents = geoCodeResults.data.results[0].address_components;
-                                    
-                                    // Initialize location details object
-                                    const locationDetails = {address:{
-                                        areaCode: '',
-                                        street: '',
-                                        road: '',
-                                        building: '',
-                                        country: '',
-                                        city: '',
-                                        state: '',
-                                        formattedAddress: geoCodeResults.data.results[0].formatted_address
-                                    }};
-                                    
-                                    // Extract components from Google's response
-                                    addressComponents.forEach(component => {
-                                        const types = component.types;
-                                        
-                                        if (types.includes('postal_code')) {
-                                            locationDetails.address.areaCode = component.long_name;
-                                        }
-                                        if (types.includes('route')) {
-                                            locationDetails.address.road = component.long_name;
-                                        }
-                                        if (types.includes('street_number')) {
-                                            locationDetails.address.street = component.long_name;
-                                        }
-                                        if (types.includes('premise') || types.includes('subpremise')) {
-                                            locationDetails.address.building = component.long_name;
-                                        }
-                                        if (types.includes('country')) {
-                                            locationDetails.address.country = component.long_name;
-                                        }
-                                        if (types.includes('locality') || types.includes('sublocality')) {
-                                            locationDetails.address.city = component.long_name;
-                                        }
-                                        if (types.includes('administrative_area_level_1')) {
-                                            locationDetails.address.state = component.long_name;
-                                        }
-                                    });
-                                    
-                                    // Store the detailed location information
-                                    localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
-                                }  
-                                // Show success message
-                                CustomToaster('success', 'New location has been set.');
-                                
-                                // Handle redirection
-                                if (redirectUrl) {
-                                    if (redirectUrl?.query === undefined) {
-                                        router.push({ pathname: redirectUrl?.pathname });
-                                    } else {
-                                        router.push({
-                                            pathname: redirectUrl?.pathname,
-                                            query: {
-                                                restaurantType: redirectUrl?.query,
-                                            },
-                                        });
-                                    }
-                                } else {
-                                    router.push('/home');
-                                }
-                                
-                                // Close the modal
-                                handleClose();
-                                
-                            } catch (e) {
-                                console.error("Error saving location", e);
-                                CustomToaster('error', 'Error saving location. Please try again.');
-                                setIsLoadingGeolocation(false);
-                            }
-                        } else {
-                            setIsLoadingGeolocation(false);
-                            CustomToaster('error', 'Could not determine your address. Please try again.');
-                        }
-                    })
-                    .catch((error) => {
-                        setIsLoadingGeolocation(false);
-                        console.error("Geocoding error:", error);
-                        CustomToaster('error', 'Could not determine your address. Please try again.');
-                    });
+                if (types.includes('postal_code')) {
+                    locationDetails.address.areaCode = component.long_name;
+                }
+                if (types.includes('route')) {
+                    locationDetails.address.road = component.long_name;
+                }
+                if (types.includes('street_number')) {
+                    locationDetails.address.street = component.long_name;
+                }
+                if (types.includes('premise') || types.includes('subpremise')) {
+                    locationDetails.address.building = component.long_name;
+                }
+                if (types.includes('country')) {
+                    locationDetails.address.country = component.long_name;
+                }
+                if (types.includes('locality') || types.includes('sublocality')) {
+                    locationDetails.address.city = component.long_name;
+                }
+                if (types.includes('administrative_area_level_1')) {
+                    locationDetails.address.state = component.long_name;
+                }
+            });
+            
+            // Store the detailed location information
+            localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+        }
+        
+        // Show success message
+        CustomToaster('success', 'New location has been set.');
+        
+        // Handle redirection
+        if (redirectUrl) {
+            if (redirectUrl?.query === undefined) {
+                router.push({ pathname: redirectUrl?.pathname });
             } else {
-                setIsLoadingGeolocation(false);
-                CustomToaster('error', 'Your location is not within our service area. Please select a different location.');
+                router.push({
+                    pathname: redirectUrl?.pathname,
+                    query: {
+                        restaurantType: redirectUrl?.query,
+                    },
+                });
             }
-        })
-        .catch((error) => {
-            setIsLoadingGeolocation(false);
-            console.error("Zone error:", error);
-            CustomToaster('error', 'Could not determine your service area. Please try again.');
-        });
+        } else {
+            router.push('/home');
+        }
+        
+        // Close the modal
+        handleClose();
+        
+    } catch (e) {
+        console.error("Error saving location", e);
+        CustomToaster('error', 'Error saving location. Please try again.');
+        setIsLoadingGeolocation(false);
+    }
 };
     //////////////////////////////////////////
 

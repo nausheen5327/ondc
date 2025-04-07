@@ -35,18 +35,26 @@ const AddressReselect = ({ location,detailedLocation }) => {
     const { t } = useTranslation()
     const dispatch = useDispatch()
     const anchorRef = useRef(null)
-    console.log("bhaiya address is", address);
     
+
+    useEffect(() => {
+        const currentLatLng = localStorage.getItem('currentLatLng')
+        if (!currentLatLng) {
+            setOpen(true)
+        }
+    }, [])
+
+
     useEffect(() => {
         if (address) {
-            localStorage.setItem('location', `${address.address.door}, ${address.address.building}, ${address.address.street},${address.address.city}, ${address.address.state}, ${address.address.country},${address.address.areaCode}`)
+            localStorage.setItem('location', JSON.stringify(`${address.address.door}, ${address.address.building}, ${address.address.street},${address.address.city}, ${address.address.state}, ${address.address.country},${address.address.areaCode}`))
             localStorage.setItem('locationDetails', JSON.stringify(address))
             const values = { lat: address?.address?.lat, lng: address?.address?.lng }
             localStorage.setItem('currentLatLng', JSON.stringify(values))
             toast.success(t('New delivery address selected.'))
             handleClosePopover()
             dispatch(setUserLocationUpdate(!userLocationUpdate))
-            router.push('/home')
+           if(router.pathname==='/') router.push('/home')
         }
     }, [address])
 

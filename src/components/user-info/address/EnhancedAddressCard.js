@@ -96,7 +96,7 @@ const EnhancedAddressCard = ({ address, onUpdateAddress, open, setOpen }) => {
             errors.phone = "Valid 10-digit phone number is required";
         if (!currentAddress.descriptor.email || !/\S+@\S+\.\S+/.test(currentAddress.descriptor.email))
             errors.email = "Valid email is required";
-        if (!currentAddress.address.door) errors.building = "House no. is required";
+        if (!currentAddress.address.door) errors.door = "House no. is required";
         if (!currentAddress.address.building) errors.building = "Building is required";
         if (!currentAddress.address.street) errors.street = "Street is required";
         if (!currentAddress.address.city) errors.city = "City is required";

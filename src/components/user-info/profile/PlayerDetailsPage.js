@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react'
-import { Grid, useTheme, useMediaQuery, Stack, Typography, IconButton } from '@mui/material'
+import { Grid, useTheme, useMediaQuery, Stack, Typography, IconButton, Button } from '@mui/material'
 import { useQuery } from 'react-query'
 import CustomShimmerForProfile from '../../customShimmerForProfile/customShimmerForProfile'
 import { ProfileApi } from "@/hooks/react-query/config/profileApi"
@@ -27,55 +27,59 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { setEditProfile } from "@/redux/slices/editProfile"
 import { setCustomerInfo } from '@/redux/slices/addressData'
+import { CustomToaster } from '@/components/custom-toaster/CustomToaster'
 
-const PlayerDetailsPage = () => {   
+const PlayerDetailsPage = () => {
     const { isEditProfile } = useSelector((state) => state.isEditProfile);
     const theme = useTheme()
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
     const dispatch = useDispatch()
     const customerInfo = useSelector((state) => state.addressData.customerInfo)
     const addresses = useSelector((state) => state.user.addressList);
+    const locationDetailed = useSelector((state) => state.addressData.locationDetailed)
+    const router = useRouter();
     let token = undefined
     if (typeof window != 'undefined') {
         token = localStorage.getItem('token')
     }
-    
+
+
+    console.log("detailed location is", locationDetailed)
 
     const location = useSelector((state) => state.addressData.location)
-            const [formData, setFormData] = useState({
-                name: '',
-                email: '',
-                phone: ''
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: ''
+    })
+    const [errors, setErrors] = useState({})
+    const [isEditing, setIsEditing] = useState(false)
+
+    useEffect(() => {
+        // First check localStorage
+        const storedCustomerInfo = localStorage.getItem('customerInfo')
+        if (storedCustomerInfo) {
+            const parsedInfo = JSON.parse(storedCustomerInfo)
+            // dispatch(setCustomerInfo(parsedInfo))
+            // setCustomerInfo(parsedInfo)
+            setFormData({
+                name: parsedInfo?.customer?.name || '',
+                email: parsedInfo?.customer?.email || '',
+                phone: parsedInfo?.customer?.phone || ''
             })
-            const [errors, setErrors] = useState({})
-            const [isEditing, setIsEditing] = useState(false)
-        
-            useEffect(() => {
-                // First check localStorage
-                const storedCustomerInfo = localStorage.getItem('customerInfo')
-                if (storedCustomerInfo) {
-                    const parsedInfo = JSON.parse(storedCustomerInfo)
-                    // dispatch(setCustomerInfo(parsedInfo))
-                    setCustomerInfo(parsedInfo)
-                    setFormData({
-                        name: parsedInfo?.customer?.name || '',
-                        email: parsedInfo?.customer?.email || '',
-                        phone: parsedInfo?.customer?.phone || ''
-                    })
-                } else {
-                    // If no localStorage data, use location descriptor and userDatafor
-                    let userDatafor  =localStorage.getItem('userDatafor');
-                    if(userDatafor)
-                    {
-                        userDatafor = JSON.parse(userDatafor)
-                    }
-                    setFormData({
-                        name: location?.descriptor?.name || '',
-                        email: location?.descriptor?.email || '',
-                        phone: userDatafor?.phone || location?.descriptor?.phone
-                    })
-                }
-            }, [location])
+        } else {
+            // If no localStorage data, use location descriptor and userDatafor
+            let userDatafor = localStorage.getItem('userDatafor');
+            if (userDatafor) {
+                userDatafor = JSON.parse(userDatafor)
+            }
+            setFormData({
+                name: location?.descriptor?.name || '',
+                email: location?.descriptor?.email || '',
+                phone: userDatafor?.phone || ''
+            })
+        }
+    }, [customerInfo])
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -85,45 +89,45 @@ const PlayerDetailsPage = () => {
         setAnchorEl(null)
     };
 
-     const handleChange = (e) => {
-            const { name, value } = e.target
-            setFormData(prev => ({
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }))
+        if (errors[name]) {
+            setErrors(prev => ({
                 ...prev,
-                [name]: value
+                [name]: ''
             }))
-            if (errors[name]) {
-                setErrors(prev => ({
-                    ...prev,
-                    [name]: ''
-                }))
+        }
+    }
+
+
+
+    console.log("customer info",  locationDetailed)
+
+    const handleSubmit = (values) => {
+        console.log("form data is", values);
+        const updatedCustomerInfo = {
+            ...customerInfo,
+            customer: {
+                ...customerInfo?.customer,
+                name: values.name,
+                email: values.email,
+                phone: values.phone
             }
         }
-    
-       
-    
-        console.log("customer info",customerInfo)
-    
-        const handleSubmit = (values) => {
-            console.log("form data is",values);
-                const updatedCustomerInfo = {
-                    ...customerInfo,
-                    customer: {
-                        ...customerInfo?.customer,
-                        name: values.name,
-                        email: values.email,
-                        phone: values.phone
-                    }
-                }
-                localStorage.setItem('customerInfo', JSON.stringify(updatedCustomerInfo))
-                dispatch(setCustomerInfo(updatedCustomerInfo))
-                dispatch(setEditProfile(false))
-            
-        }
-    
-        const handleEdit = () => {
-            setIsEditing(true)
-        }
-    
+        localStorage.setItem('customerInfo', JSON.stringify(updatedCustomerInfo))
+        dispatch(setCustomerInfo(updatedCustomerInfo))
+        dispatch(setEditProfile(false))
+
+    }
+
+    const handleEdit = () => {
+        setIsEditing(true)
+    }
+
     const settings = {
         speed: 500,
         slidesToShow: 4,
@@ -220,12 +224,26 @@ const PlayerDetailsPage = () => {
             },
         ],
     }
-    console.log("form data is",formData);
+    const disableContinue=()=>{
+            console.log("checking inside disable customer", customerInfo, locationDetailed);
+            
+            if(!(customerInfo?.customer?.name && customerInfo?.customer?.email && customerInfo?.customer?.phone)){
+            // CustomToaster('error', 'Please provide customer details')
+            return true;
+            }
+
+            if(!(locationDetailed?.descriptor?.name && locationDetailed?.descriptor?.email && locationDetailed?.descriptor?.phone && locationDetailed?.address?.areaCode && locationDetailed?.address?.building && locationDetailed?.address?.street && locationDetailed?.address?.city && locationDetailed?.address?.state && locationDetailed?.address?.lat && locationDetailed?.address?.lng && locationDetailed?.address?.country)){
+            // CustomToaster('error', 'Please provide delivery address details')
+            return true;
+            }
+
+            return false;
+        }
     
     return (
         <>
             <Meta title={"Player Info on ONDC"} description="" keywords="" />
-            {token  ? (
+            {token ? (
                 <CustomStackFullWidth gap="15px">
                     <Stack gap={isEditProfile ? 0 : "15px"} paddingInline={{ xs: "0", sm: "2px 10px" }} >
                         <CustomPaperBigCard
@@ -234,16 +252,16 @@ const PlayerDetailsPage = () => {
                         >
                             <Grid item xs={12} sm={12} md={12}>
                                 <CustomStackFullWidth
-                                    justifyContent={isSmall ? "end" : "space-between"}
+                                    justifyContent={"space-between"}
                                     direction="row"
                                     alignItems="flex-start"
                                     paddingBottom="12px"
                                 >
-                                    {(!isSmall) &&
+                                    
                                         <Typography fontSize="16px" fontWeight="500" padding="0">
                                             {t('Personal Details')}
                                         </Typography>
-                                    }
+                                    
                                     {isEditProfile === true ? (
                                         <Stack flexDirection="row" alignItems="center" marginTop={isSmall ? '0px' : '-5px'}>
                                             {!isSmall &&
@@ -254,9 +272,9 @@ const PlayerDetailsPage = () => {
                                                     <Typography fontSize="13px" color={theme.palette.primary.main}>{t("Go Back")}</Typography>
                                                 </Stack>
                                             }
-                                            <IconButton onClick={handleClick} sx={{ padding: "0 0 0 16px" }}>
+                                            {/* <IconButton onClick={handleClick} sx={{ padding: "0 0 0 16px" }}>
                                                 <MoreDotIcon />
-                                            </IconButton>
+                                            </IconButton> */}
                                         </Stack>
                                     ) : (
                                         <Stack>
@@ -298,13 +316,32 @@ const PlayerDetailsPage = () => {
                                 />
                             ) : (
                                 <PersonalDetails
-                                    data={customerInfo?.customer}
+                                    data={formData}
                                 />
                             )}
 
                         </CustomPaperBigCard>
                         <CustomStackFullWidth>
                             {isEditProfile === false ? <MyAddresses /> : ""}
+                        </CustomStackFullWidth>
+                        <CustomStackFullWidth padding={'8px'}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                    borderRadius: '8px',
+                                    width: isSmall ? '100%' : '320px',
+                                    height: '48px',
+                                    textTransform: 'none',
+                                    fontSize: '16px',
+                                    fontWeight: 500,
+                                    margin: 'auto'
+                                }}
+                                disabled={disableContinue()}
+                                onClick={()=>router.push('/checkout')}
+                            >
+                                Continue
+                            </Button>
                         </CustomStackFullWidth>
 
                     </Stack>

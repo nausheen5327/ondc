@@ -101,7 +101,7 @@ const DeliveryAddress = ({
     }
     return (
         <>
-            {!renderOnNavbar &&
+            {/* {!renderOnNavbar &&
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <DeliveryCaption>{t('Delivery Addresses')}</DeliveryCaption>
                     <SaveAddressBox onClick={handleClick}>
@@ -115,7 +115,7 @@ const DeliveryAddress = ({
                         </Typography>
                     </SaveAddressBox>
                </Stack>
-            }
+            } */}
             {hideAddressSelectionField !== 'true' && (
                 <AddressSelectionField
                     theme={theme}

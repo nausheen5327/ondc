@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsLoading } from '@/redux/slices/global';
 import { setAddressList } from '@/redux/slices/customer';
-import { setlocation } from '@/redux/slices/addressData';
+import { setCustomerInfo, setDetailedLocation, setlocation } from '@/redux/slices/addressData';
 import { setCartList } from '@/redux/slices/cart';
 import { deleteCall, getCall, postCall } from '@/api/MainApi';
 import useCancellablePromise from '@/api/cancelRequest';
@@ -125,7 +125,7 @@ export const useAuthData = () => {
           localStorage.setItem('addressList', JSON.stringify(data));
       } catch (err) {
           console.error('Error fetching delivery address:', err);
-          CustomToaster('error', 'Error fetching delivery address');
+          // CustomToaster('error', 'Error fetching delivery address');
       } finally {
           dispatch(setIsLoading(false));
       }
@@ -219,32 +219,40 @@ export const useAuthData = () => {
         let addrToBeAdded = localStorage.getItem('addrToBeAdded');
         let orderNowItem = localStorage.getItem('orderNowItem');
         console.log('verified 1',token);
+        const storedCustomerInfo = localStorage.getItem('customerInfo')
+        if (storedCustomerInfo) {
+            const parsedInfo = JSON.parse(storedCustomerInfo)
+            dispatch(setCustomerInfo(parsedInfo))
+        }
+
+        let locationDetailed = localStorage.getItem('locationDetails');
+        if(locationDetailed)
+        {
+          dispatch(setDetailedLocation(JSON.parse(locationDetailed)))
+        }
         if (token) {
             // if(addrToBeUpdated)
             // {
             //   postUserLocation(JSON.parse(addrToBeUpdated));
             // }
-            if(addrToBeAdded) {
-               postUserLocation(JSON.parse(addrToBeAdded));
-            }else{
-              fetchDeliveryAddress();
-            }
+            fetchDeliveryAddress();
             if (orderNowItem) {
               orderNowItem = JSON.parse(orderNowItem);
               cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
               let orderItem = cartItemsPreAuth.filter(cartItem => cartItem.id === orderNowItem);
-              deleteCartItem().then(() => {
-                  postCartItems(orderItem[0]).then(() => {
-                      fetchCartItems();
-                      localStorage.removeItem('orderNowItem');
-                  });
-              });
+              // deleteCartItem().then(() => {
+              //     postCartItems(orderItem[0]).then(() => {
+              //         fetchCartItems();
+              //         localStorage.removeItem('orderNowItem');
+              //     });
+              // });
           } 
             else if(cartItemsPreAuth)
             {
                 cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
                 if(cartItemsPreAuth?.length)
                 {
+                  //delete kardo old
                    postCartItems(cartItemsPreAuth).then(()=>{
                     fetchCartItems();
                    })
