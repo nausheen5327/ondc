@@ -8,9 +8,10 @@ import { GoogleApi } from '@/hooks/react-query/config/googleApi';
 import { useTheme } from '@emotion/react';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed'
 import { LoadingButton } from '@mui/lab';
-import { setUserLocationUpdate, setZoneData } from '@/redux/slices/global';
+import { setIsLoading, setUserLocationUpdate, setZoneData } from '@/redux/slices/global';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomToaster } from '../custom-toaster/CustomToaster';
+import { useRouter } from 'next/router';
 
 const CssTextField = styled(TextField)(({ theme, border }) => ({
     '& label.Mui-focused': {
@@ -129,6 +130,7 @@ handleClose}) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const [isGettingLocation, setIsGettingLocation] = React.useState(false);
+    const router = useRouter();
         const dispatch = useDispatch();
     // Function to get place details using our GoogleApi utility
     const fetchPlaceDetails = async (placeId) => {
@@ -336,10 +338,16 @@ handleClose}) => {
                                     dispatch(setUserLocationUpdate(!userLocationUpdate));
                                     
                                     // Show success message
-                                    CustomToaster('success', 'New location has been set.');
+                                    
                                     
                                     // Close the modal
-                                    handleClose();
+                                    if(router.pathname!=='/playerInfo')
+                                    {
+                                        CustomToaster('success', 'New location has been set.');
+                                       
+                                        handleClose();
+                                    }
+                                    setIsGettingLocation(false)   
                                     
                                 } catch (e) {
                                     console.error("Error saving location", e);

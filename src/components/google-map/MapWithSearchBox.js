@@ -86,7 +86,7 @@ const MapWithSearchBox = ({ orderType, padding, coords, mapHeight, rerenderMap, 
             )}
 
             {/* Second condition - for the map component */}
-            {location && orderType !== "take_away" && (
+            { orderType !== "take_away" && (
                 <>
                     {console.log("Rendering GoogleMapComponent")}
                     <GoogleMapComponent

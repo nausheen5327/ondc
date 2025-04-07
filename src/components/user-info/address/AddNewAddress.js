@@ -53,6 +53,7 @@ const AddNewAddress = ({
     guestUser,
     orderType,
     setOpenGuestUserModal,
+    postUserLocation
 }) => {
     const theme = useTheme()
     const dispatch = useDispatch()
@@ -80,56 +81,7 @@ const AddNewAddress = ({
     }
 
 
-    const fetchDeliveryAddress = async (newAddressId = null) => {
-        setIsLoading(true);
-          try {
-              const data = await getCall("/clientApis/v1/delivery_address");
-              dispatch(setAddressList(data));
-              localStorage.setItem('addressList', JSON.stringify(data));
-          } catch (err) {
-              console.error('Error fetching delivery address:', err);
-              CustomToaster('error', 'Error fetching delivery address');
-              setIsLoading(false);
-          } finally {
-            setIsLoading(false);
-          }
-      };
-
-      console.log("location detailed", locationDetailed);
-      
-    const postUserLocation = async(customerValue)=>{
-        setIsLoading(true);
-                  postCall(`/clientApis/v1/delivery_address`, {
-                    descriptor: {
-                      name: customerValue?.contact_person_name.trim(),
-                      email: customerValue?.contact_person_email.trim(),
-                      phone: customerValue?.contact_person_number.trim(),
-                    },
-                    address: {
-                      areaCode: locationDetailed?.address?.areaCode.trim(),
-                      building: customerValue?.house.trim(),
-                      city: locationDetailed?.address?.city.trim(),
-                      country: "IND",
-                      door: customerValue?.floor.trim(),
-                      state: locationDetailed?.address?.state.trim(),
-                      street: customerValue?.road.trim(),
-                      tag: customerValue?.address_type,
-                      lat: customerValue?.latitude,
-                      lng: locationDetailed?.address?.longitude,
-                    },
-                  }).then((data)=>{
-                     fetchDeliveryAddress(data.id)
-                  }).catch((error)=>{ 
-                    setIsLoading(false);
-                  }).finally(()=>{
-                    setIsLoading(false);
-                  })
-                
-                  
-                //   dispatch(setlocation(null));
-                //   dispatch(setAddressList([]));
-               
-        }
+    
     
     const formSubmitHandler = (values) => {
         const token = localStorage.getItem('token');

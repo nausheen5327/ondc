@@ -134,7 +134,7 @@
 //     // Handler for when an address is clicked
 //     const handleAddressSelect = (address) => {
 //         setDefaultAddress(address);
-        
+
 //         // Save to localStorage
 //         localStorage.setItem('location', JSON.stringify(`${address.address.door}, ${address.address.building}, ${address.address.street},${address.address.city}, ${address.address.state}, ${address.address.country},${address.address.areaCode}`))
 //         localStorage.setItem('locationDetails', JSON.stringify(address))
@@ -143,9 +143,9 @@
 //         toast.success(t('New delivery address selected.'))
 //         dispatch(setUserLocationUpdate(!userLocationUpdate))
 //         dispatch(setDetailedLocation(address))
-        
-        
-        
+
+
+
 //     };
 
 //     return (
@@ -305,6 +305,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import toast from 'react-hot-toast';
 import { setUserLocationUpdate } from '@/redux/slices/global';
 import { setDetailedLocation } from '@/redux/slices/addressData';
+import { getCall, postCall } from '@/api/MainApi';
+import { setAddressList } from '@/redux/slices/customer';
 
 const MyAddresses = () => {
     const theme = useTheme();
@@ -314,26 +316,77 @@ const MyAddresses = () => {
     const [defaultAddress, setDefaultAddress] = useState(null);
     const { openMapDrawer, userLocationUpdate } = useSelector((state) => state.globalSettings);
     const [showAllAddresses, setShowAllAddresses] = useState(false);
-
+    const { location, formatted_address, locationDetailed } = useSelector(
+        (state) => state.addressData
+    )
     // Load default address from localStorage on component mount
     useEffect(() => {
         const savedDefaultAddress = localStorage.getItem('locationDetails');
         if (savedDefaultAddress) {
             let locationSelected = JSON.parse(savedDefaultAddress);
-            if(locationSelected.id)
-            {
+            if (locationSelected.id) {
                 setDefaultAddress(JSON.parse(savedDefaultAddress));
-            }else{
+            } else {
                 setShowAllAddresses(true);
             }
-            
+
         }
     }, []);
+
+    const fetchDeliveryAddress = async (newAddressId = null) => {
+        try {
+            const data = await getCall("/clientApis/v1/delivery_address");
+            dispatch(setAddressList(data));
+            if (newAddressId) {
+                // If we just posted a new address, find and set it
+                const newAddress = data.find(addr => addr.id === newAddressId);
+                if (newAddress) {
+                    handleAddressSelect(newAddress);
+                }
+            }
+            localStorage.setItem('addressList', JSON.stringify(data));
+        } catch (err) {
+            console.error('Error fetching delivery address:', err);
+            //   CustomToaster('error', 'Error fetching delivery address');
+        } finally {
+        }
+    };
+
+
+    const postUserLocation = async (customerValue) => {
+        postCall(`/clientApis/v1/delivery_address`, {
+            descriptor: {
+                name: customerValue?.contact_person_name.trim(),
+                email: customerValue?.contact_person_email.trim(),
+                phone: customerValue?.contact_person_number.trim(),
+            },
+            address: {
+                areaCode: locationDetailed?.address?.areaCode.trim(),
+                building: customerValue?.house.trim(),
+                city: locationDetailed?.address?.city.trim(),
+                country: "IND",
+                door: customerValue?.floor.trim(),
+                state: locationDetailed?.address?.state.trim(),
+                street: customerValue?.road.trim(),
+                tag: customerValue?.address_type,
+                lat: customerValue?.latitude,
+                lng: customerValue?.latitude,
+            },
+        }).then((data) => {
+            fetchDeliveryAddress(data.id)
+        }).catch((error) => {
+        }).finally(() => {
+        })
+
+
+        //   dispatch(setlocation(null));
+        //   dispatch(setAddressList([]));
+
+    }
 
     // Handler for when an address is clicked
     const handleAddressSelect = (address) => {
         setDefaultAddress(address);
-        
         // Save to localStorage
         localStorage.setItem('location', JSON.stringify(`${address.address.door}, ${address.address.building}, ${address.address.street},${address.address.city}, ${address.address.state}, ${address.address.country},${address.address.areaCode}`));
         localStorage.setItem('locationDetails', JSON.stringify(address));
@@ -342,7 +395,7 @@ const MyAddresses = () => {
         toast.success(t('New delivery address selected.'));
         dispatch(setUserLocationUpdate(!userLocationUpdate));
         dispatch(setDetailedLocation(address));
-        
+
         // Hide all addresses after selection
         setShowAllAddresses(false);
     };
@@ -383,7 +436,7 @@ const MyAddresses = () => {
                         >
                             {t('Saved Addresses')}
                         </Button>
-                        <AddNewAddress />
+                        <AddNewAddress postUserLocation={postUserLocation} />
                     </Stack>
                 </CustomStackFullWidth>
                 {addresses?.length === 0 ? (
@@ -405,8 +458,8 @@ const MyAddresses = () => {
                     <>
                         {/* Show only default address when not showing all addresses */}
                         {!showAllAddresses && defaultAddress && (
-                            <div 
-                                style={{ 
+                            <div
+                                style={{
                                     cursor: 'pointer',
                                     position: 'relative',
                                     borderRadius: '8px',
@@ -426,8 +479,8 @@ const MyAddresses = () => {
                                     borderRadius: '50%',
                                     boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                 }}>
-                                    <CheckCircleIcon 
-                                        color="primary" 
+                                    <CheckCircleIcon
+                                        color="primary"
                                         style={{ fontSize: '24px' }}
                                     />
                                 </div>
@@ -461,20 +514,20 @@ const MyAddresses = () => {
                                 {addresses?.length > 0
                                     ? addresses.map((address) => (
                                         <Grid item xs={12} md={6} key={address?.id}>
-                                            <div 
+                                            <div
                                                 onClick={() => handleAddressSelect(address)}
-                                                style={{ 
+                                                style={{
                                                     cursor: 'pointer',
                                                     position: 'relative',
                                                     borderRadius: '8px',
-                                                    border: defaultAddress && defaultAddress.id === address.id 
-                                                        ? `2px solid ${theme.palette.primary.main}` 
+                                                    border: defaultAddress && defaultAddress.id === address.id
+                                                        ? `2px solid ${theme.palette.primary.main}`
                                                         : '2px solid transparent',
-                                                    boxShadow: defaultAddress && defaultAddress.id === address.id 
-                                                        ? `0 0 8px ${theme.palette.primary.main}` 
+                                                    boxShadow: defaultAddress && defaultAddress.id === address.id
+                                                        ? `0 0 8px ${theme.palette.primary.main}`
                                                         : 'none',
                                                     transition: 'all 0.3s ease',
-                                                    backgroundColor: defaultAddress && defaultAddress.id === address.id 
+                                                    backgroundColor: defaultAddress && defaultAddress.id === address.id
                                                         ? 'transparent'
                                                         : 'transparent'
                                                 }}
@@ -502,8 +555,8 @@ const MyAddresses = () => {
                                                         borderRadius: '50%',
                                                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                                     }}>
-                                                        <CheckCircleIcon 
-                                                            color="primary" 
+                                                        <CheckCircleIcon
+                                                            color="primary"
                                                             style={{ fontSize: '24px' }}
                                                         />
                                                     </div>

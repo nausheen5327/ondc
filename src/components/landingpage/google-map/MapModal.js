@@ -122,6 +122,7 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
     const { global, userLocationUpdate } = useSelector(
         (state) => state.globalSettings
     );
+    const [locationInitialized, setLocationInitialized] = useState(false);
 
     // State variables
     const [isEnableLocation, setIsEnableLocation] = useState(false);
@@ -147,29 +148,16 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
 
     // Default location with fallback
     const DEFAULT_LOCATION = { lat: 21.2511, lng: 81.6676 };
-
-    // Initialize location state with proper validation
     const [location, setLocation] = useState(() => {
-        try {
-            const savedLocation = localStorage.getItem('currentLatLng');
-            if (savedLocation) {
-                const parsed = JSON.parse(savedLocation);
-                if (parsed && parsed.lat && parsed.lng) {
-                    const lat = parseFloat(parsed.lat);
-                    const lng = parseFloat(parsed.lng);
-                    if (!isNaN(lat) && !isNaN(lng)) {
-                        return { lat, lng };
-                    }
-                }
-            }
-        } catch (e) {
-            console.error("Error initializing location", e);
+        let savedLocation = localStorage.getItem('currentLatLng');
+        if(savedLocation)
+        {
+            savedLocation = JSON.parse(savedLocation);
         }
-
-        // Fallback to hardcoded default
-        return DEFAULT_LOCATION;
+        return savedLocation || DEFAULT_LOCATION;
     });
-
+    // Initialize location state with proper validation
+   
     // Check if Google Maps API is loaded
     useEffect(() => {
         const checkGoogleMapsLoaded = () => {
@@ -212,7 +200,15 @@ const MapModal = ({ open, handleClose, redirectUrl }) => {
 
         return { lat, lng };
     };
-
+    useEffect(() => {
+        if (locationInitialized && location && isValidLocation(location) && googleMapsAvailable) {
+            // This ensures we get zone data for the selected location
+            setLocationEnabled(true);
+            
+            // Force map to rerender with the location
+            setRerenderMap(prev => !prev);
+        }
+    }, [locationInitialized, location, googleMapsAvailable]);
 
     ///////////////////////////////////////////
     // Handle current location selection - Updated to directly set location and close modal
@@ -775,6 +771,84 @@ const finalizeLocationSelection = (newLocation, zoneResponse, geoResponse) => {
         // Return false to prevent default behavior
         return false;
     };
+
+    useEffect(() => {
+        const initializeLocation = async () => {
+            console.log("Initializing map location...");
+            
+            // Step 1: Try to use saved location from localStorage
+            let savedLocation = localStorage.getItem('currentLatLng');
+        if(savedLocation)
+        {
+            savedLocation = JSON.parse(savedLocation);
+        }
+            if (savedLocation) {
+                console.log("Using saved location:", savedLocation);
+                setLocation(savedLocation);
+                setLocationEnabled(true);
+                setLocationInitialized(true);
+                // Fetch zone data for this location
+                refetchCurrentLocation();
+                return;
+            }
+            
+            // Step 2: Try to get current geolocation
+            if (navigator.geolocation) {
+                try {
+                    console.log("No saved location, attempting to get current location...");
+                    setIsLoadingGeolocation(true);
+                    
+                    const positionPromise = new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            resolve,
+                            reject,
+                            {
+                                enableHighAccuracy: true,
+                                timeout: 5000,
+                                maximumAge: 0
+                            }
+                        );
+                    });
+                    
+                    try {
+                        const position = await positionPromise;
+                        const newLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        console.log("Successfully got current location:", newLocation);
+                        setLocation(newLocation);
+                        setLocationEnabled(true);
+                        setLocationInitialized(true);
+                        refetchCurrentLocation();
+                    } catch (geoError) {
+                        console.error("Geolocation error:", geoError);
+                        // Fall back to default location
+                        console.log("Falling back to default location:", DEFAULT_LOCATION);
+                        setLocation(DEFAULT_LOCATION);
+                        setLocationInitialized(true);
+                    }
+                } catch (e) {
+                    console.error("Error in geolocation process:", e);
+                    setLocation(DEFAULT_LOCATION);
+                    setLocationInitialized(true);
+                } finally {
+                    setIsLoadingGeolocation(false);
+                }
+            } else {
+                // Geolocation not supported
+                console.log("Geolocation not supported, using default location");
+                setLocation(DEFAULT_LOCATION);
+                setLocationInitialized(true);
+            }
+        };
+        
+        if (!locationInitialized) {
+            initializeLocation();
+        }
+    }, [locationInitialized, refetchCurrentLocation]);
+
 
     return (
         <Modal
