@@ -49,7 +49,7 @@ const Home = ({ configData, landingPageData, searchQuery, isAuthenticated }) => 
         setCartData(parsedCartItems)
       }
       if (storedLocation) {
-          const parsedLocation = JSON.parse(storedLocation)
+          const parsedLocation = (storedLocation)
           setLocationData(parsedLocation)
       }
       
@@ -132,13 +132,13 @@ const getCartItems = async () => {
   useEffect(() => {
       if (token) {
           console.log("Authenticated state - fetching user data")
-          fetchDeliveryAddress()
+        //   fetchDeliveryAddress()
           getCartItems()
       } else if (!token) {
           console.log("Unauthenticated with location - redirecting")
           if(cartData)dispatch(setCartList(cartData))
          if(locationData){ 
-          dispatch(setlocation(locationData))
+        //   dispatch(setlocation(locationData))
           router.replace('/home')
         }
       }

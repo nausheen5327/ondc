@@ -276,7 +276,7 @@ const SignInPage = ({
             dispatch(setToken(response.token))
             dispatch(setAuthModalOpen(false));
             fetchUserData();
-                // router.push('/')
+            handleClose();
         }
     }
 
@@ -347,6 +347,13 @@ const SignInPage = ({
             phone: values.phone,
             otp: values?.reset_token,
         })        
+        if (values.phone) {
+            if (!values.phone.startsWith('+91')) {
+              values.phone = '+91' + values.phone;
+            }
+          }
+        
+        localStorage.setItem('userDatafor', JSON.stringify(values))
         // Determine which modal to show based on the response
             setOpenOtpModal(false)
             let token = mainToken.split(' ')[1];
@@ -366,7 +373,8 @@ const SignInPage = ({
             CustomToaster('success', loginSuccessFull)
             dispatch(setAuthModalOpen(false));
             fetchUserData();
-            // handleClose();
+            // router.push('/playerInfo')
+            handleClose();
         
     }
     const otpFormSubmitHandler = async(values) => {

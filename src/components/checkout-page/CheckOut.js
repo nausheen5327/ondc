@@ -77,7 +77,7 @@ const CheckOut = () => {
     const token = getValueFromCookie("token")
     const dispatch = useDispatch()
     const cartItems = useSelector(state => state.cart.cartList, shallowEqual)
-    const location = useSelector((state) => state.addressData.location, shallowEqual)
+    const location = useSelector((state) => state.addressData.locationDetailed, shallowEqual)
     const { handleCheckoutFlow, isQuoteComplete } = useCheckoutFlow();
     // const [isQuoteReady, setIsQuoteReady] = useState(false);
     const cartContext = useSelector(state => state.cart.cartContext);

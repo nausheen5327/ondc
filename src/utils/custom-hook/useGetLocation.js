@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { GoogleApi } from "@/hooks/react-query/config/googleApi";
-import { setFormattedAddress, setLocation, setZoneIds } from "@/redux/slices/addressData";
+import { setDetailedLocation, setFormattedAddress, setLocation, setZoneIds } from "@/redux/slices/addressData";
 
 
 export const useGetLocation = (coords) => {
@@ -20,7 +20,7 @@ export const useGetLocation = (coords) => {
     const [predictions, setPredictions] = useState([]);
     const [placeId, setPlaceId] = useState('');
     const [value, setValue] = useState();
-    const [currentLocationValue, setCurrentLactionValue] = useState({
+    const [currentLocationValue, setCurrentLocationValue] = useState({
         description: '',
     })
 
@@ -133,15 +133,56 @@ export const useGetLocation = (coords) => {
             dispatch(setFormattedAddress(geoCodeResults?.data?.results[0]
                 ?.formatted_address))
         }
+        const addressComponents = geoCodeResults?.data?.results[0]?.address_components;
+                                        
+                                        // Initialize location details object
+                                        const locationDetails = {address:{
+                                            areaCode: '',
+                                            street: '',
+                                            road: '',
+                                            building: '',
+                                            country: '',
+                                            city: '',
+                                            state: '',
+                                            formattedAddress: geoCodeResults?.data?.results[0]?.formatted_address
+                                        }};
+                                        
+                                        // Extract components from Google's response
+                                        addressComponents?.forEach(component => {
+                                            const types = component.types;
+                                            
+                                            if (types.includes('postal_code')) {
+                                                locationDetails.address.areaCode = component.long_name;
+                                            }
+                                            if (types.includes('route')) {
+                                                locationDetails.address.road = component.long_name;
+                                            }
+                                            if (types.includes('street_number')) {
+                                                locationDetails.address.street = component.long_name;
+                                            }
+                                            if (types.includes('premise') || types.includes('subpremise')) {
+                                                locationDetails.address.building = component.long_name;
+                                            }
+                                            if (types.includes('country')) {
+                                                locationDetails.address.country = component.long_name;
+                                            }
+                                            if (types.includes('locality') || types.includes('sublocality')) {
+                                                locationDetails.address.city = component.long_name;
+                                            }
+                                            if (types.includes('administrative_area_level_1')) {
+                                                locationDetails.address.state = component.long_name;
+                                            }
+                                        });
+                                        // dispatch(setDetailedLocation(locationDetails))
     }, [geoCodeResults]);
     useEffect(() => {
         if (geoCodeResults) {
-            setCurrentLactionValue({
+            setCurrentLocationValue({
                 description:
                     geoCodeResults?.data?.results[0]?.formatted_address,
             })
         } else {
-            setCurrentLactionValue({
+            setCurrentLocationValue({
                 description: '',
             })
         }
@@ -174,7 +215,7 @@ export const useGetLocation = (coords) => {
         isLoadingPlacesApi,
         geoCodeLoading,
         currentLocationValue,
-        setCurrentLactionValue
+        setCurrentLocationValue
 
         // Other state variables and functions...
     };

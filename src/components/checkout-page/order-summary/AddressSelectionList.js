@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -21,10 +21,20 @@ import 'simplebar-react/dist/simplebar.min.css'
 
 const AddressSelectionList = (props) => {
     const theme = useTheme()
-    const { renderOnNavbar, selectedAddress, data, allAddress, handleLatLng, t, address, isRefetching, additionalInformationDispatch } = props
-    const handleClick = (adres) => {
+    const [selectedAddress, setSelectedAddress]=useState({});
+    const { renderOnNavbar, data, allAddress, handleLatLng, t, address, isRefetching, additionalInformationDispatch } = props
+    const handleClick = (adres) => {        
         handleLatLng(adres)
     }
+
+    useEffect(()=>{
+        let selectedAddr = localStorage.getItem('locationDetails');
+        if(selectedAddr)
+        {
+            setSelectedAddress(JSON.parse(selectedAddr))
+        }
+    },[])
+
     return (
         <CustomStackFullWidth minWidth="300px">
             <SimpleBar style={{ maxHeight: 300, width: "100%" }}>
@@ -35,8 +45,6 @@ const AddressSelectionList = (props) => {
                         marginTop: ".3rem",
                         paddingRight:"15px"
                         // bgcolor: 'background.paper',
-
-
                     }}
                 >
                     {data &&
@@ -73,18 +81,17 @@ const AddressSelectionList = (props) => {
                                         <ListItemText
                                             primary={
                                                 <Typography textTransform="capitalize" fontSize="14px" fontWeight="500">
-                                                    {t(adres.address_type)}
+                                                    {t(adres.address.tag)}
                                                 </Typography>
                                             }
                                             secondary={
                                                 <Typography
-                                                    noWrap
                                                     fontSize="12px"
                                                     maxWidth="285px"
                                                     color={theme.palette.neutral[400]}
                                                     sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
                                                 >
-                                                    {adres.address}
+                                                    {adres.address.door} {adres.address.building} {adres.address.street} {adres.address.state} {adres.address.city} {adres.address.country} {adres.address.areaCode}
                                                 </Typography>
                                             }
                                         />

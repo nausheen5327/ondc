@@ -31,12 +31,11 @@ const AccountInformation = ({ data, formSubmit }) => {
     const theme = useTheme()
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setConfirmShowPassword] = useState(false)
-    const { f_name, l_name, phone, email } = data
     const profileFormik = useFormik({
         initialValues: {
-            name: f_name ? `${f_name} ${l_name}` : '',
-            email: email ? email : '',
-            phone: phone ? phone : '',
+            name: data?.name,
+            email: data?.email ? data?.email : '',
+            phone: data?.phone ? data?.phone : '',
             password: '',
             confirm_password: '',
             button_type: 'change_password',

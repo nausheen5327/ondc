@@ -16,6 +16,7 @@ import useCancellablePromise from '@/api/cancelRequest.js'
 import { useSelector } from 'react-redux'
 import { CustomToaster } from '@/components/custom-toaster/CustomToaster.jsx'
 import SearchFilterWithResults from '@/components/products-page/SearchFilterWithResults.js'
+
 const index = () => {
     const [type, setType] = useState('all')
     const [offset, setOffset] = useState(1)
@@ -26,14 +27,14 @@ const index = () => {
     const [pageData, setPageData] = useState({})
     const [category_id, setCategoryId] = useState(id)
     const [foodOrRestaurant, setFoodOrRestaurant] = useState('products')
-
-    useEffect(() => {
-        type && setOffset(1)
-    }, [type])
     const [products, setProducts] = useState([])
     const [totalProductCount, setTotalProductCount] = useState(0)
     const [cachedPages, setCachedPages] = useState({})
     const { global } = useSelector((state) => state.globalSettings)
+    const { location } = useSelector((state) => state.addressData)
+    
+    // Track current location to detect changes
+    const [currentLocation, setCurrentLocation] = useState(null)
 
     const [paginationModel, setPaginationModel] = useState({
         page: 1,
@@ -43,10 +44,17 @@ const index = () => {
 
     const { cancellablePromise } = useCancellablePromise()
 
+    useEffect(() => {
+        type && setOffset(1)
+    }, [type])
+
     const getAllProducts = async (searchName, currentOffset) => {
+        // Create location-aware cache key
+        const cacheKey = `${currentOffset}-${JSON.stringify(location)}-${searchName}`
+        
         // Check if data is already cached
-        if (cachedPages[currentOffset]) {
-            setPageData(cachedPages[currentOffset])
+        if (cachedPages[cacheKey]) {
+            setPageData(cachedPages[cacheKey])
             return
         }
 
@@ -69,13 +77,19 @@ const index = () => {
                 getAllProductRequest(paginationData.searchData)
             )
 
-            // Cache the results
+            // Cache the results with location-aware key
             setCachedPages(prev => ({
                 ...prev,
-                [currentOffset]: data.data
+                [cacheKey]: data.data
             }))
 
-            setProducts(prevProducts => [...prevProducts, ...data.data])
+            // Replace products instead of appending when location changes
+            if (JSON.stringify(currentLocation) !== JSON.stringify(location)) {
+                setProducts(data.data)
+            } else {
+                setProducts(prevProducts => [...prevProducts, ...data.data])
+            }
+            
             setTotalProductCount(data.count)
             setPageData(data.data)
         } catch (err) {
@@ -83,7 +97,21 @@ const index = () => {
         }
     }
 
-    
+    // Reset pagination and data when location changes
+    useEffect(() => {
+        if (location && JSON.stringify(currentLocation) !== JSON.stringify(location)) {
+            setOffset(1)
+            setPaginationModel(prev => ({ ...prev, page: 1 }))
+            setProducts([])
+            // Don't clear the cache completely, just let the new location data be cached separately
+            setCurrentLocation(location)
+            
+            // Reload data with the new location if name is available
+            if (name) {
+                getAllProducts(name, 1)
+            }
+        }
+    }, [location])
 
     useEffect(() => {
         if (name) {

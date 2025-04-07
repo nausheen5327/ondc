@@ -131,46 +131,42 @@ import { getValueFromCookie } from '@/utils/cookies'
 
 const TopNav = ({ cartListRefetch }) => {
     const dispatch = useDispatch();
-    const theme = useTheme();
+    const theme = useTheme()
     const [query, setQuery] = useState("");
-    const router = useRouter();
-    const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+    const router = useRouter()
+    const isSmall = useMediaQuery(theme.breakpoints.down('md'))
     const { global, userLocationUpdate } = useSelector(
         (state) => state.globalSettings
-    );
-    const location = useSelector((state) => state.addressData.location);
-    const addresses = useSelector((state) => state.user.addressList);
-    const token = getValueFromCookie('token');
-    
-    // Cache the logo URL to prevent unnecessary re-renders
-    const logoUrl = useMemo(() => process.env.NEXT_PUBLIC_LOGO, []);
-    
-    // Load location data only once during component mount
+    )
+    const location = useSelector((state) => state.addressData.location)
+    const [userLocation, setUserLocation] = useState(null)
+    const [userDetailedLocation, setUserDetailedLocation] = useState(null);
     useEffect(() => {
-        const loadLocationData = () => {
-            try {
-                const savedLocation = localStorage.getItem('location');
-                const addressList = localStorage.getItem('addressList');
-                
-                if (savedLocation) {
-                    const parsedLocation = JSON.parse(savedLocation);
-                    dispatch(setlocation(parsedLocation));
-                    if (!token) {
-                        dispatch(setAddressList([parsedLocation]));
-                    }
-                }
-                
-                if (addressList) {
-                    dispatch(setAddressList(JSON.parse(addressList)));
-                }
-            } catch (error) {
-                console.error('Error loading location data:', error);
-            }
+        let location = undefined
+        let detailedLocation = undefined
+        if (typeof window !== 'undefined') {
+            location = localStorage.getItem('location')
+            detailedLocation = localStorage.getItem('locationDetails');
+        }
+        setUserLocation((location))
+       if(detailedLocation) setUserDetailedLocation(JSON.parse(detailedLocation));
+    }, [userLocationUpdate])
+    const addresses = useSelector((state) => state.user.addressList);
+    console.log("location in top nav...", location);
+    const businessLogo = 'https://ondcpreprod.nazarasdk.com/static/media/logo1.ae3b79430a977262a2e9.jpg'
+    const token = getValueFromCookie('token')
+    useEffect(() => {
+        let location = localStorage.getItem('currentLatLng');
+        let addressList = localStorage.getItem('addressList');
+        if (location) {
+            dispatch(setlocation(JSON.parse(location)))
+            // if (!token) dispatch(setAddressList([JSON.parse(location)]));
+            // router.push('/home')
         };
-        
-        loadLocationData();
-    }, [dispatch, token]);
-
+        if (addressList) {
+            dispatch(setAddressList(JSON.parse(addressList)));
+        }
+    }, [])
     return (
         <NoSsr>
             <Card
@@ -208,19 +204,37 @@ const TopNav = ({ cartListRefetch }) => {
                                     <LogoSide
                                         global={global}
                                         width="unset"
-                                        businessLogo={logoUrl}
+                                        businessLogo={process.env.NEXT_PUBLIC_LOGO}
                                     />
 
                                     {/* Only render the AddressReselect component if location exists */}
                                     
-                                        <AddressReselect
+                                        {/* <AddressReselect
                                             location={location}
-                                        />
+                                        /> */}
                                     
+
+                                    <AddressReselect
+                                        location={userLocation}
+                                        detailedLocation = {userDetailedLocation}
+                                        userLocationUpdate={userLocationUpdate}
+                                    />
                                 </CustomStackForLoaction>
+
+                                {/* {!isSmall && (
+                                    <Stack
+                                        direction="row"
+                                        spacing={2}
+                                        justifyContent="end"
+                                    >
+                                        <ThemeSwitches />
+                                    </Stack>
+                                )} */}
                             </Stack>
                             {isSmall && (
-                                <DrawerMenu />
+                                <DrawerMenu
+
+                                />
                             )}
                         </Box>
                     </Container>

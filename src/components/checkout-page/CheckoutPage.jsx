@@ -201,9 +201,9 @@ const CheckoutPage = () => {
     let currencySymbolDirection = 'left'
     let digitAfterDecimalPoint = 2
     // const [location, setLocation] = useState({});
-    const location = useSelector((state)=>state.addressData.location)
-    const billingAddress = useSelector((state)=>state.addressData.location)
-    const deliveryAddress = useSelector((state)=>state.addressData.location)
+    const location = useSelector((state)=>state.addressData.locationDetailed)
+    const billingAddress = useSelector((state)=>state.addressData.locationDetailed)
+    const deliveryAddress = useSelector((state)=>state.addressData.locationDetailed)
     const customerInfo = useSelector((state)=>state.addressData.customerInfo)
    
     

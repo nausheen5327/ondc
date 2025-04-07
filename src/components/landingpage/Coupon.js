@@ -152,7 +152,7 @@ const CouponGrid = ({coupons}) => {
 
                         </Stack>
       <div className="coupon-grid" style={styles.grid}>
-        {coupons.map((coupon) => (
+        {coupons?.map((coupon) => (
           <CouponCard
             key={coupon.code}
             code={coupon.code}

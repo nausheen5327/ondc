@@ -97,7 +97,7 @@ const CartContent = ({
       {/* <Divider sx={{ my: 2 }} /> */}
 
       {/* Item Details */}
-      <Grid container spacing={2} paddingRight={'25px'} style={{marginLeft:'5px'}} alignItems="center">
+      <Grid container spacing={2} paddingRight={'0px'} style={{marginLeft:'5px'}} alignItems="center">
         {/* Item Image */}
         <Grid item xs={3} sm={3} md={3}>
           <Box 
