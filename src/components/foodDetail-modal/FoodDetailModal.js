@@ -462,7 +462,7 @@ const FoodDetailModal = ({
             addToCart(true);
         }else{
             handleModalClose();
-            router.push('/checkout');
+            router.push('/playerInfo');
             return;
         }
     }
@@ -589,7 +589,7 @@ const FoodDetailModal = ({
                     if (navigate) {
                         handleModalClose();
                         dispatch(setCartList([res]));
-                        router.push('/checkout');
+                        router.push('/playerInfo');
                         // handleCheckoutFlow([res], location)
                         return;
                     }
@@ -603,7 +603,7 @@ const FoodDetailModal = ({
                         if (navigate) {
                             handleModalClose();
                             dispatch(setCartList([res]));
-                            router.push('/checkout');
+                            router.push('/playerInfo');
                             // handleCheckoutFlow([res], location)
                             return;
                         }
@@ -710,7 +710,7 @@ const FoodDetailModal = ({
                 dispatch(setCartList(transformedList));
                 if (navigate) {
                     handleModalClose();
-                    router.push('/checkout');
+                    router.push('/playerInfo');
                     // handleCheckoutFlow([res], location)
                     return;
                 }

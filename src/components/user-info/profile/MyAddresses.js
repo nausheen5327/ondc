@@ -370,7 +370,7 @@ const MyAddresses = () => {
                 street: customerValue?.road.trim(),
                 tag: customerValue?.address_type,
                 lat: customerValue?.latitude,
-                lng: customerValue?.latitude,
+                lng: customerValue?.longitude,
             },
         }).then((data) => {
             fetchDeliveryAddress(data.id)
