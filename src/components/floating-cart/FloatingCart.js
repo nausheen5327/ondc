@@ -350,7 +350,7 @@ const createTransformedArray = (dataList) => {
     if(user)
     {
       user = JSON.parse(user)
-      const url = `/clientApis/v2/cart/${user}/${itemId}`;
+      const url = `/clientApis/v2/cart/${user._id}/${itemId}`;
       const res = await deleteCall(url);
       // dispatch(setIsLoading(false));
       getCartItems();

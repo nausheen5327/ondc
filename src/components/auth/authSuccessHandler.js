@@ -143,6 +143,7 @@ export const useAuthData = () => {
             const res = await getCall(url);
             dispatch(setCartList(res));
             localStorage.setItem('userCartItems', JSON.stringify(res));
+            return res;
         } catch (error) {
             console.error("Error fetching cart items:", error);
             CustomToaster('error', "Error fetching cart items")
@@ -203,7 +204,7 @@ export const useAuthData = () => {
       if(user)
       {
         user = JSON.parse(user)
-        const url = `/clientApis/v2/cart/${user}/${itemId}`;
+        const url = `/clientApis/v2/cart/${user._id}/clear`;
         const res = await deleteCall(url);
         // dispatch(setIsLoading(false));
         // getCartItems();
@@ -215,8 +216,6 @@ export const useAuthData = () => {
     const fetchUserData = () => {
         const token = localStorage.getItem('token');
         let cartItemsPreAuth = localStorage.getItem('cartItemsPreAuth');
-        let addrToBeUpdated = localStorage.getItem('addrToBeUpdated');
-        let addrToBeAdded = localStorage.getItem('addrToBeAdded');
         let orderNowItem = localStorage.getItem('orderNowItem');
         console.log('verified 1',token);
         const storedCustomerInfo = localStorage.getItem('customerInfo')
@@ -240,12 +239,12 @@ export const useAuthData = () => {
               orderNowItem = JSON.parse(orderNowItem);
               cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
               let orderItem = cartItemsPreAuth.filter(cartItem => cartItem.id === orderNowItem);
-              // deleteCartItem().then(() => {
-              //     postCartItems(orderItem[0]).then(() => {
-              //         fetchCartItems();
-              //         localStorage.removeItem('orderNowItem');
-              //     });
-              // });
+              deleteCartItem().then(() => {
+                  postCartItems(orderItem[0]).then(() => {
+                      fetchCartItems();
+                      localStorage.removeItem('orderNowItem');
+                  });
+              });
           } 
             else if(cartItemsPreAuth)
             {
@@ -253,9 +252,12 @@ export const useAuthData = () => {
                 if(cartItemsPreAuth?.length)
                 {
                   //delete kardo old
-                   postCartItems(cartItemsPreAuth).then(()=>{
-                    fetchCartItems();
-                   })
+                  deleteCartItem().then(() => {
+                    postCartItems(cartItemsPreAuth).then(() => {
+                        fetchCartItems();
+                        localStorage.removeItem('orderNowItem');
+                    });
+                });
                 }
             }else{
               fetchCartItems();
