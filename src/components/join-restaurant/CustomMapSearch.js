@@ -126,6 +126,7 @@ const CustomMapSearch = ({
     isLoadingPlacesApi,
     currentLocationValue,
     setLocation,
+    allowClose,
 handleClose}) => {
     const { t } = useTranslation();
     const theme = useTheme();
@@ -341,7 +342,7 @@ handleClose}) => {
                                     
                                     
                                     // Close the modal
-                                    if(router.pathname!=='/playerInfo')
+                                    if(allowClose)
                                     {
                                         CustomToaster('success', 'New location has been set.');
                                        

@@ -224,6 +224,7 @@ const AddNewAddress = ({
                                     mapHeight="200px"
                                     handleClose={()=>setOpen(false)}
                                     isGps={true}
+                                    allowClose={false}
                                 />
                                 <IconButton
                                     sx={{

@@ -217,7 +217,7 @@ export const useAuthData = () => {
         const token = localStorage.getItem('token');
         let cartItemsPreAuth = localStorage.getItem('cartItemsPreAuth');
         let orderNowItem = localStorage.getItem('orderNowItem');
-        console.log('verified 1',token);
+        console.log('verified 1',orderNowItem);
         const storedCustomerInfo = localStorage.getItem('customerInfo')
         if (storedCustomerInfo) {
             const parsedInfo = JSON.parse(storedCustomerInfo)
@@ -236,18 +236,21 @@ export const useAuthData = () => {
             // }
             fetchDeliveryAddress();
             if (orderNowItem) {
-              orderNowItem = JSON.parse(orderNowItem);
+              console.log("inside if order now");
+              console.log("order now item is ...", orderNowItem);
               cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
               let orderItem = cartItemsPreAuth.filter(cartItem => cartItem.id === orderNowItem);
+              console.log("order now item is ...", orderItem);
+              
               deleteCartItem().then(() => {
-                  postCartItems(orderItem[0]).then(() => {
+                  postCartItems(orderItem).then(() => {
                       fetchCartItems();
                       localStorage.removeItem('orderNowItem');
                   });
               });
-          } 
-            else if(cartItemsPreAuth)
+          } else if(cartItemsPreAuth)
             {
+              console.log("inside if cart item");
                 cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
                 if(cartItemsPreAuth?.length)
                 {

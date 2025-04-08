@@ -515,7 +515,6 @@ const MyAddresses = () => {
                                     ? addresses.map((address) => (
                                         <Grid item xs={12} md={6} key={address?.id}>
                                             <div
-                                                onClick={() => handleAddressSelect(address)}
                                                 style={{
                                                     cursor: 'pointer',
                                                     position: 'relative',
@@ -563,6 +562,7 @@ const MyAddresses = () => {
                                                 )}
                                                 <AddressCard
                                                     address={address}
+                                                    handleAddressSelect={handleAddressSelect}
                                                 />
                                                 {defaultAddress && defaultAddress.id === address.id && (
                                                     <div style={{

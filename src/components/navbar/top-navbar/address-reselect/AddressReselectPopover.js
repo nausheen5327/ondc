@@ -217,12 +217,13 @@ const AddressReselectPopover = (props) => {
                                     token={token}
                                 //handleAddressSetSuccess={handleAddressSetSuccess}
                                 />
-                                <Button startIcon={<AddCircleOutlineIcon />} sx={{ alignItems: "flex-start", marginBottom: "1rem" }} onClick={setUserCurrentLocation}>
+                                {/* <Button startIcon={<AddCircleOutlineIcon />} sx={{ alignItems: "flex-start", marginBottom: "1rem" }} onClick={setUserCurrentLocation}>
                                     {t("Use Current Location")}
-                                </Button>
+                                </Button> */}
                                 <CustomButtonPrimary paddingLeft="25px" paddingRight="25px"
-                                    paddingTop="10px" paddingBottom="10px"
+                                    paddingTop="20px" paddingBottom="10px"
                                     maxWidth="200px"
+                                    marginTop="20px"
                                     onClick={() => setMapOpen(true)}
                                 >
                                     {t("Pick from Map")}

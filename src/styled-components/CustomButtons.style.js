@@ -66,13 +66,14 @@ export const CustomButtonGray = styled(Button)(({ theme }) => ({
     },
 }))
 
-export const CustomButtonPrimary = styled(Button)(({ theme,paddingLeft,paddingRight,paddingTop,paddingBottom,maxWidth }) => ({
+export const CustomButtonPrimary = styled(Button)(({ theme,paddingLeft,paddingRight,paddingTop,paddingBottom,maxWidth,marginTop }) => ({
     backgroundColor: theme.palette.primary.main,
     color: `${theme.palette.whiteContainer.main} !important`,
     paddingLeft:paddingLeft ?? '0.313rem',
     paddingRight: paddingRight ??'0.313rem',
     paddingTop:paddingTop ?? "16px",
     paddingBottom:paddingBottom ?? "16px",
+    marginTop: marginTop?? "10px",
     '&:hover': {
         backgroundColor: theme.palette.primary.dark,
     },

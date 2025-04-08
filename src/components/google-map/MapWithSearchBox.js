@@ -8,7 +8,7 @@ import { useMediaQuery } from "@mui/material";
 import { useGetLocation } from "@/utils/custom-hook/useGetLocation";
 import { setlocation, setLocation as setReduxLocation } from "@/redux/slices/addressData";
 
-const MapWithSearchBox = ({ orderType, padding, coords, mapHeight, rerenderMap, isGps, handleClose }) => {
+const MapWithSearchBox = ({ orderType, padding, coords, mapHeight, rerenderMap, isGps, handleClose, allowClose=true }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
     const { global } = useSelector((state) => state.globalSettings);
@@ -81,6 +81,7 @@ const MapWithSearchBox = ({ orderType, padding, coords, mapHeight, rerenderMap, 
                         currentLocationValue={currentLocationValue}
                         setLocation={handleLocationUpdate}
                         handleClose={handleClose} // Pass the new handler
+                        allowClose={allowClose}
                     />
                 </>
             )}

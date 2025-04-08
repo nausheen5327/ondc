@@ -338,7 +338,7 @@ const style = {
     borderRadius: "10px",
 }
 
-const AddressCard = ({ address, isDefault, onClick }) => {
+const AddressCard = ({ address, isDefault, onClick,handleAddressSelect}) => {
     const theme = useTheme()
     const dispatch = useDispatch()
     const [open, setOpen] = useState(false)
@@ -461,6 +461,7 @@ const AddressCard = ({ address, isDefault, onClick }) => {
                 <CustomStackFullWidth
                     spacing={1}
                     sx={{ paddingX: '20px', paddingBottom: '25px' }}
+                    onClick={() => handleAddressSelect(address)}
                 >
                     <Stack direction="row" spacing={2}>
                         <Typography fontSize="14px" fontWeight="500">
