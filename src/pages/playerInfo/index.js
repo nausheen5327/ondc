@@ -73,7 +73,7 @@ const PlayerDetailLayout = ({ configdata }) => {
 
     const handleCloseAuthModal = () => {
         setAuthModalOpen(false)
-        router.push('/home')
+        // router.push('/home')
     }
 
     if (isLoading) {
