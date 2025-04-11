@@ -93,7 +93,7 @@ const OrderDetails = () => {
       console.log("Error fetching item:", error);
     }
   };
-
+console.log("order detail is....", order);
   const isItemCustomization = (tags) => {
     let isCustomization = false;
     tags?.forEach((tag) => {
@@ -833,7 +833,7 @@ const handleTrackIssue=()=>{
                   </Typography>
                 </Stack>
               </Stack>
-              <OrderActions />
+              <OrderActions storeName={order?.provider?.descriptor?.name} storePhone={""} />
             </Stack>
           </Grid>
 

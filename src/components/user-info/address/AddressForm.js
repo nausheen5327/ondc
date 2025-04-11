@@ -105,7 +105,7 @@ const AddressForm = ({
             longitude: lng,
             road: editAddress ? address?.road : '',
             house: editAddress ? address?.house : '',
-            floor: editAddress ? address?.floor : '',
+            building: editAddress ? address?.building : '',
         },
         validationSchema: ValidationSchemaForAddAddress(),
         onSubmit: async (values) => {
@@ -148,8 +148,8 @@ const AddressForm = ({
     const houseHandler = (value) => {
         addAddressFormik.setFieldValue('house', value)
     }
-    const floorHandler = (value) => {
-        addAddressFormik.setFieldValue('floor', value)
+    const buildingHandler = (value) => {
+        addAddressFormik.setFieldValue('building', value)
     }
     useEffect(() => {
         addAddressFormik.setFieldValue('address', deliveryAddress)
@@ -320,8 +320,8 @@ const AddressForm = ({
                         <Grid item xs={12} md={12}>
                             <CustomTextFieldWithFormik
                                 type="text"
-                                placeholder={t('Enter Your Street Number')}
-                                label={t('Street Number')}
+                                placeholder={t('Enter Your Street')}
+                                label={t('Street')}
                                 touched={addAddressFormik.touched.road}
                                 errors={addAddressFormik.errors.road}
                                 fieldProps={addAddressFormik.getFieldProps(
@@ -349,15 +349,15 @@ const AddressForm = ({
                             <Grid item xs={12} md={6}>
                                 <CustomTextFieldWithFormik
                                     type="text"
-                                    label={t('Floor')}
-                                    placeholder={t('Enter Your Floor')}
-                                    touched={addAddressFormik.touched.floor}
-                                    errors={addAddressFormik.errors.floor}
+                                    label={t('building')}
+                                    placeholder={t('Enter Your building')}
+                                    touched={addAddressFormik.touched.building}
+                                    errors={addAddressFormik.errors.building}
                                     fieldProps={addAddressFormik.getFieldProps(
-                                        'floor'
+                                        'building'
                                     )}
-                                    onChangeHandler={floorHandler}
-                                    value={addAddressFormik.values.floor}
+                                    onChangeHandler={buildingHandler}
+                                    value={addAddressFormik.values.building}
                                 />
                             </Grid>
                         </Grid>

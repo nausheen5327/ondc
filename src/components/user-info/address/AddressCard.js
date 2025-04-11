@@ -368,7 +368,7 @@ const AddressCard = ({ address, isDefault, onClick,handleAddressSelect}) => {
         }
       };
 
-    const handleUpdateAddress = async (address) => {
+    const handleUpdateAddress = async (address) => {        
         try {
             const data = await postCall(
               `/clientApis/v1/update_delivery_address/${address.id}`,

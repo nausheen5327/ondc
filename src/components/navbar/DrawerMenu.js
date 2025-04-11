@@ -122,7 +122,6 @@ const DrawerMenu = ({  cartListRefetch }) => {
             localStorage.removeItem('user');
             localStorage.removeItem('cartContext')
             removeCookie('token')
-            dispatch(setlocation(null))
             dispatch(removeToken())
             setOpenDrawer(false)
             let a = []

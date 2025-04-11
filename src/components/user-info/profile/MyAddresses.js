@@ -354,6 +354,7 @@ const MyAddresses = () => {
 
 
     const postUserLocation = async (customerValue) => {
+        console.log("customer Value hhhhhhhhhhhhhhh",customerValue)
         postCall(`/clientApis/v1/delivery_address`, {
             descriptor: {
                 name: customerValue?.contact_person_name.trim(),
@@ -362,10 +363,10 @@ const MyAddresses = () => {
             },
             address: {
                 areaCode: locationDetailed?.address?.areaCode.trim(),
-                building: customerValue?.house.trim(),
+                building: customerValue?.building.trim(),
                 city: locationDetailed?.address?.city.trim(),
                 country: "IND",
-                door: customerValue?.floor.trim(),
+                door: customerValue?.house?.trim(),
                 state: locationDetailed?.address?.state.trim(),
                 street: customerValue?.road.trim(),
                 tag: customerValue?.address_type,

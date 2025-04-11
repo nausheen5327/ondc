@@ -202,7 +202,7 @@ const DifferentFoodCompontent = ({ isLoading, isLoadingNearByPopularRestaurantDa
           longitude = parsedLocation.lng;
         }
       }
-      
+      console.log("hhhhhhhhhhhhhhhhhhhhhhhhhh",location, latitude, longitude)
       const data = await postCallTest(`/clientApis/v2/getRandomItems`, {lat: latitude, lon: longitude});            
       storeDataBySection('todays-trends', data?.data);
     } catch (err) {

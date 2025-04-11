@@ -37,6 +37,7 @@ import { setIsLoading } from '@/redux/slices/global'
 import { getToken } from '../checkout-page/functions/getGuestUserId'
 import { LogIn } from 'lucide-react'
 import AuthModal from '../auth'
+import { setClearCart } from '@/redux/slices/cart'
 
 export const menuData = [
     {
@@ -80,7 +81,6 @@ export const AccountPopover = (props) => {
                      localStorage.removeItem('user');
                      localStorage.removeItem('cartContext')
                      removeCookie('token')
-                     dispatch(setlocation(null))
                      dispatch(removeToken())
                      setOpenModal(false);
                      let a = []
