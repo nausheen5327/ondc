@@ -383,7 +383,7 @@ const AddressCard = ({ address, isDefault, onClick,handleAddressSelect}) => {
                   building: address.address.building.trim(),
                   city: address.address.city.trim(),
                   country: "IND",
-                  door: address.address.building.trim(),
+                  door: address.address.door.trim(),
                   building: address.address.building.trim(),
                   state: address.address.state.trim(),
                   street: address.address.street.trim(),
