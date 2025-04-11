@@ -859,14 +859,14 @@ const finalizeLocationSelection = (newLocation, zoneResponse, geoResponse) => {
             disableAutoFocus={true}
             disableEnforceFocus={true}
             disableRestoreFocus={true}
-            BackdropProps={{
-                onClick: (e) => {
-                    // Only close if clicking directly on the backdrop
-                    if (e.target === e.currentTarget) {
-                        handleClose();
-                    }
-                }
-            }}
+            // BackdropProps={{
+            //     onClick: (e) => {
+            //         // Only close if clicking directly on the backdrop
+            //         if (e.target === e.currentTarget) {
+            //             handleClose();
+            //         }
+            //     }
+            // }}
         >
             <CustomBoxWrapper onClick={handleModalContentClick}>
                 <Grid container spacing={1}>

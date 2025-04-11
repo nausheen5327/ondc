@@ -81,6 +81,8 @@ const AddressReselect = ({ location,detailedLocation }) => {
     // const handleOpen = () => setOpen(true)
     const handleModalClose=() => setOpen(false)
     const handleClose = () => {
+        const currentLatLng = localStorage.getItem('currentLatLng')
+        if(!currentLatLng)return;
         setOpen(false)
         if (router.pathname !== '/') {
             handleModalClose()
