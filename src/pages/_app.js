@@ -32,12 +32,16 @@ import AuthModal from '@/components/auth'
 // import { AuthDataListener } from '@/components/auth/authSuccessHandler'
 import { styled } from '@mui/styles'
 // import { PersistGate } from 'redux-persist/integration/react'
+import Script from 'next/script'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 Router.events.on('routeChangeStart', nProgress.start)
 Router.events.on('routeChangeError', nProgress.done)
 Router.events.on('routeChangeComplete', nProgress.done)
 export const currentVersion = process.env.NEXT_PUBLIC_SITE_VERSION
 const clientSideEmotionCache = createEmotionCache()
+const GA_MEASUREMENT_ID = 'G-NM8X1XVNT9'
+
 App.getInitialProps = async ({ Component, ctx }) => {
     let pageProps = {}
 
@@ -76,6 +80,19 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
             minHeight: '100vh',
         }
     });
+
+    useEffect(() => {
+        const handleRouteChange = (url) => {
+            window.gtag('config', GA_MEASUREMENT_ID, {
+                page_path: url,
+            })
+        }
+        
+        router.events.on('routeChangeComplete', handleRouteChange)
+        return () => {
+            router.events.off('routeChangeComplete', handleRouteChange)
+        }
+    }, [router.events])
     return (
         <ThemeProvider
             theme={createTheme({
@@ -89,6 +106,7 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
             <Head>
                 <title>{'ONDC'}</title>
             </Head>
+            <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
             <LoadingOverlay open={isLoading} />
             <WrapperForApp pathname={router?.pathname}>
                 <ScrollToTop />
