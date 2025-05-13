@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsLoading } from '@/redux/slices/global';
 import { setAddressList } from '@/redux/slices/customer';
-import { setlocation } from '@/redux/slices/addressData';
+import { setCustomerInfo, setDetailedLocation, setlocation } from '@/redux/slices/addressData';
 import { setCartList } from '@/redux/slices/cart';
 import { deleteCall, getCall, postCall } from '@/api/MainApi';
 import useCancellablePromise from '@/api/cancelRequest';
@@ -93,39 +93,39 @@ export const useAuthData = () => {
       try {
           const data = await getCall("/clientApis/v1/delivery_address");
           
-          if (newAddressId) {
-              // If we just posted a new address, find and set it
-              const newAddress = data.find(addr => addr.id === newAddressId);
-              if (newAddress) {
-                  dispatch(setlocation(newAddress));
-                  localStorage.setItem('location', JSON.stringify(newAddress));
-              }
-          } else {
-              // Handle existing stored location
-              const storedLocation = localStorage.getItem('location');
-              if (storedLocation) {
-                  const locationData = JSON.parse(storedLocation);
-                  const existingAddress = data.find(addr => addr.id === locationData.id);
+          // if (newAddressId) {
+          //     // If we just posted a new address, find and set it
+          //     const newAddress = data.find(addr => addr.id === newAddressId);
+          //     if (newAddress) {
+          //         dispatch(setlocation(newAddress));
+          //         localStorage.setItem('location', JSON.stringify(newAddress));
+          //     }
+          // } else {
+          //     // Handle existing stored location
+          //     const storedLocation = localStorage.getItem('location');
+          //     if (storedLocation) {
+          //         const locationData = JSON.parse(storedLocation);
+          //         const existingAddress = data.find(addr => addr.id === locationData.id);
                   
-                  if (existingAddress) {
-                      dispatch(setlocation(existingAddress));
-                      localStorage.setItem('location', JSON.stringify(existingAddress));
-                  } else {
-                      // If stored location not found, use latest address
-                      const latestAddress = data[data.length - 1];
-                      if (latestAddress) {
-                          dispatch(setlocation(latestAddress));
-                          localStorage.setItem('location', JSON.stringify(latestAddress));
-                      }
-                  }
-              }
-          }
+          //         if (existingAddress) {
+          //             dispatch(setlocation(existingAddress));
+          //             localStorage.setItem('location', JSON.stringify(existingAddress));
+          //         } else {
+          //             // If stored location not found, use latest address
+          //             const latestAddress = data[data.length - 1];
+          //             if (latestAddress) {
+          //                 dispatch(setlocation(latestAddress));
+          //                 localStorage.setItem('location', JSON.stringify(latestAddress));
+          //             }
+          //         }
+          //     }
+          // }
           
           dispatch(setAddressList(data));
           localStorage.setItem('addressList', JSON.stringify(data));
       } catch (err) {
           console.error('Error fetching delivery address:', err);
-          CustomToaster('error', 'Error fetching delivery address');
+          // CustomToaster('error', 'Error fetching delivery address');
       } finally {
           dispatch(setIsLoading(false));
       }
@@ -143,9 +143,10 @@ export const useAuthData = () => {
             const res = await getCall(url);
             dispatch(setCartList(res));
             localStorage.setItem('userCartItems', JSON.stringify(res));
+            return res;
         } catch (error) {
             console.error("Error fetching cart items:", error);
-            CustomToaster('error', "Error fetching cart items")
+            // CustomToaster('error', "Error fetching cart items")
         } finally {
             console.log('verified 7')
             // dispatch(setIsLoading(false));
@@ -203,7 +204,7 @@ export const useAuthData = () => {
       if(user)
       {
         user = JSON.parse(user)
-        const url = `/clientApis/v2/cart/${user}/${itemId}`;
+        const url = `/clientApis/v2/cart/${user._id}/clear`;
         const res = await deleteCall(url);
         // dispatch(setIsLoading(false));
         // getCartItems();
@@ -215,39 +216,51 @@ export const useAuthData = () => {
     const fetchUserData = () => {
         const token = localStorage.getItem('token');
         let cartItemsPreAuth = localStorage.getItem('cartItemsPreAuth');
-        let addrToBeUpdated = localStorage.getItem('addrToBeUpdated');
-        let addrToBeAdded = localStorage.getItem('addrToBeAdded');
         let orderNowItem = localStorage.getItem('orderNowItem');
-        console.log('verified 1',token);
+        console.log('verified 1',orderNowItem);
+        const storedCustomerInfo = localStorage.getItem('customerInfo')
+        if (storedCustomerInfo) {
+            const parsedInfo = JSON.parse(storedCustomerInfo)
+            dispatch(setCustomerInfo(parsedInfo))
+        }
+
+        let locationDetailed = localStorage.getItem('locationDetails');
+        if(locationDetailed)
+        {
+          dispatch(setDetailedLocation(JSON.parse(locationDetailed)))
+        }
         if (token) {
             // if(addrToBeUpdated)
             // {
             //   postUserLocation(JSON.parse(addrToBeUpdated));
             // }
-            if(addrToBeAdded) {
-               postUserLocation(JSON.parse(addrToBeAdded));
-            }else{
-              fetchDeliveryAddress();
-            }
+            fetchDeliveryAddress();
             if (orderNowItem) {
-              orderNowItem = JSON.parse(orderNowItem);
+              console.log("inside if order now");
+              console.log("order now item is ...", orderNowItem);
               cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
               let orderItem = cartItemsPreAuth.filter(cartItem => cartItem.id === orderNowItem);
+              console.log("order now item is ...", orderItem);
+              
               deleteCartItem().then(() => {
-                  postCartItems(orderItem[0]).then(() => {
+                  postCartItems(orderItem).then(() => {
                       fetchCartItems();
                       localStorage.removeItem('orderNowItem');
                   });
               });
-          } 
-            else if(cartItemsPreAuth)
+          } else if(cartItemsPreAuth)
             {
+              console.log("inside if cart item");
                 cartItemsPreAuth = JSON.parse(cartItemsPreAuth);
                 if(cartItemsPreAuth?.length)
                 {
-                   postCartItems(cartItemsPreAuth).then(()=>{
-                    fetchCartItems();
-                   })
+                  //delete kardo old
+                  deleteCartItem().then(() => {
+                    postCartItems(cartItemsPreAuth).then(() => {
+                        fetchCartItems();
+                        localStorage.removeItem('orderNowItem');
+                    });
+                });
                 }
             }else{
               fetchCartItems();

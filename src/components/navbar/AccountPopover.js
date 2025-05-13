@@ -36,8 +36,8 @@ import { setlocation } from '@/redux/slices/addressData'
 import { setIsLoading } from '@/redux/slices/global'
 import { getToken } from '../checkout-page/functions/getGuestUserId'
 import { LogIn } from 'lucide-react'
-import { setClearCart } from '@/redux/slices/cart'
 import AuthModal from '../auth'
+import { setClearCart } from '@/redux/slices/cart'
 
 export const menuData = [
     {
@@ -75,26 +75,25 @@ export const AccountPopover = (props) => {
     const token = getToken()
 
     const handleLogout = async () => {
-        try {
-                    dispatch(setIsLoading(true));
-                    await localStorage.removeItem('token')
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('cartContext')
-                    removeCookie('token')
-                    dispatch(setlocation(null))
-                    dispatch(removeToken())
-                    setOpenModal(false);
-                    let a = []
-                    dispatch(clearWishList([]))
-                    dispatch(setClearCart())
-                    dispatch(setWelcomeModal(false))
-                    dispatch(setIsLoading(false));
-                    CustomToaster('success', logoutSuccessFull)
-                    router.push('/home')
-                } catch (err) {
-                    dispatch(setIsLoading(false));
-        
-                }
+        try{
+        dispatch(setIsLoading(true));
+                     await localStorage.removeItem('token')
+                     localStorage.removeItem('user');
+                     localStorage.removeItem('cartContext')
+                     removeCookie('token')
+                     dispatch(removeToken())
+                     setOpenModal(false);
+                     let a = []
+                     dispatch(clearWishList([]))
+                     dispatch(setClearCart())
+                     dispatch(setWelcomeModal(false))
+                     dispatch(setIsLoading(false));
+                     CustomToaster('success', logoutSuccessFull)
+                     router.push('/home')
+                 } catch (err) {
+                     dispatch(setIsLoading(false));
+         
+                 }
     }
     const handleClick = (item) => {
         router.push({

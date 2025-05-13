@@ -108,34 +108,22 @@ export function getCall(url, params = null) {
 export function getCallTest(url, params = null) {
   return new Promise(async (resolve, reject) => {
     try {
-      // Build the query parameters string for the URL
-      const queryParams = params
-        ? Object.entries(params)
-            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-            .join('&')
-        : '';
-
-      const fullUrl = queryParams ? `${process.env.NEXT_PUBLIC_BASE_URL}?${queryParams}` : `${process.env.NEXT_PUBLIC_BASE_URL}${url}`;
-
-      // Log the cURL command
-      const headers = {
-        Authorization: 'Bearer YOUR_TOKEN', // Add authorization or other headers if necessary
-      };
-      const headerString = Object.entries(headers)
-        .map(([key, value]) => `-H "${key}: ${value}"`)
-        .join(' ');
-      console.log(`cURL: curl -X GET "${fullUrl}" ${headerString}`);
+      // The logging part should be fixed as well:
+      const fullUrl = params 
+        ? `${process.env.NEXT_PUBLIC_TEST_URL}${url}?${new URLSearchParams(params)}` 
+        : `${process.env.NEXT_PUBLIC_TEST_URL}${url}`;
+        
+      console.log(`cURL: curl -X GET "${fullUrl}"`);
 
       const response = await apiStrapiTest.get(url, { params });
       return resolve(response.data);
     } catch (error) {
-      console.log("error123",error);
+      console.log("error123", error);
       handleApiError(error);
       return reject(error);
     }
   });
 }
-
 
 export function getCallStrapi(url, params = null) {
   return new Promise(async (resolve, reject) => {

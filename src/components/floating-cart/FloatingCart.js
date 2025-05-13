@@ -350,7 +350,7 @@ const createTransformedArray = (dataList) => {
     if(user)
     {
       user = JSON.parse(user)
-      const url = `/clientApis/v2/cart/${user}/${itemId}`;
+      const url = `/clientApis/v2/cart/${user._id}/${itemId}`;
       const res = await deleteCall(url);
       // dispatch(setIsLoading(false));
       getCartItems();
@@ -596,6 +596,11 @@ const createTransformedArray = (dataList) => {
       const data = await cancellablePromise(
         getCall(`/clientApis/v2/on_select?messageIds=${message_id}`)
       );
+      if(data[0]?.error)
+      {
+        CustomToaster('error', data[0]?.error?.message);
+        return;
+      }
       responseRef.current = [...responseRef.current, data[0]];
 
       setEventData((eventData) => [...eventData, data[0]]);
@@ -646,8 +651,9 @@ const createTransformedArray = (dataList) => {
 
   const handleCheckout = () => {
     // handleCheckoutFlow(cartItems, location)
-    setSideDrawerOpen(false)
-    router.push('/checkout');
+    setSideDrawerOpen(false);
+    router.push('/playerInfo');
+    // router.push('/checkout');
   };
 
   // const variationPrice = cartList.map((item) => {

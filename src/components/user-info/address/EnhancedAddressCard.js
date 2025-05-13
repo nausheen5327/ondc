@@ -21,7 +21,7 @@ const style = {
     color: '#FFFFFF',
 };
 
-const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
+const EnhancedAddressCard = ({ address, onUpdateAddress, open, setOpen }) => {
     const theme = useTheme();
     const [addressSymbol, setAddressSymbol] = useState(null);
     const [formErrors, setFormErrors] = useState({});
@@ -54,6 +54,9 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
         }
     }, [address]);
 
+    console.log("current address is", currentAddress, address);
+    
+
     useEffect(() => {
         if (currentAddress.address?.tag === "Home") {
             setAddressSymbol(<HomeRoundedIcon style={{ width: '20px', height: '20px', color: '#666666' }} />);
@@ -67,7 +70,7 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         const [mainKey, subKey] = name.split(".");
-        
+
         setCurrentAddress(prev => ({
             ...prev,
             [mainKey]: { ...prev[mainKey], [subKey]: value }
@@ -89,10 +92,11 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
     const validateForm = () => {
         const errors = {};
         if (!currentAddress.descriptor.name) errors.name = "Name is required";
-        if (!currentAddress.descriptor.phone || currentAddress.descriptor.phone.length !== 10)
+        if (!currentAddress.descriptor.phone || currentAddress.descriptor.phone.length !== 13)
             errors.phone = "Valid 10-digit phone number is required";
         if (!currentAddress.descriptor.email || !/\S+@\S+\.\S+/.test(currentAddress.descriptor.email))
             errors.email = "Valid email is required";
+        if (!currentAddress.address.door) errors.door = "House no. is required";
         if (!currentAddress.address.building) errors.building = "Building is required";
         if (!currentAddress.address.street) errors.street = "Street is required";
         if (!currentAddress.address.city) errors.city = "City is required";
@@ -108,7 +112,7 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
 
     const handleSave = () => {
         if (!validateForm()) return;
-        
+
         const updatedAddress = {
             ...currentAddress,
             address: {
@@ -116,26 +120,27 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
                 tag: currentAddress.address.tag === "Other" ? customTag : currentAddress.address.tag
             }
         };
+        console.log("update address", updatedAddress);
         
         onUpdateAddress(updatedAddress);
         setOpen(false);
     };
 
     return (
-        <div style={{ 
-            border: '1px solid #e0e0e0', 
+        <div style={{
+            border: '1px solid #e0e0e0',
             borderRadius: '8px',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
         }}>
-            
+
 
             <Modal
                 open={open}
                 onClose={() => setOpen(false)}
                 aria-labelledby="edit-address-modal"
             >
-                <Stack sx={style} style={{ 
-                    width: '90%', 
+                <Stack sx={style} style={{
+                    width: '90%',
                     maxWidth: '600px',
                     padding: '24px',
                     maxHeight: '90vh',
@@ -152,10 +157,10 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
                             cursor: 'pointer'
                         }}
                     >
-                        <CloseIcon style={{ width: '16px', height: '16px', color:'#ffffff' }} />
+                        <CloseIcon style={{ width: '16px', height: '16px', color: '#ffffff' }} />
                     </button>
 
-                    <Typography variant="h6" style={{ 
+                    <Typography variant="h6" style={{
                         fontWeight: 'bold',
                         marginBottom: '24px'
                     }}>
@@ -172,7 +177,7 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
                             error={!!formErrors.name}
                             helperText={formErrors.name}
                         />
-                        
+
                         <TextField
                             label="Phone*"
                             name="descriptor.phone"
@@ -192,7 +197,15 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
                             error={!!formErrors.email}
                             helperText={formErrors.email}
                         />
-
+                        <TextField
+                            label="House No.*"
+                            name="address.door"
+                            value={currentAddress.address?.door || ''}
+                            onChange={handleInputChange}
+                            fullWidth
+                            error={!!formErrors.door}
+                            helperText={formErrors.door}
+                        />
                         <TextField
                             label="Building*"
                             name="address.building"
@@ -251,20 +264,20 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
                                 onChange={handleTagChange}
                                 style={{ width: '100%' }}
                             >
-                                <ToggleButton 
-                                    value="Home" 
+                                <ToggleButton
+                                    value="Home"
                                     style={{ flex: 1 }}
                                 >
                                     Home
                                 </ToggleButton>
-                                <ToggleButton 
-                                    value="Office" 
+                                <ToggleButton
+                                    value="Office"
                                     style={{ flex: 1 }}
                                 >
                                     Office
                                 </ToggleButton>
-                                <ToggleButton 
-                                    value="Other" 
+                                <ToggleButton
+                                    value="Other"
                                     style={{ flex: 1 }}
                                 >
                                     Other
@@ -283,9 +296,9 @@ const EnhancedAddressCard = ({ address, onUpdateAddress,open,setOpen }) => {
                             />
                         )}
 
-                        <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'flex-end', 
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
                             gap: '16px',
                             marginTop: '24px'
                         }}>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import RoomIcon from '@mui/icons-material/Room'
 import { Paper, Stack, Typography } from '@mui/material'
-// import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 import { useDispatch, useSelector } from 'react-redux'
 import Router, { useRouter } from 'next/router'
@@ -14,7 +14,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import { useGeolocated } from "react-geolocated";
 import { setOpenMapDrawer, setUserLocationUpdate } from "@/redux/slices/global"
 import MapModal from "@/components/landingpage/google-map/MapModal";
-import AddressList from '@/components/address/addressList'
+import { setlocation } from '@/redux/slices/addressData'
 export const AddressTypographyGray = styled(Typography)(({ theme }) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -27,56 +27,73 @@ export const AddressTypographyGray = styled(Typography)(({ theme }) => ({
     color: theme.palette.neutral[1000],
     fontSize: "13px"
 }))
-const AddressReselect = ({ location }) => {
-    console.log("location inside addr",location);
+const AddressReselect = ({ location,detailedLocation }) => {
+    const [mapOpen, setMapOpen] = useState(false)
     const router = useRouter()
     const [open, setOpen] = useState(false)
-    const [openGuestAddr, setOpenGuestAddr] = useState(false)
+    const { openMapDrawer, userLocationUpdate } = useSelector((state) => state.globalSettings)
+    const [address, setAddress] = useState(null)
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const anchorRef = useRef(null)
-    const [deliveryAddr, setDeliveryAddr] = useState('');
+    
 
-    useEffect(()=>{
-        if(location)
-        {
-            setDeliveryAddr(location?.address?.areaCode);
+    useEffect(() => {
+        const currentLatLng = localStorage.getItem('currentLatLng')
+        if (!currentLatLng) {
+            setOpen(true)
         }
-    },[location])
+    }, [])
 
-   
 
-    const token = localStorage.getItem("token");
+    useEffect(() => {
+        if (address) {
+            localStorage.setItem('location', JSON.stringify(`${address.address.door}, ${address.address.building}, ${address.address.street},${address.address.city}, ${address.address.state}, ${address.address.country},${address.address.areaCode}`))
+            localStorage.setItem('locationDetails', JSON.stringify(address))
+            const values = { lat: address?.address?.lat, lng: address?.address?.lng }
+            localStorage.setItem('currentLatLng', JSON.stringify(values))
+            dispatch(setlocation(values));
+            toast.success(t('New delivery address selected.'))
+            handleClosePopover()
+            dispatch(setUserLocationUpdate(!userLocationUpdate))
+           if(router.pathname==='/') router.push('/home')
+        }
+    }, [address])
+
+    const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: false,
+            },
+            userDecisionTimeout: 5000,
+            isGeolocationEnabled: true,
+        })
+    const handleClosePopover = () => {
+        dispatch(setOpenMapDrawer(false))
+        setMapOpen(false)
+    }
     const handleClickToLandingPage = () => {
-            // if(token){
-            //     setOpen(true)
-            // }else{
-            //     setOpenGuestAddr(true);
-            // }
-        setOpen(true);    
-        
+        if(router.pathname === '/'){
+            setOpen(true)
+        }else{
+            dispatch(setOpenMapDrawer(true))
+        }
+
     }
     // const handleOpen = () => setOpen(true)
     const handleModalClose=() => setOpen(false)
     const handleClose = () => {
+        const currentLatLng = localStorage.getItem('currentLatLng')
+        if(!currentLatLng)return;
         setOpen(false)
         if (router.pathname !== '/') {
             handleModalClose()
         }
     }
-
-    const handleCloseGuest = () => {
-        setOpenGuestAddr(false)
-    }
-
-    useEffect(()=>{
-        if(!location)
-        {
-            setOpen(true);
-        }
-    },[location])
+    console.log("location in top nav",address);
 
     return (
-        <>{location && Object.keys(location).length>=1 ?
+        <>{location ?
             <Stack
                 sx={{
                     color: (theme) => theme.palette.neutral[1000],
@@ -96,9 +113,9 @@ const AddressReselect = ({ location }) => {
                 <AddressTypographyGray
                     align="left"
                 >
-                    {deliveryAddr}
+                    {detailedLocation?.address?.areaCode}
                 </AddressTypographyGray>
-                {/* <KeyboardArrowDownIcon /> */}
+                <KeyboardArrowDownIcon />
             </Stack> :
             <Stack
                 direction="row"
@@ -118,12 +135,12 @@ const AddressReselect = ({ location }) => {
                 <AddressTypographyGray
                     align="left"
                 >
-                    {"Select your location"}
+                    {t("Select your location")}
                 </AddressTypographyGray>
-                {/* <KeyboardArrowDownIcon /> */}
+                <KeyboardArrowDownIcon />
             </Stack>
         }
-            {/* <AddressReselectPopover
+            <AddressReselectPopover
                 anchorEl={anchorRef.current}
                 onClose={handleClosePopover}
                 open={openMapDrawer}
@@ -131,13 +148,12 @@ const AddressReselect = ({ location }) => {
                 address={address}
                 setAddress={setAddress}
                 mapOpen={mapOpen}
-                // setUserLocationUpdate={setUserLocationUpdate}
+                setUserLocationUpdate={setUserLocationUpdate}
                 setMapOpen={setMapOpen}
                 coords={coords}
 
-            /> */}
-            {open && <AddressList openAddressModal={open} setOpenAddressModal={handleClose}/>
-}
+            />
+            {open && <MapModal open={open} handleClose={handleClose} />}
         </>
     )
 }

@@ -26,6 +26,9 @@ const ProductSearchPage = ({
     const [cachedPages, setCachedPages] = useState({})
     const { global } = useSelector((state) => state.globalSettings)
     const { searchTagData } = useSelector((state) => state.searchTags)
+    const { location, formatted_address, zoneId } = useSelector((state) => state.addressData)
+    // Track current location to detect changes
+    const [currentLocation, setCurrentLocation] = useState(null)
 
     const [paginationModel, setPaginationModel] = useState({
         page: 1,
@@ -37,8 +40,9 @@ const ProductSearchPage = ({
 
     const getAllProducts = async (searchName, currentOffset) => {
         // Check if data is already cached
-        if (cachedPages[currentOffset]) {
-            setPageData(cachedPages[currentOffset])
+        const cacheKey = `${currentOffset}-${JSON.stringify(location)}`
+        if (cachedPages[cacheKey]) {
+            setPageData(cachedPages[cacheKey])
             return
         }
 
@@ -61,13 +65,19 @@ const ProductSearchPage = ({
                 getAllProductRequest(paginationData.searchData)
             )
 
-            // Cache the results
+            // Cache the results with location-aware key
             setCachedPages(prev => ({
                 ...prev,
-                [currentOffset]: data.data
+                [cacheKey]: data.data
             }))
 
-            setProducts(prevProducts => [...prevProducts, ...data.data])
+            // Replace products instead of appending when location changes
+            if (JSON.stringify(currentLocation) !== JSON.stringify(location)) {
+                setProducts(data.data)
+            } else {
+                setProducts(prevProducts => [...prevProducts, ...data.data])
+            }
+            
             setTotalProductCount(data.count)
             setPageData(data.data)
         } catch (err) {
@@ -78,7 +88,7 @@ const ProductSearchPage = ({
     useEffect(() => {
         if (query) {
             setSearchValue(removeSpecialCharacters(query))
-        }else if(page){
+        } else if (page) {
             setSearchValue(removeSpecialCharacters(page))
         } else if (tags) {
             setSearchValue(null)
@@ -87,15 +97,24 @@ const ProductSearchPage = ({
         }
     }, [query, tags])
 
+    // Reset pagination and cache when location changes
+    useEffect(() => {
+        if (location && JSON.stringify(currentLocation) !== JSON.stringify(location)) {
+            setOffset(1)
+            setPaginationModel(prev => ({ ...prev, page: 1 }))
+            setProducts([])
+            setCachedPages({})
+            setCurrentLocation(location)
+        }
+    }, [location])
+
     useEffect(() => {
         if (searchValue) {
             setPaginationModel(prev => ({ ...prev, page: offset }))
             getAllProducts(searchValue, offset)
         }
-    }, [offset, searchValue])
+    }, [offset, searchValue, location])
 
-
-    console.log('Search value', searchValue)
     return (
         <>
             <Meta

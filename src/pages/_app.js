@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import { Provider, useSelector } from 'react-redux'
+import { Provider, useDispatch, useSelector } from 'react-redux'
 // import { persistStore } from 'redux-persist'
 import DynamicFavicon from '../components/favicon/DynamicFavicon'
 import FloatingCardManagement from '../components/floating-cart/FloatingCardManagement'
@@ -31,6 +31,7 @@ import LoadingOverlay from '@/components/common/layoutProgress'
 import AuthModal from '@/components/auth'
 // import { AuthDataListener } from '@/components/auth/authSuccessHandler'
 import { styled } from '@mui/styles'
+import { setCustomerInfo, setDetailedLocation } from '@/redux/slices/addressData'
 // import { PersistGate } from 'redux-persist/integration/react'
 import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -62,6 +63,7 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
     const isLoading = useSelector(state => state.globalSettings.isLoading);
     const [forSignup, setForSignup] = useState('')
     const [modalFor, setModalFor] = useState('sign-in')
+    const dispatch = useDispatch();
 
     const Footer = dynamic(() => import('../components/footer/Footer'), {
         ssr: false,
@@ -70,6 +72,20 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
     const customerInfo = useSelector(state=> state.addressData.customerInfo);
     const theme = useTheme()
     const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+
+    useEffect(()=>{
+        const storedCustomerInfo = localStorage.getItem('customerInfo')
+                if (storedCustomerInfo) {
+                    const parsedInfo = JSON.parse(storedCustomerInfo)
+                    dispatch(setCustomerInfo(parsedInfo))
+                }
+
+        let locationDetailed = localStorage.getItem('locationDetails');
+                if(locationDetailed)
+                {
+                  dispatch(setDetailedLocation(JSON.parse(locationDetailed)))
+                }
+    },[])
     // Main content wrapper to provide proper spacing
     const MainContentWrapper = styled('div')(() => {
         const currentPath = router?.pathname || '/'
@@ -174,7 +190,6 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     const router = useRouter()
     const [showSplashScreen, setShowSplashScreen] = useState(true)
     const { userId } = router.query;
-
     useEffect(() => {
         setShowSplashScreen(false)
     }, [router.isReady])
@@ -192,7 +207,7 @@ function App({ Component, pageProps, emotionCache = clientSideEmotionCache }) {
     // }
 
 
-    const zoneid = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('zoneid')) : undefined;
+    const zoneid = typeof window !== 'undefined' ? (localStorage.getItem('zoneid')) : undefined;
 
 
     useEffect(() => {

@@ -57,6 +57,11 @@ export const useCheckoutFlow = () => {
       // dispatch(setIsLoading(true))
 
       const data = await getCall(`/clientApis/v2/on_select?messageIds=${message_id}`)
+      if(data[0]?.error)
+            {
+              CustomToaster('error', data[0]?.error?.message);
+              return;
+            }
       
       responseRef.current = [...responseRef.current, data[0]];
 

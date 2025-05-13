@@ -152,11 +152,13 @@ const FoodDetailModal = ({
 
     const deleteCartItem = async (itemId) => {
         // const user = JSON.parse(getValueFromCookie("user"));
+        let item_details = cartItems.filter(item=>item?.item?.id===itemId)
+
         let user = localStorage.getItem("user")
         if(user)
         {
             user = JSON.parse(user);
-            const url = `/clientApis/v2/cart/${user._id}/${itemId}`;
+            const url = `/clientApis/v2/cart/${user._id}/${item_details[0]._id}`;
             const res = await deleteCall(url);
             CustomToaster('success', "Item removed from cart");
             getCartItems();
@@ -165,7 +167,6 @@ const FoodDetailModal = ({
             const updatedPreAuthCart = preAuthCartHelpers.deleteFromPreAuthCart(itemId);
             const transformedList = createTransformedArray(updatedPreAuthCart);
             dispatch(setCartList(transformedList));
-            console.log("setting cartlist", transformedList);
             localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
             getCartItemsPre();
             CustomToaster('success', "Item removed from cart");
@@ -271,7 +272,6 @@ const FoodDetailModal = ({
         customisations,
         cartItemData
     ) => {
-        console.log("check for customizations", customisations, cartItemData)
         const cartItem = Object.assign(
             {},
             JSON.parse(JSON.stringify(cartItemData))
@@ -406,7 +406,6 @@ const FoodDetailModal = ({
         };
     };
 
-    console.log("cartitems inside food modal",cartItems)
 
     const updateCartInLocalStorage = (newItem) => {
         try {
@@ -455,14 +454,53 @@ const FoodDetailModal = ({
         });
       };
 
-    const handleOrderNow=()=>{
+
+      const clearCartItem = async (itemId) => {
+        // dispatch(setIsLoading(true));
+        // const user = JSON.parse(getValueFromCookie("user"));
+        let user  = localStorage.getItem("user");
+        if(user)
+        {
+          user = JSON.parse(user)
+          const url = `/clientApis/v2/cart/${user._id}/clear`;
+          const res = await deleteCall(url);
+          // dispatch(setIsLoading(false));
+          // getCartItems();
+        }
+      };
+
+    const handleOrderNow=async()=>{
         let isPresentInCart = cartItems.filter(cartItem=> cartItem.item.id === modalData[0].id)
+        const userData = localStorage.getItem('user');
         localStorage.setItem("orderNowItem", modalData[0].id);
         if(isPresentInCart.length<1 ){
-            addToCart(true);
+            if(userData)
+            {
+                clearCartItem().then(()=>{
+                    addToCart(true);
+                })
+            }else{
+                addToCart(true);
+            }
+           
         }else{
+            //delete oters except this one
+            let otherItems = cartItems.filter(cartItem=> cartItem.item.id !== modalData[0].id)
+            
+            const parsedUser = JSON.parse(userData);
+            if(userData)
+            {
+                for (const itemId of otherItems) {
+                    try {
+                      const url = `/clientApis/v2/cart/${parsedUser._id}/${itemId._id}`;
+                      const res = await deleteCall(url);
+                    } catch (error) {
+                      console.error(`Failed to delete item ${itemId}:`, error);
+                    }
+                  }
+            }
             handleModalClose();
-            router.push('/checkout');
+            router.push('/playerInfo');
             return;
         }
     }
@@ -534,7 +572,6 @@ const FoodDetailModal = ({
                     modalData[0],
                     customizationState
                 );
-                console.log("customizations are...", customizationState)
                 }
                 
 
@@ -589,7 +626,7 @@ const FoodDetailModal = ({
                     if (navigate) {
                         handleModalClose();
                         dispatch(setCartList([res]));
-                        router.push('/checkout');
+                        router.push('/playerInfo');
                         // handleCheckoutFlow([res], location)
                         return;
                     }
@@ -603,7 +640,7 @@ const FoodDetailModal = ({
                         if (navigate) {
                             handleModalClose();
                             dispatch(setCartList([res]));
-                            router.push('/checkout');
+                            router.push('/playerInfo');
                             // handleCheckoutFlow([res], location)
                             return;
                         }
@@ -669,7 +706,6 @@ const FoodDetailModal = ({
                 }
 
                 
-                console.log("selected customization mine", selectedCustomizations)
     
                 // Calculate total price including customizations
                 const basePrice = modalData[0]?.item_details?.price?.value || 0;
@@ -710,11 +746,10 @@ const FoodDetailModal = ({
                 dispatch(setCartList(transformedList));
                 if (navigate) {
                     handleModalClose();
-                    router.push('/checkout');
+                    router.push('/playerInfo');
                     // handleCheckoutFlow([res], location)
                     return;
                 }
-                console.log("setting cartlist 1",transformedList)
                 localStorage.setItem('cartListPreAuth',JSON.stringify(transformedList));
                 CustomToaster('success', quantity > 1 
                     ? "Item quantity updated successfully" 
@@ -761,7 +796,6 @@ const FoodDetailModal = ({
             if(user) user = JSON.parse(user);
             const url = `/clientApis/v2/cart/${user._id}`;
             const res = await getCall(url);
-            console.log("cart...", res);
             dispatch(setCartList(res));
             localStorage.setItem('cartItems', JSON.stringify(res));
 
@@ -781,7 +815,6 @@ const FoodDetailModal = ({
                 setQuantity(1);
             }
         } catch (error) {
-            console.log("Error fetching cart items:", error);
             //   setLoading(false);
         } finally {
             //   setLoading(false);
@@ -877,7 +910,6 @@ const FoodDetailModal = ({
                 }
             })
             // dispatch(setCart(product))
-            console.log("products123456", product);
             CustomToaster('success', 'Item added to cart')
             handleClose()
             //dispatch()
@@ -1048,7 +1080,6 @@ const FoodDetailModal = ({
         }
         // handleClose?.()
     }
-    console.log(cartItems, 'CartItem...');
 
 
 
@@ -1161,7 +1192,6 @@ const FoodDetailModal = ({
 
     const isInCart = (id) => {
         const isInCart = cartList?.filter((item) => item?.item?.id === id)
-        console.log("same hai kya...", id === cartList?.[0]?.item?.id);
         if (isInCart?.length > 0) {
             return true
         } else {
@@ -1180,7 +1210,6 @@ const FoodDetailModal = ({
     const orderNow = () => {
 
     }
-    console.log("auth modal open", authModalOpen);
     const getFullFillRequirements = () => {
         let isdisabled = false
         if (modalData[0]?.variations?.length > 0) {
@@ -1305,7 +1334,6 @@ const FoodDetailModal = ({
     const text2 = t('items available')
 
 
-    console.log("check data for customization",modalData[0])
 
     return (
         <>
@@ -1501,7 +1529,6 @@ const FoodDetailModal = ({
                                                 const groupItems = modalData[0].customisation_items?.filter(
                                                     item => item.customisation_group_id === group.id
                                                 );
-                                                console.log("check data for customization 1",groupItems)
                                                 return (
                                                     <CustomizationSection
                                                         key={group.id}

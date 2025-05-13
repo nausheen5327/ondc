@@ -329,11 +329,7 @@ const OrderCalculation = (props) => {
             </Stack>
         );
     };
-    const restaurantChargeInfo = zoneData?.find(
-        (item) =>
-            Number.parseInt(item.id) ===
-            Number.parseInt(restaurantData?.data?.zone_id)
-    );
+    
     const extraText = t("This charge includes extra vehicle charge");
     const badText = t("and bad weather charge");
     const deliveryToolTipsText = `${extraText} ${getAmount(

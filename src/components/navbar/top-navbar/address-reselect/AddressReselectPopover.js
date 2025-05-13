@@ -16,7 +16,7 @@ import { useGetLocation } from "@/utils/custom-hook/useGetLocation";
 import { AnimationDots } from "../../../products-page/AnimationDots";
 import IconButton from "@mui/material/IconButton";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import { setLocation } from "@/redux/slices/addressData";
+import { setlocation } from "@/redux/slices/addressData";
 import { useQuery } from "react-query";
 import { GoogleApi } from "@/hooks/react-query/config/googleApi";
 import { setUserLocationUpdate } from "@/redux/slices/global";
@@ -31,6 +31,7 @@ const AddressReselectPopover = (props) => {
     const { coords, anchorEl, setMapOpen, mapOpen, onClose, open, t, address, setAddress, ...other } = props
     const { geoCodeLoading } = useGetLocation(coords);
     const { location, formatted_address, zoneId } = useSelector((state) => state.addressData)
+    console.log("address reselect popover", address);
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
     const languageDirection = 'ltr'
     const handleSuccess = () => {
@@ -48,40 +49,198 @@ const AddressReselectPopover = (props) => {
 
     }
 
-    const { data: geoCodeResults, refetch: refetchCurrentLocation } = useQuery(
-        ['geocode-api', location],
-        async () => GoogleApi.geoCodeApi(location), {
-        onSuccess: handleSuccess
-    }
-    )
+    console.log("coords in location", address);
 
-    const getLocation = () => {
-        if (zoneId && formatted_address && location) {
-            localStorage.setItem('zoneid', zoneId)
-            localStorage.setItem(
-                'location',
-                formatted_address
-            )
-            localStorage.setItem('currentLatLng', JSON.stringify(location))
-            CustomToaster('success', 'New location has been set.');
-            setAddress(null)
-            dispatch(setUserLocationUpdate(!userLocationUpdate))
-            onClose()
+    const { data: geoCodeResults, refetch: refetchCurrentLocation, isLoading: geoCodeApiLoading } = useQuery(
+        ['geocode-api', location],
+        async () => {
+            if (!location || !location.lat || !location.lng) {
+                return null;
+            }
+            return GoogleApi.geoCodeApi(location);
+        },
+        {
+            onSuccess: handleSuccess,
+            enabled: !!location && !!location.lat && !!location.lng, // Only run if location exists
+            retry: 1,
+            // Don't automatically refetch on window focus
+            refetchOnWindowFocus: false
         }
-    }
+    );
+
+    const processGeoCodeResults = (results) => {
+        if (!results || !results.data || !results.data.results || results.data.results.length === 0) {
+            return null;
+        }
+
+        const result = results.data.results[0];
+        const formattedAddress = result.formatted_address;
+        const addressComponents = result.address_components;
+
+        // Initialize location details object
+        const locationDetails = {
+            address: {
+                areaCode: '',
+                street: '',
+                road: '',
+                building: '',
+                country: '',
+                city: '',
+                state: '',
+                formattedAddress: formattedAddress
+            }
+        };
+
+        // Extract components from Google's response
+        addressComponents.forEach(component => {
+            const types = component.types;
+
+            if (types.includes('postal_code')) {
+                locationDetails.address.areaCode = component.long_name;
+            }
+            if (types.includes('route')) {
+                locationDetails.address.road = component.long_name;
+            }
+            if (types.includes('street_number')) {
+                locationDetails.address.street = component.long_name;
+            }
+            if (types.includes('premise') || types.includes('subpremise')) {
+                locationDetails.address.building = component.long_name;
+            }
+            if (types.includes('country')) {
+                locationDetails.address.country = component.long_name;
+            }
+            if (types.includes('locality') || types.includes('sublocality')) {
+                locationDetails.address.city = component.long_name;
+            }
+            if (types.includes('administrative_area_level_1')) {
+                locationDetails.address.state = component.long_name;
+            }
+        });
+
+        return {
+            formattedAddress,
+            locationDetails
+        };
+    };
+
+    const getLocation = async () => {
+        // First, check if we have a location
+        if (!location || !location.lat || !location.lng) {
+            CustomToaster('error', 'Please select a location on the map first');
+            return;
+        }
+
+        try {
+            // Save location to localStorage immediately
+            localStorage.setItem('currentLatLng', JSON.stringify(location));
+
+            // If we have a zoneId, save it
+            if (zoneId) {
+                localStorage.setItem('zoneid', zoneId);
+            }
+
+            // Get latest geocode results if we need to
+            let geocodeData = geoCodeResults;
+            if (!geocodeData) {
+                const response = await refetchCurrentLocation();
+                geocodeData = response.data;
+            }
+
+            // Process the geocode results
+            const processedResults = processGeoCodeResults(geocodeData);
+
+            if (processedResults) {
+                // Save formatted address
+                localStorage.setItem('location', JSON.stringify(processedResults.formattedAddress));
+
+                // Save location details
+                localStorage.setItem('locationDetails', JSON.stringify(processedResults.locationDetails));
+
+                // Show success message
+                CustomToaster('success', 'New location has been set');
+            } else if (formatted_address) {
+                // Use provided formatted_address if geocoding failed
+                localStorage.setItem('location', JSON.stringify(formatted_address));
+                CustomToaster('success', 'New location has been set');
+            } else {
+                // We have a location but no address information
+                CustomToaster('success', 'Location set, but address details could not be determined');
+            }
+
+            // Update state and close
+            setAddress(null);
+            dispatch(setUserLocationUpdate(!userLocationUpdate));
+            onClose();
+        } catch (error) {
+            console.error('Error setting location:', error);
+            CustomToaster('error', 'Failed to set location. Please try again.');
+        }
+    };
+
+
     const setUserCurrentLocation = async () => {
         if (coords) {
-            // dispatch(setLocation(
-            //     {
-            //         lat: coords?.latitude,
-            //         lng: coords?.longitude,
-            //     }
-            // ))
+            let location = {
+                lat: coords?.latitude,
+                lng: coords?.longitude,
+            }
+            dispatch(setlocation(
+                location
+            ))
             if (zoneId) {
                 localStorage.setItem('zoneid', zoneId)
             }
             await refetchCurrentLocation()
+            if (geoCodeResults?.data?.results && geoCodeResults.data?.results.length > 0) {
+                const addressComponents = geoCodeResults.data.results[0].address_components;
+
+                // Initialize location details object
+                const locationDetails = {
+                    address: {
+                        areaCode: '',
+                        street: '',
+                        road: '',
+                        building: '',
+                        country: '',
+                        city: '',
+                        state: '',
+                        formattedAddress: geoCodeResults.results[0].formatted_address
+                    }
+                };
+
+                // Extract components from Google's response
+                addressComponents.forEach(component => {
+                    const types = component.types;
+
+                    if (types.includes('postal_code')) {
+                        locationDetails.address.areaCode = component.long_name;
+                    }
+                    if (types.includes('route')) {
+                        locationDetails.address.road = component.long_name;
+                    }
+                    if (types.includes('street_number')) {
+                        locationDetails.address.street = component.long_name;
+                    }
+                    if (types.includes('premise') || types.includes('subpremise')) {
+                        locationDetails.address.building = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        locationDetails.address.country = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('sublocality')) {
+                        locationDetails.address.city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        locationDetails.address.state = component.long_name;
+                    }
+                });
+
+                // Store the detailed location information
+                localStorage.setItem('locationDetails', JSON.stringify(locationDetails));
+            }
             setRerenderMap((prvMap) => !prvMap)
+            onClose();
         }
 
     }
@@ -120,12 +279,13 @@ const AddressReselectPopover = (props) => {
                                     token={token}
                                 //handleAddressSetSuccess={handleAddressSetSuccess}
                                 />
-                                <Button startIcon={<AddCircleOutlineIcon />} sx={{ alignItems: "flex-start", marginBottom: "1rem" }} onClick={setUserCurrentLocation}>
+                                {/* <Button startIcon={<AddCircleOutlineIcon />} sx={{ alignItems: "flex-start", marginBottom: "1rem" }} onClick={setUserCurrentLocation}>
                                     {t("Use Current Location")}
-                                </Button>
+                                </Button> */}
                                 <CustomButtonPrimary paddingLeft="25px" paddingRight="25px"
-                                    paddingTop="10px" paddingBottom="10px"
+                                    paddingTop="20px" paddingBottom="10px"
                                     maxWidth="200px"
+                                    marginTop="20px"
                                     onClick={() => setMapOpen(true)}
                                 >
                                     {t("Pick from Map")}
@@ -133,38 +293,24 @@ const AddressReselectPopover = (props) => {
                             </CustomStackFullWidth>
 
                         ) : (<CustomStackFullWidth position="relative" justifyContent="center" alignItems="center">
-                            <MapWithSearchBox isGps={true} rerenderMap={rerenderMap} orderType="dd" padding="0px" coords={coords} mapHeight="400px" />
+                            <MapWithSearchBox isGps={true} rerenderMap={rerenderMap} orderType="dd" padding="0px" coords={coords} mapHeight="400px" handleClose={onClose} />
                             <Stack width={{ xs: "80%", sm: "85%", md: "90%" }} position="absolute" right="15px" bottom="5%" direction="row" spacing={1}>
-                                {geoCodeLoading ? (
-                                    <Button
-                                        fullWidth
-                                        sx={{
-                                            color: `${theme.palette.whiteText.main} !important`,
-                                            backgroundColor: theme.palette.primary.main,
-                                            '&:hover': {
-                                                backgroundColor: theme.palette.primary.dark,
-                                            },
-                                        }}
-                                    >
-                                        <AnimationDots size="0px" />
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        fullWidth
-                                        sx={{
-                                            color: `${theme.palette.whiteText.main} !important`,
-                                            backgroundColor: theme.palette.primary.main,
-                                            '&:hover': {
-                                                backgroundColor: theme.palette.primary.dark,
-                                            },
-                                        }}
-                                        paddingTop="10px" paddingBottom="10px"
-                                        onClick={getLocation}
-
-                                    >
-                                        {t("Select")}
-                                    </Button>
-                                )}
+                                <Button
+                                    fullWidth
+                                    disabled={geoCodeApiLoading}
+                                    sx={{
+                                        color: `${theme.palette.whiteText.main} !important`,
+                                        backgroundColor: theme.palette.primary.main,
+                                        '&:hover': {
+                                            backgroundColor: theme.palette.primary.dark,
+                                        },
+                                        zIndex: 9999
+                                    }}
+                                    paddingTop="10px" paddingBottom="10px"
+                                    onClick={getLocation}
+                                >
+                                    {geoCodeApiLoading ? <AnimationDots size="0px" /> : t("Select")}
+                                </Button>
                                 <IconButton
                                     sx={{
                                         background: theme => theme.palette.neutral[100],

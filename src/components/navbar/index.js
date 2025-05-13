@@ -360,7 +360,50 @@ const Navigation = () => {
     const scrolling = useScrollTrigger()
     const [userLocation, setUserLocation] = useState(null)
     const { userLocationUpdate } = useSelector((state) => state.globalSettings)
-    const categories = useSelector(state => state.globalSettings.categoriesList);
+    const categories = useSelector(state => state.globalSettings.categoriesList); // Adjust the path according to your Redux store structure
+  
+    const fetchCategories = async () => {
+      try {
+        const response = await getCallTest('/nodeStrapi/strapi/categories');
+        dispatch(setCategoriesList(response));
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        let categories = [
+            {title:'Food',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167043/pizza_r66op5.png'
+            },
+            {title:'Electronics',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167046/smartphone_dotw66.png'
+            },
+            {title:'Fashion',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167043/shirt_pvhvvp.png'
+            },
+            {title:'Groceries',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167042/shopping-basket_fayoda.png'
+            },
+            {title:'Home Decor',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167042/bed-double_lhr4iq.png'
+            },
+            {title:'Gift-Cards',
+                imageSrc:'https://res.cloudinary.com/dbctmcyg0/image/upload/v1741167043/gift_uxvev1.png'
+            }
+            
+        ]
+        dispatch(setCategoriesList(categories))
+      }
+    };
+    useEffect(() => {
+    //   fetchCategories();
+    }, []); 
+    useEffect(() => {
+        let location = undefined
+        if (typeof window !== 'undefined') {
+            location = localStorage.getItem('location')
+        }
+        setUserLocation(location)
+    }, [userLocationUpdate])
+    console.log('User location', userLocation)
+    // const categories = useSelector(state => state.globalSettings.categoriesList);
     const pathname = usePathname();
     const prevScrollY = useRef(0);
     const [scrollState, setScrollState] = useState({
