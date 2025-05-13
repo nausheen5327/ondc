@@ -68,6 +68,7 @@ import { useCheckoutFlow } from '../checkout-guard/checkoutFlow'
 import { RTL } from '../RTL/RTL'
 import preAuthCartHelpers from './PreAuthCartHandler'
 import { formatCustomizationGroups, formatCustomizations, hasCustomizations, initializeCustomizationState } from '@/utils/productDetailsUtils'
+import { trackAddToCart, trackProductView } from '@/utils/analytics'
 const FoodDetailModal = ({
     product,
     image,
@@ -623,6 +624,7 @@ const FoodDetailModal = ({
     
                 if (cartItem.length === 0) {
                     const res = await postCall(url, payload);
+                    trackAddToCart(res);
                     if (navigate) {
                         handleModalClose();
                         dispatch(setCartList([res]));
@@ -775,6 +777,7 @@ const FoodDetailModal = ({
             const data = await cancellablePromise(
                 getCall(`/clientApis/v2/item-details?id=${productId}`)
             );
+            trackProductView(data);
             setProductPayload(data);
             setModalData([data]);
             let user  = localStorage.getItem('user');

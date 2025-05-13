@@ -1,3 +1,4 @@
+import { trackPaymentFailure, trackPaymentSuccess } from "@/utils/analytics";
 import React, { useContext, useEffect } from "react";
 
 const Razorpay = (props) => {
@@ -41,6 +42,7 @@ const Razorpay = (props) => {
           console.log("payment success response: ", response);
           setPaymentResponse(response);
           setPaymentStatus("success");
+          trackPaymentSuccess(response);
         },
         prefill: {
           name: `${billingAddress.name}`,
@@ -60,6 +62,7 @@ const Razorpay = (props) => {
       rzp.on("payment.failed", function (response) {
         console.log("payment failure response: ", response);
         setPaymentResponse(response);
+        trackPaymentFailure(response);
         setPaymentStatus("fail");
       });
 

@@ -35,6 +35,7 @@ import { setCustomerInfo, setDetailedLocation } from '@/redux/slices/addressData
 // import { PersistGate } from 'redux-persist/integration/react'
 import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { pageview } from '@/utils/analytics'
 
 Router.events.on('routeChangeStart', nProgress.start)
 Router.events.on('routeChangeError', nProgress.done)
@@ -102,8 +103,9 @@ const AppContent = ({ value, router, isAuthRoute, zoneid, getLayout, Component, 
             window.gtag('config', GA_MEASUREMENT_ID, {
                 page_path: url,
             })
+            pageview(url)
         }
-        
+       
         router.events.on('routeChangeComplete', handleRouteChange)
         return () => {
             router.events.off('routeChangeComplete', handleRouteChange)

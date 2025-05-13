@@ -66,6 +66,7 @@ import {
   alpha,
 } from '@mui/material'
 import LoadingScreen from '../CheckoutLoader';
+import { trackPaymentGatewayOpen, trackPlaceOrderClicked } from '@/utils/analytics';
 
 let currentDate = moment().format('YYYY/MM/DD HH:mm')
 let nextday = moment(currentDate).add(1, 'days').format('YYYY/MM/DD')
@@ -1869,6 +1870,7 @@ useEffect(() => {
         await getKeys();
         await createPayment();
         handleProceedToPay();
+        trackPaymentGatewayOpen();
       };
       const setUpdateCartItemsDataOnInitialize=(data) => {
         setSelectedFulfillments({});
@@ -2056,6 +2058,7 @@ useEffect(() => {
               })
             )
           );
+          trackPlaceOrderClicked(data);
           //Error handling workflow eg, NACK
           const isNACK = data.find((item) => item.error && item.message.ack.status === "NACK");
           if (isNACK) {

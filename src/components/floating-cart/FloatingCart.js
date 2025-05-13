@@ -78,6 +78,7 @@ import { CustomToaster } from '../custom-toaster/CustomToaster'
 import CartActions from './cartAction';
 import { useCheckoutFlow } from '../checkout-guard/checkoutFlow';
 import preAuthCartHelpers from '../foodDetail-modal/PreAuthCartHandler';
+import { trackBeginCheckout } from '@/utils/analytics';
 
 const FloatingCart = (props) => {
   const { handleCheckoutFlow } = useCheckoutFlow()
@@ -652,6 +653,7 @@ const createTransformedArray = (dataList) => {
   const handleCheckout = () => {
     // handleCheckoutFlow(cartItems, location)
     setSideDrawerOpen(false);
+    trackBeginCheckout(cartList);
     router.push('/playerInfo');
     // router.push('/checkout');
   };

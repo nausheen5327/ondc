@@ -8,6 +8,7 @@ import useCancellablePromise from '@/api/cancelRequest'
 import { getAllProductRequest } from '@/api/productApi'
 import { CustomToaster } from '../custom-toaster/CustomToaster'
 import { removeSpecialCharacters } from '@/utils/customFunctions'
+import { trackSearchEvent } from '@/utils/analytics'
 
 const ProductSearchPage = ({
     query,
@@ -64,6 +65,8 @@ const ProductSearchPage = ({
             const data = await cancellablePromise(
                 getAllProductRequest(paginationData.searchData)
             )
+
+            trackSearchEvent(searchName, data.count);
 
             // Cache the results with location-aware key
             setCachedPages(prev => ({
