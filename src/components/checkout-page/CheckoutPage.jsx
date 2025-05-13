@@ -66,7 +66,7 @@ import {
   alpha,
 } from '@mui/material'
 import LoadingScreen from '../CheckoutLoader';
-import { trackPaymentGatewayOpen, trackPlaceOrderClicked } from '@/utils/analytics';
+import { trackPaymentGatewayOpen, trackPlaceOrderClicked, trackPurchase } from '@/utils/analytics';
 
 let currentDate = moment().format('YYYY/MM/DD HH:mm')
 let nextday = moment(currentDate).add(1, 'days').format('YYYY/MM/DD')
@@ -326,6 +326,7 @@ const handleOrderSuccess = () => {
     
     // Clear cart and navigate
     dispatch(setCartList([]))
+    trackPurchase(paymentEventData);
     router.push(`/info?page=order&orderId=${paymentEventData[0]?.message?.order?.id}`)
   }
 };
