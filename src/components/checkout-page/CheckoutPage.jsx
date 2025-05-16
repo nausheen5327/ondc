@@ -2026,15 +2026,15 @@ useEffect(() => {
                           "street": billingAddress?.address?.street,
                           "tag": billingAddress?.address?.tag
                         },
-                      phone: billingAddress?.descriptor?.phone,
-                      name: billingAddress?.descriptor?.name,
+                        phone: billingAddress?.descriptor?.phone?.startsWith("+91") ? billingAddress?.descriptor?.phone?.substring(3): billingAddress?.descriptor?.phone,
+                        name: billingAddress?.descriptor?.name,
                       email: billingAddress?.descriptor?.email,
                     },
                     delivery_info: {
                       type: "Delivery",
                       name: deliveryAddress?.descriptor?.name,
                       email: deliveryAddress?.descriptor?.email,
-                      phone: deliveryAddress?.descriptor?.phone,
+                      phone: deliveryAddress?.descriptor?.phone?.startsWith("+91") ? deliveryAddress?.descriptor?.phone?.substring(3): deliveryAddress?.descriptor?.phone,
                       location: {
                         gps: `${deliveryAddress?.address?.lat},${deliveryAddress?.address?.lng}`,
                         "address": {
